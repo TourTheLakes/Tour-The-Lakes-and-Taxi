@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }.container {
+  max-width: 600px;
+  width: 100%;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.booking {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.booking p {
+  margin: 10px 0;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.actions button {
+  margin-right: 10px;
+  width: auto;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 20px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Your Booking</h1>
+    <div id="bookingDetails">
+      <p>Loading booking information...</p>
+    </div>
+    <button onclick="window.location.href='index.html'">Return to Homepage</button>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const phone = localStorage.getItem("returningPhoneNumber");
+    const bookingSection = document.getElementById("bookingDetails");
+
+    if (!phone) {
+      bookingSection.innerHTML = "<p>No phone number found. Please verify again.</p>";
+    } else {
+      db.ref("bookings").orderByChild("phone").equalTo(phone).once("value", snapshot => {
+        bookingSection.innerHTML = "";
+
+        if (!snapshot.exists()) {
+          bookingSection.innerHTML = "<p>No bookings found for this number.</p>";
+          return;
+        }
+
+        snapshot.forEach(child => {
+          const booking = child.val();
+          const id = child.key;
+
+          const div = document.createElement("div");
+          div.className = "booking";
+          div.innerHTML = `
+            <p><strong>Name:</strong> ${booking.name}</p>
+            <p><strong>Pickup:</strong> ${booking.pickup}</p>
+            <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
+            <p><strong>Time:</strong> ${booking.time}</p>
+            <div class="actions">
+              <button onclick="amendBooking('${id}')">Amend</button>
+              <button onclick="cancelBooking('${id}')">Cancel</button>
+            </div>
+          `;
+          bookingSection.appendChild(div);
+        });
+      });
+    }
+
+    function amendBooking(id) {
+      alert("Amend logic not implemented yet.");
+    }
+
+    function cancelBooking(id) {
+      if (confirm("Are you sure you want to cancel this booking?")) {
+        firebase.database().ref("bookings/" + id).remove()
+          .then(() => {
+            alert("Booking cancelled.");
+            location.reload();
+          });
+      }
+    }
+  </script></body>
+</html>
