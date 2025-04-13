@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <title>Returning Customer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,46 +13,39 @@
       padding: 40px;
       display: flex;
       justify-content: center;
-    }.container {
-  max-width: 600px;
-  width: 100%;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-}
-
-#recaptcha-container {
-  margin-bottom: 15px;
-}
-
-.booking {
-  background: #f9f9f9;
-  padding: 15px;
-  margin-top: 20px;
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.actions button {
-  width: auto;
-  margin-right: 10px;
-}
-
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    #recaptcha-container {
+      margin-bottom: 15px;
+    }
+    .booking {
+      background: #f9f9f9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .actions button {
+      width: auto;
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Returning Customer</h1><p style="font-size: 14px; color: #333;">Please verify your phone number (same as your booking):</p>
-
-<input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
+    <h1>Returning Customer</h1><p style="font-size: 14px; color: #333;">Please verify your phone number (same as your booking):</p><input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
 <div id="recaptcha-container"></div>
 <button onclick="sendCode()">Send Code</button>
 
@@ -120,12 +112,12 @@ input, button {
           const div = document.createElement("div");
           div.className = "booking";
           div.innerHTML = `
-            <p><strong>Name:</strong> ${booking.name}</p>
-            <p><strong>Pickup:</strong> ${booking.pickup}</p>
-            <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
-            <p><strong>Time:</strong> ${booking.time}</p>
+            <label>Name:</label><input type="text" id="name_${id}" value="${booking.name || ''}">
+            <label>Pickup:</label><input type="text" id="pickup_${id}" value="${booking.pickup || ''}">
+            <label>Dropoff:</label><input type="text" id="dropoff_${id}" value="${booking.dropoff || ''}">
+            <label>Time:</label><input type="text" id="time_${id}" value="${booking.time || ''}">
             <div class="actions">
-              <button onclick="amendBooking('${id}')">Amend</button>
+              <button onclick="saveChanges('${id}')">Save Changes</button>
               <button onclick="cancelBooking('${id}')">Cancel</button>
             </div>
           `;
@@ -134,13 +126,24 @@ input, button {
       });
     }
 
-    function amendBooking(id) {
-      alert("Amend logic not implemented yet.");
+    function saveChanges(id) {
+      const updatedData = {
+        name: document.getElementById(name_${id}).value.trim(),
+        pickup: document.getElementById(pickup_${id}).value.trim(),
+        dropoff: document.getElementById(dropoff_${id}).value.trim(),
+        time: document.getElementById(time_${id}).value.trim()
+      };
+      db.ref("bookings/" + id).update(updatedData)
+        .then(() => {
+          alert("Booking updated successfully.");
+          location.reload();
+        })
+        .catch(error => alert("Error updating booking: " + error.message));
     }
 
     function cancelBooking(id) {
       if (confirm("Are you sure you want to cancel this booking?")) {
-        firebase.database().ref("bookings/" + id).remove()
+        db.ref("bookings/" + id).remove()
           .then(() => {
             alert("Booking cancelled.");
             location.reload();
