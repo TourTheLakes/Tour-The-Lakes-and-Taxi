@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Amend Booking</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Amend Booking</title>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
@@ -15,38 +14,49 @@
       display: flex;
       justify-content: center;
     }
-
     .container {
       max-width: 600px;
       width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
     }
-
-    h1 {
+    h1, h2 {
       text-align: center;
       margin-bottom: 20px;
     }
-
     label {
-      font-weight: bold;
-      margin-top: 10px;
       display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
-
-    input, select, textarea {
+    input, select {
       width: 100%;
-      padding: 10px;
-      margin: 5px 0 15px;
+      padding: 8px;
+      margin-bottom: 15px;
       box-sizing: border-box;
     }
-
     button {
+      margin-top: 20px;
       padding: 10px 20px;
-      font-weight: bold;
-      cursor: pointer;
       width: 100%;
     }
-
-    @media (max-width: 600px) {
+    .warning {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffa500;
+      padding: 10px;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+    .disclaimer {
+      background: #f8f8f8;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid #cc0000;
+      font-size: 14px;
+    }
+    @media screen and (max-width: 480px) {
       body {
         padding: 20px;
       }
@@ -54,77 +64,143 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Amend Your Booking</h1>
+<div class="container">
+  <h1>Amend Your Booking</h1>
+  <form id="amendForm">
+    <label for="area">Local Area:</label>
+    <select id="area">
+      <option value="">--Select Area--</option>
+      <option>Windermere</option>
+      <option>Troutbeck</option>
+      <option>Ambleside</option>
+      <option>Hawkshead</option>
+      <option>Coniston</option>
+      <option>Grasmere</option>
+      <option>Kendal</option>
+      <option value="other">Another area</option>
+    </select>
+    <div id="otherAreaBox" style="display: none;">
+      <label for="otherArea">Specify Area:</label>
+      <input type="text" id="otherArea">
+    </div><label for="pickup">Pickup Address:</label>
+<input type="text" id="pickup" required>
+<label for="extra">Additional Info:</label>
+<input type="text" id="extra">
+<label for="dropoff">Drop-off Location:</label>
+<input type="text" id="dropoff" required>
 
-    <form id="amendForm">
-      <label for="pickup">Pickup:</label>
-      <input type="text" id="pickup" required>
+<label for="passengers">Number of Passengers:</label>
+<select id="passengers">
+  <option value="">--Select--</option>
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+  <option>6</option>
+</select>
+<label for="luggage">Luggage Size:</label>
+<select id="luggage">
+  <option value="">-- Select Luggage Size --</option>
+  <option value="none">No luggage – just me and a smile</option>
+  <option value="small">Small – a backpack or small carry-on</option>
+  <option value="medium">Medium – a couple of suitcases</option>
+  <option value="large">Large – multiple bags or oversized items</option>
+</select>
 
-      <label for="dropoff">Drop-off:</label>
-      <input type="text" id="dropoff" required>
+<div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
 
-      <label for="time">Pickup Time:</label>
-      <input type="text" id="time" required>
+<div class="disclaimer">
+  <strong>Important Notice Regarding Pets</strong><br>
+  We regret to inform you that, due to multiple incidents involving damage to our vehicles, our drivers are no longer accepting animals on board.<br><br>
+  We are <strong>not a pet-friendly service</strong>. Please acknowledge you are not travelling with a pet.<br><br>
+  <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+</div>
+<label><input type="checkbox" id="noPets"> I acknowledge I am not travelling with a pet.</label>
 
-      <label for="extra">Extra Info:</label>
-      <textarea id="extra" rows="3"></textarea>
+<button type="submit">Update Booking</button>
 
-      <button type="submit">Save Changes</button>
-    </form>
-  </div>
+  </form>
+</div><script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
-      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-      projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
-      messagingSenderId: "470758171431",
-      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-    };
+  const id = new URLSearchParams(location.search).get("id");
+  const form = document.getElementById("amendForm");
+  const areaSelect = document.getElementById("area");
+  const luggage = document.getElementById("luggage");
+  const passengers = document.getElementById("passengers");
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+  const luggageWarning = document.getElementById("luggageWarning");
+  const otherAreaBox = document.getElementById("otherAreaBox");
+  const otherAreaInput = document.getElementById("otherArea");
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const bookingId = urlParams.get("id");
-
-    if (!bookingId) {
-      alert("Missing booking ID.");
-      window.location.href = "index.html";
+  db.ref("bookings/" + id).once("value", snap => {
+    const data = snap.val();
+    if (!data) return;
+    areaSelect.value = ["Windermere", "Troutbeck", "Ambleside", "Hawkshead", "Coniston", "Grasmere", "Kendal"].includes(data.area) ? data.area : "other";
+    if (areaSelect.value === "other") {
+      otherAreaBox.style.display = "block";
+      otherAreaInput.value = data.area;
     }
+    document.getElementById("pickup").value = data.pickup;
+    document.getElementById("extra").value = data.extra || "";
+    document.getElementById("dropoff").value = data.dropoff;
+    document.getElementById("passengers").value = data.passengers;
+    document.getElementById("luggage").value = data.luggage;
+    document.getElementById("noPets").checked = data.pets === "No";
+    checkLuggageLimit();
+  });
 
-    const pickupInput = document.getElementById("pickup");
-    const dropoffInput = document.getElementById("dropoff");
-    const timeInput = document.getElementById("time");
-    const extraInput = document.getElementById("extra");
+  passengers.addEventListener("change", checkLuggageLimit);
+  areaSelect.addEventListener("change", function () {
+    otherAreaBox.style.display = this.value === "other" ? "block" : "none";
+  });
 
-    // Load booking data
-    db.ref("bookings/" + bookingId).once("value").then(snapshot => {
-      const data = snapshot.val();
-      if (!data) return alert("Booking not found.");
+  function checkLuggageLimit() {
+    const count = parseInt(passengers.value);
+    const mediumOption = luggage.querySelector('option[value="medium"]');
+    const largeOption = luggage.querySelector('option[value="large"]');
+    if (count > 4) {
+      mediumOption.disabled = true;
+      largeOption.disabled = true;
+      if (["medium", "large"].includes(luggage.value)) luggage.value = "";
+      luggageWarning.style.display = "block";
+    } else {
+      mediumOption.disabled = false;
+      largeOption.disabled = false;
+      luggageWarning.style.display = "none";
+    }
+  }
 
-      pickupInput.value = data.pickup || "";
-      dropoffInput.value = data.dropoff || "";
-      timeInput.value = data.time || "";
-      extraInput.value = data.extra || "";
+  form.onsubmit = e => {
+    e.preventDefault();
+    const data = {
+      area: areaSelect.value === "other" ? otherAreaInput.value.trim() : areaSelect.value,
+      pickup: document.getElementById("pickup").value.trim(),
+      extra: document.getElementById("extra").value.trim(),
+      dropoff: document.getElementById("dropoff").value.trim(),
+      passengers: passengers.value,
+      luggage: luggage.value,
+      pets: document.getElementById("noPets").checked ? "No" : "Yes or not confirmed"
+    };
+    if (!data.area || !data.pickup || !data.dropoff || !data.passengers || !data.luggage || data.pets === "Yes or not confirmed") {
+      alert("Please complete all required fields and confirm no pets.");
+      return;
+    }
+    db.ref("bookings/" + id).update(data).then(() => {
+      alert("Booking updated successfully.");
+      window.location.href = "CustomerBooking.html";
     });
-
-    // Handle form submission
-    document.getElementById("amendForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      db.ref("bookings/" + bookingId).update({
-        pickup: pickupInput.value.trim(),
-        dropoff: dropoffInput.value.trim(),
-        time: timeInput.value.trim(),
-        extra: extraInput.value.trim()
-      }).then(() => {
-        alert("Booking updated successfully.");
-        window.location.href = "CustomerBooking.html";
-      });
-    });
-  </script>
-</body>
+  }
+</script></body>
 </html>
