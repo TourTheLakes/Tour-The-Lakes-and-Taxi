@@ -47,7 +47,7 @@
   <div class="container">
     <h1>Driver Dashboard</h1>
     <div id="bookingsContainer">
-      <!-- Bookings will be injected here -->
+      <!-- Bookings will appear here -->
     </div>
   </div>
 
@@ -55,7 +55,9 @@
     const bookings = JSON.parse(localStorage.getItem('liveBookings') || '[]');
     const container = document.getElementById('bookingsContainer');
 
-    if (bookings.length > 0) {
+    if (bookings.length === 0) {
+      container.innerHTML = "<p>No bookings received yet.</p>";
+    } else {
       bookings.forEach(booking => {
         const card = document.createElement('div');
         card.className = 'booking';
@@ -72,8 +74,6 @@
         `;
         container.appendChild(card);
       });
-    } else {
-      container.innerHTML = "<p>No bookings received yet.</p>";
     }
   </script>
 </body>
