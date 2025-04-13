@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en">
-<head>
+<!DOCTYPE html><html lang="en"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Amend Booking</title>
@@ -88,31 +87,28 @@
     <label for="extra">Additional Info:</label>
     <input type="text" id="extra">
     <label for="dropoff">Drop-off Location:</label>
-    <input type="text" id="dropoff" required>
+    <input type="text" id="dropoff" required><label for="passengers">Number of Passengers:</label>
+<select id="passengers">
+  <option value="">--Select--</option>
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option>4</option>
+  <option>5</option>
+  <option>6</option>
+</select>
 
-    <label for="passengers">Number of Passengers:</label>
-    <select id="passengers">
-      <option value="">--Select--</option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4</option>
-      <option>5</option>
-      <option>6</option>
-    </select>
+<label for="luggage">Luggage Size:</label>
+<select id="luggage">
+  <option value="">-- Select Luggage Size --</option>
+  <option value="none">No luggage – just me and a smile</option>
+  <option value="small">Small – a backpack or small carry-on</option>
+  <option value="medium">Medium – a couple of suitcases</option>
+  <option value="large">Large – multiple bags or oversized items</option>
+</select>
 
-    <label for="luggage">Luggage Size:</label>
-    <select id="luggage">
-      <option value="">-- Select Luggage Size --</option>
-      <option value="none">No luggage – just me and a smile</option>
-      <option value="small">Small – a backpack or small carry-on</option>
-      <option value="medium">Medium – a couple of suitcases</option>
-      <option value="large">Large – multiple bags or oversized items</option>
-    </select>
+<div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
 
-    <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
-
-    <!-- Pet disclaimer block -->
 <div style="background: #f8f8f8; padding: 15px; margin-top: 20px; border-left: 4px solid #cc0000; font-size: 14px;">
   <strong>Important Notice Regarding Pets</strong><br>
   We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
@@ -122,14 +118,13 @@
 
 <label style="margin-top: 15px;">
   <input type="checkbox" id="noPets" required>
-  I acknowledge I am not travelling with a pet.
+  I acknowledge I am not travelling with a pet.
 </label>
 
-    <button type="submit">Update Booking</button>
-  </form>
-</div>
+<button type="submit">Update Booking</button>
 
-<script>
+  </form>
+</div><script>
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
     authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -151,6 +146,11 @@
   const luggageWarning = document.getElementById("luggageWarning");
   const otherAreaBox = document.getElementById("otherAreaBox");
   const otherAreaInput = document.getElementById("otherArea");
+
+  const accessKey = amend-${id};
+  const now = Date.now();
+  const validUntil = now + 60000; // 60 seconds from now
+  sessionStorage.setItem(accessKey, validUntil);
 
   db.ref("bookings/" + id).once("value", snap => {
     const data = snap.val();
@@ -192,6 +192,13 @@
 
   form.onsubmit = e => {
     e.preventDefault();
+    const valid = parseInt(sessionStorage.getItem(accessKey));
+    if (!valid || Date.now() > valid) {
+      alert("This amendment session has expired. Please verify again.");
+      window.location.href = "ReturningCustomer.html";
+      return;
+    }
+
     const data = {
       area: areaSelect.value === "other" ? otherAreaInput.value.trim() : areaSelect.value,
       pickup: document.getElementById("pickup").value.trim(),
@@ -201,15 +208,16 @@
       luggage: luggage.value,
       pets: document.getElementById("noPets").checked ? "No" : "Yes or not confirmed"
     };
+
     if (!data.area || !data.pickup || !data.dropoff || !data.passengers || !data.luggage || data.pets === "Yes or not confirmed") {
       alert("Please complete all required fields and confirm no pets.");
       return;
     }
+
     db.ref("bookings/" + id).update(data).then(() => {
       alert("Booking updated successfully.");
       window.location.href = "CustomerBooking.html";
     });
   };
-</script>
-</body>
+</script></body>
 </html>
