@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Driver Verification</h1><div id="stepDisplay"></div>
+<label id="questionLabel"></label>
+<input type="text" id="answerInput" placeholder="Enter your answer">
+<button onclick="submitAnswer()">Submit</button>
+
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const driverId = new URLSearchParams(location.search).get("id");
+    let driverData = null;
+    let currentStep = 0;
+
+    const steps = [
+      { key: "hackneyNumber", question: "What is your Hackney Carriage Driver number?" },
+      { key: "vehicleCard", question: "What is your 3-digit vehicle door card number?" },
+      { key: "phonePrefix", question: "What are the first 5 digits of your registered phone number?" },
+      { key: "tyreSize", question: "What is your car's tyre size? (e.g., R18)" },
+      { key: "doorCount", question: "How many doors does your vehicle have? (e.g., 4-door)" }
+    ];
+
+    const shuffledSteps = steps.sort(() => Math.random() - 0.5);
+
+    function displayStep() {
+      if (currentStep >= shuffledSteps.length) {
+        // All passed
+        window.location.href = "DriverDashboard.html";
+        return;
+      }
+
+      const step = shuffledSteps[currentStep];
+      document.getElementById("stepDisplay").textContent = Step ${currentStep + 1} of ${steps.length};
+      document.getElementById("questionLabel").textContent = step.question;
+      document.getElementById("answerInput").value = "";
+    }
+
+    function submitAnswer() {
+      const input = document.getElementById("answerInput").value.trim();
+      const step = shuffledSteps[currentStep];
+
+      if (!driverData) return;
+
+      const expected = (driverData[step.key] || "").toString().toLowerCase();
+      if (input.toLowerCase() === expected) {
+        currentStep++;
+        displayStep();
+      } else {
+        alert("Incorrect. Access denied.");
+        window.location.href = "DriverLoginScreen.html";
+      }
+    }
+
+    if (!driverId) {
+      alert("Missing driver ID. Redirecting...");
+      window.location.href = "DriverLoginScreen.html";
+    } else {
+      db.ref("drivers/" + driverId).once("value").then(snap => {
+        if (!snap.exists()) {
+          alert("Driver not found.");
+          window.location.href = "DriverLoginScreen.html";
+        } else {
+          driverData = snap.val();
+          displayStep();
+        }
+      });
+    }
+  </script></body>
+</html>
