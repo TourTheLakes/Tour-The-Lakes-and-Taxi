@@ -82,46 +82,53 @@
     <div id="otherAreaBox" style="display: none;">
       <label for="otherArea">Specify Area:</label>
       <input type="text" id="otherArea">
-    </div><label for="pickup">Pickup Address:</label>
-<input type="text" id="pickup" required>
-<label for="extra">Additional Info:</label>
-<input type="text" id="extra">
-<label for="dropoff">Drop-off Location:</label>
-<input type="text" id="dropoff" required>
+    </div>
+    <label for="pickup">Pickup Address:</label>
+    <input type="text" id="pickup" required>
+    <label for="extra">Additional Info:</label>
+    <input type="text" id="extra">
+    <label for="dropoff">Drop-off Location:</label>
+    <input type="text" id="dropoff" required>
 
-<label for="passengers">Number of Passengers:</label>
-<select id="passengers">
-  <option value="">--Select--</option>
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-  <option>5</option>
-  <option>6</option>
-</select>
-<label for="luggage">Luggage Size:</label>
-<select id="luggage">
-  <option value="">-- Select Luggage Size --</option>
-  <option value="none">No luggage – just me and a smile</option>
-  <option value="small">Small – a backpack or small carry-on</option>
-  <option value="medium">Medium – a couple of suitcases</option>
-  <option value="large">Large – multiple bags or oversized items</option>
-</select>
+    <label for="passengers">Number of Passengers:</label>
+    <select id="passengers">
+      <option value="">--Select--</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4</option>
+      <option>5</option>
+      <option>6</option>
+    </select>
 
-<div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
+    <label for="luggage">Luggage Size:</label>
+    <select id="luggage">
+      <option value="">-- Select Luggage Size --</option>
+      <option value="none">No luggage – just me and a smile</option>
+      <option value="small">Small – a backpack or small carry-on</option>
+      <option value="medium">Medium – a couple of suitcases</option>
+      <option value="large">Large – multiple bags or oversized items</option>
+    </select>
 
-<div class="disclaimer">
-  <strong>Important Notice Regarding Pets</strong><br>
-  We regret to inform you that, due to multiple incidents involving damage to our vehicles, our drivers are no longer accepting animals on board.<br><br>
-  We are <strong>not a pet-friendly service</strong>. Please acknowledge you are not travelling with a pet.<br><br>
-  <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
-</div>
-<label><input type="checkbox" id="noPets"> I acknowledge I am not travelling with a pet.</label>
+    <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
 
-<button type="submit">Update Booking</button>
+    <div class="disclaimer">
+      <strong>Important Notice Regarding Pets</strong><br>
+      We regret to inform you that, due to multiple incidents involving damage to our vehicles, our drivers are no longer accepting animals on board.<br><br>
+      We are <strong>not a pet-friendly service</strong>. Please acknowledge you are not travelling with a pet.<br><br>
+      <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+    </div>
 
+    <label style="display: flex; align-items: center; margin-top: 15px;">
+      <input type="checkbox" id="noPets">
+      <span style="margin-left: 8px;">I acknowledge I am not travelling with a pet.</span>
+    </label>
+
+    <button type="submit">Update Booking</button>
   </form>
-</div><script>
+</div>
+
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
     authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -201,6 +208,7 @@
       alert("Booking updated successfully.");
       window.location.href = "CustomerBooking.html";
     });
-  }
-</script></body>
+  };
+</script>
+</body>
 </html>
