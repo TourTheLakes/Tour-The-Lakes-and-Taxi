@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Driver Dashboard</title>
@@ -14,14 +15,17 @@
       display: flex;
       justify-content: center;
     }
+
     .container {
       max-width: 800px;
       width: 100%;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
+
     .booking {
       background: #fff;
       padding: 20px;
@@ -29,9 +33,11 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       margin-bottom: 20px;
     }
+
     .booking p {
       margin: 8px 0;
     }
+
     @media screen and (max-width: 600px) {
       body {
         padding: 20px;
@@ -47,58 +53,13 @@
     </div>
   </div>
 
-<audio id="dingSound" preload="auto">
-  <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
-  <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-  let userInteracted = false;
-  const sound = document.getElementById("dingSound");
-
-  document.addEventListener("click", () => userInteracted = true, { once: true });
-  document.addEventListener("keydown", () => userInteracted = true, { once: true });
-
-  let lastBookingCount = 0;
-
-  db.ref("bookings").on("value", snapshot => {
-    const bookings = snapshot.val();
-    const bookingList = bookings ? Object.values(bookings) : [];
-    
-    if (bookingList.length > lastBookingCount && userInteracted) {
-      sound.currentTime = 0;
-      sound.play().catch(() => {});
-    }
-
-    lastBookingCount = bookingList.length;
-
-    container.innerHTML = "";
-    if (!bookings) {
-      container.innerHTML = "<p>No bookings received yet.</p>";
-      return;
-    }
-
-    bookingList.reverse().forEach(booking => {
-      const card = document.createElement('div');
-      card.className = 'booking';
-      card.innerHTML = `
-        <p><strong>Name:</strong> ${booking.name}</p>
-        <p><strong>Phone:</strong> ${booking.phone}</p>
-        <p><strong>Area:</strong> ${booking.area}</p>
-        <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
-        <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
-        <p><strong>Passengers:</strong> ${booking.passengers}</p>
-        <p><strong>Luggage:</strong> ${booking.luggage}</p>
-        <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
-        <p><strong>Pickup Time:</strong> ${booking.time}</p>
-      `;
-      container.appendChild(card);
-    });
-  });
-</script>
-
+  <audio id="dingSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -111,26 +72,33 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
     const container = document.getElementById('bookingsContainer');
     const sound = document.getElementById('dingSound');
+
+    let userInteracted = false;
     let latestCount = 0;
+
+    document.addEventListener("click", () => userInteracted = true, { once: true });
+    document.addEventListener("keydown", () => userInteracted = true, { once: true });
 
     db.ref("bookings").on("value", snapshot => {
       const bookings = snapshot.val();
+      const bookingList = bookings ? Object.values(bookings) : [];
+
+      if (bookingList.length > latestCount && userInteracted) {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+      }
+
+      latestCount = bookingList.length;
+
       container.innerHTML = "";
 
       if (!bookings) {
         container.innerHTML = "<p>No bookings received yet.</p>";
         return;
       }
-
-      const bookingList = Object.values(bookings);
-
-      if (bookingList.length > latestCount) {
-        sound.play().catch(() => {});
-      }
-
-      latestCount = bookingList.length;
 
       bookingList.reverse().forEach(booking => {
         const card = document.createElement('div');
