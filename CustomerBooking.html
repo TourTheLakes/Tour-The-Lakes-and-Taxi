@@ -103,7 +103,7 @@ button {
             <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
             <p><strong>Time:</strong> ${booking.time}</p>
             <div class="actions">
-              <button onclick="amendBooking('${id}')">Amend</button>
+              <button onclick="location.href='CustomerAmend.html?id=${id}'">Amend</button>
               <button onclick="cancelBooking('${id}')">Cancel</button>
             </div>
           `;
