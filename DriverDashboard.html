@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <title>Driver Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,10 +46,14 @@
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>  <audio id="dingSound" preload="auto">
+  </div>
+
+  <audio id="dingSound" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.mp3" type="audio/mpeg">
-  </audio>  <script>
+  </audio>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -63,7 +69,7 @@
     const container = document.getElementById('bookingsContainer');
     const sound = document.getElementById('dingSound');
 
-    let lastSnapshot = "";
+    let lastKeys = [];
     let userInteracted = false;
 
     document.addEventListener("click", () => userInteracted = true, { once: true });
@@ -71,21 +77,22 @@
 
     db.ref("bookings").on("value", snapshot => {
       const bookings = snapshot.val();
-      const currentSnapshot = JSON.stringify(bookings || {});
-
-      // Play sound if content changes
-      if (userInteracted && lastSnapshot && currentSnapshot !== lastSnapshot) {
-        sound.currentTime = 0;
-        sound.play().catch(() => {});
-      }
-
-      lastSnapshot = currentSnapshot;
       container.innerHTML = "";
 
       if (!bookings) {
         container.innerHTML = "<p>No bookings received yet.</p>";
         return;
       }
+
+      const currentKeys = Object.keys(bookings);
+      const isNew = currentKeys.length > lastKeys.length;
+
+      if (userInteracted && isNew) {
+        sound.currentTime = 0;
+        sound.play().catch(() => {});
+      }
+
+      lastKeys = currentKeys;
 
       const bookingList = Object.values(bookings);
       bookingList.reverse().forEach(booking => {
@@ -105,5 +112,6 @@
         container.appendChild(card);
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
