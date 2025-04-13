@@ -3,73 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Verify Phone</title>
-
-  <!-- Firebase Modules via CDN -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-
-    // Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyDuqigXeAv06q1GeGhWIM7HbPCCjJXXq_g",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
-      projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
-      messagingSenderId: "470758171431",
-      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02",
-      measurementId: "G-W6JYLZX1P"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    window.onload = () => {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'normal',
-        callback: () => {
-          // reCAPTCHA solved
-        }
-      });
-      recaptchaVerifier.render().then(widgetId => {
-        window.recaptchaWidgetId = widgetId;
-      });
-
-      window.sendCode = () => {
-        const phone = document.getElementById("phone").value.trim();
-        if (!phone) {
-          alert("Please enter your mobile number.");
-          return;
-        }
-
-        localStorage.setItem("phoneNumber", phone);
-
-        signInWithPhoneNumber(auth, phone, window.recaptchaVerifier)
-          .then(confirmationResult => {
-            window.confirmationResult = confirmationResult;
-            document.getElementById("codeSection").style.display = "block";
-          })
-          .catch(error => {
-            alert(error.message);
-          });
-      };
-
-      window.verifyCode = () => {
-        const code = document.getElementById("code").value.trim();
-        window.confirmationResult.confirm(code)
-          .then(result => {
-            const user = result.user;
-            document.getElementById("errorMsg").style.display = "none";
-            document.getElementById("successMsg").style.display = "block";
-            setTimeout(() => {
-              window.location.href = "/ConfirmName.html";
-            }, 1000);
-          })
-          .catch(() => {
-            document.getElementById("errorMsg").style.display = "block";
-          });
-      };
-    };
-  </script>
+  <!-- Firebase scripts (non-module global versions) -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
 
   <style>
     body {
@@ -145,5 +81,66 @@
     <p class="message" id="successMsg" style="display:none;">Phone verified! Redirecting...</p>
     <p class="error" id="errorMsg" style="display:none;">Incorrect code. Try again.</p>
   </div>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDuqigXeAv06q1GeGhWIM7HbPCCjJXXq_g",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02",
+      measurementId: "G-W6JYLZX1P"
+    };
+
+    // Init Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Recaptcha
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal',
+      callback: function(response) {
+        // reCAPTCHA solved
+      }
+    });
+
+    recaptchaVerifier.render();
+
+    function sendCode() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) {
+        alert("Please enter your mobile number.");
+        return;
+      }
+
+      localStorage.setItem("phoneNumber", phone);
+
+      auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
+        .then(confirmationResult => {
+          window.confirmationResult = confirmationResult;
+          document.getElementById("codeSection").style.display = "block";
+        })
+        .catch(error => {
+          alert(error.message);
+        });
+    }
+
+    function verifyCode() {
+      const code = document.getElementById("code").value.trim();
+      window.confirmationResult.confirm(code)
+        .then(result => {
+          document.getElementById("errorMsg").style.display = "none";
+          document.getElementById("successMsg").style.display = "block";
+          setTimeout(() => {
+            window.location.href = "/ConfirmName.html";
+          }, 1000);
+        })
+        .catch(error => {
+          document.getElementById("errorMsg").style.display = "block";
+        });
+    }
+  </script>
 </body>
 </html>
