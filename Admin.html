@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #fff; }
+    .driver-form, .driver-list { max-width: 500px; margin: auto; }
+    label { font-weight: bold; display: block; margin-top: 10px; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; }
+    button { margin-top: 20px; padding: 10px; width: 100%; }
+    .driver-card { background: #f4f4f4; padding: 10px; margin-top: 15px; border-left: 4px solid #333; }
+  </style>
+</head>
+<body>
+  <div class="driver-form">
+    <h2>Add / Update Driver</h2>
+    <input type="hidden" id="editKey">
+    <label>Driver Name</label>
+    <input type="text" id="name">
+    <label>Phone Prefix (e.g. 07432)</label>
+    <input type="text" id="phonePrefix">
+    <label>Hackney Driver Number</label>
+    <input type="text" id="driverNumber">
+    <label>Door Card Number</label>
+    <input type="text" id="doorCard">
+    <label>Tyre Size (e.g. R18)</label>
+    <input type="text" id="tyreSize">
+    <label>Number of Doors</label>
+    <select id="doors">
+      <option value="">Select...</option>
+      <option value="3-door">3-door</option>
+      <option value="4-door">4-door</option>
+      <option value="5-door">5-door</option>
+    </select>
+    <button onclick="saveDriver()">Save Driver</button>
+  </div>  <div class="driver-list">
+    <h2>Driver Profiles</h2>
+    <div id="driversContainer"></div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function saveDriver() {
+      const data = {
+        name: document.getElementById("name").value.trim(),
+        phonePrefix: document.getElementById("phonePrefix").value.trim(),
+        driverNumber: document.getElementById("driverNumber").value.trim(),
+        doorCard: document.getElementById("doorCard").value.trim(),
+        tyreSize: document.getElementById("tyreSize").value.trim(),
+        doors: document.getElementById("doors").value,
+        active: true
+      };
+
+      const key = document.getElementById("editKey").value;
+      if (key) {
+        db.ref("drivers/" + key).update(data).then(() => location.reload());
+      } else {
+        db.ref("drivers").push(data).then(() => location.reload());
+      }
+    }
+
+    function loadDrivers() {
+      const container = document.getElementById("driversContainer");
+      container.innerHTML = "Loading...";
+
+      db.ref("drivers").once("value", snapshot => {
+        container.innerHTML = "";
+        snapshot.forEach(child => {
+          const driver = child.val();
+          const id = child.key;
+
+          const card = document.createElement("div");
+          card.className = "driver-card";
+          card.innerHTML = `
+            <p><strong>${driver.name}</strong> (${driver.active ? 'Active' : 'Inactive'})</p>
+            <p>Phone: ${driver.phonePrefix}</p>
+            <p>Driver #: ${driver.driverNumber}</p>
+            <p>Door Card: ${driver.doorCard}</p>
+            <p>Tyres: ${driver.tyreSize}</p>
+            <p>Doors: ${driver.doors}</p>
+            <button onclick="editDriver('${id}')">Edit</button>
+            <button onclick="deactivateDriver('${id}')">${driver.active ? 'Deactivate' : 'Activate'}</button>
+          `;
+          container.appendChild(card);
+        });
+      });
+    }
+
+    function editDriver(id) {
+      db.ref("drivers/" + id).once("value", snap => {
+        const d = snap.val();
+        document.getElementById("editKey").value = id;
+        document.getElementById("name").value = d.name;
+        document.getElementById("phonePrefix").value = d.phonePrefix;
+        document.getElementById("driverNumber").value = d.driverNumber;
+        document.getElementById("doorCard").value = d.doorCard;
+        document.getElementById("tyreSize").value = d.tyreSize;
+        document.getElementById("doors").value = d.doors;
+      });
+    }
+
+    function deactivateDriver(id) {
+      db.ref("drivers/" + id + "/active").once("value", snap => {
+        db.ref("drivers/" + id + "/active").set(!snap.val()).then(() => location.reload());
+      });
+    }
+
+    loadDrivers();
+  </script></body>
+</html>
