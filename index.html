@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tour The Lakes Home</title>
+  <title>MainLanding</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
@@ -30,25 +30,40 @@
       margin-bottom: 30px;
     }
 
-    .button-group {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
     button {
       padding: 10px 20px;
-      min-width: 120px;
+      margin: 10px;
+    }
+
+    .returning {
+      margin-bottom: 40px;
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 20px;
+      }
+
+      button {
+        width: 100%;
+        margin: 10px 0;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
+    
+    <!-- RETURNING CUSTOMER SECTION -->
+    <div class="returning">
+      <button onclick="location.href='ReturningCustomer.html'">RETURNING CUSTOMER</button>
+      <p style="font-size: 14px; color: #555;">View, Amend or Cancel your existing booking</p>
+    </div>
+
     <h1>Tour The Lakes</h1>
     <p>Lake District Tours and Taxi Service</p>
 
-    <div class="button-group">
+    <div>
       <button onclick="location.href='LakesTours.html'">LAKES TOURS</button>
       <button onclick="location.href='TaxiService.html'">TAXI SERVICE</button>
     </div>
