@@ -10,11 +10,19 @@
       text-align: center;
       padding: 50px;
     }
+
+    button {
+      padding: 15px 25px;
+      font-size: 16px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
   <h1>Sound Test</h1>
-  <p>If you hear a sound, autoplay worked.</p>
+  <p>If no sound played automatically, tap the button below:</p>
+
+  <button onclick="playSound()">Play Sound</button>
 
   <audio id="testSound" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
@@ -22,16 +30,19 @@
   </audio>
 
   <script>
-    window.addEventListener("load", () => {
-      const sound = document.getElementById("testSound");
+    const sound = document.getElementById("testSound");
 
-      // Attempt to autoplay after short delay
+    function playSound() {
+      sound.play();
+    }
+
+    // Try autoplay after short delay
+    window.addEventListener("load", () => {
       setTimeout(() => {
-        sound.play().catch(err => {
-          console.warn("Autoplay blocked:", err);
-          // Optionally prompt user to click to play
+        sound.play().catch(() => {
+          console.warn("Autoplay blocked, waiting for user interaction.");
         });
-      }, 500);
+      }, 300);
     });
   </script>
 </body>
