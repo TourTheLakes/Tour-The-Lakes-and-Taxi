@@ -52,12 +52,17 @@
   </div>
 
   <script>
-    const bookings = JSON.parse(localStorage.getItem('liveBookings') || '[]');
     const container = document.getElementById('bookingsContainer');
 
-    if (bookings.length === 0) {
-      container.innerHTML = "<p>No bookings received yet.</p>";
-    } else {
+    function renderBookings() {
+      const bookings = JSON.parse(localStorage.getItem('liveBookings') || '[]');
+      container.innerHTML = '';
+
+      if (bookings.length === 0) {
+        container.innerHTML = "<p>No bookings received yet.</p>";
+        return;
+      }
+
       bookings.forEach(booking => {
         const card = document.createElement('div');
         card.className = 'booking';
@@ -75,6 +80,9 @@
         container.appendChild(card);
       });
     }
+
+    renderBookings(); // Initial load
+    setInterval(renderBookings, 3000); // Refresh every 3 seconds
   </script>
 </body>
 </html>
