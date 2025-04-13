@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .booking {
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+
+    .booking p {
+      margin: 8px 0;
+    }
+
+    @media screen and (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Driver Dashboard</h1>
+    <div id="bookingsContainer">
+      <!-- Booking will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    const booking = JSON.parse(localStorage.getItem('latestBooking'));
+
+    if (booking) {
+      const container = document.getElementById('bookingsContainer');
+      const card = document.createElement('div');
+      card.className = 'booking';
+      card.innerHTML = `
+        <p><strong>Name:</strong> ${booking.customerName}</p>
+        <p><strong>Phone:</strong> ${booking.phoneNumber}</p>
+        <p><strong>Area:</strong> ${booking.area}</p>
+        <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+        <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+        <p><strong>Passengers:</strong> ${booking.passengers}</p>
+        <p><strong>Luggage:</strong> ${booking.luggage}</p>
+        <p><strong>Travelling with Pet:</strong> ${booking.noPets === 'true' ? 'No' : 'Yes or not confirmed'}</p>
+        <p><strong>Pickup Time:</strong> ${booking.pickupType === 'ASAP' ? 'ASAP (avg wait ~15 min)' : booking.pickupDate + ' at ' + booking.pickupTime}</p>
+      `;
+      container.appendChild(card);
+    } else {
+      document.getElementById('bookingsContainer').innerHTML = "<p>No bookings received yet.</p>";
+    }
+  </script>
+</body>
+</html>
