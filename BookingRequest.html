@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Booking Summary</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      margin-top: 30px;
+      margin-bottom: 10px;
+      display: block;
+      width: 100%;
+      border-radius: 4px;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Booking Summary</h1>
+    <p>A driver will be in touch shortly.</p>
+    <hr>
+
+    <p><b>Name for Booking:</b> <span id="customerName"></span></p>
+    <p><b>Phone Number:</b> <span id="phoneNumber"></span></p>
+    <p><b>Area:</b> <span id="area"></span></p>
+    <p><b>Pickup Address:</b> <span id="pickup"></span></p>
+    <p><b>Extra Info:</b> <span id="extra"></span></p>
+    <p><b>Drop-off Location:</b> <span id="dropoff"></span></p>
+    <p><b>Passengers:</b> <span id="passengers"></span></p>
+    <p><b>Luggage:</b> <span id="luggage"></span></p>
+    <p><b>Travelling with Pet:</b> <span id="noPets"></span></p>
+    <p><b>Pickup Time:</b> <span id="pickupTime"></span></p>
+
+    <button class="submit-btn" onclick="submitBooking()">Submit Booking</button>
+    <button onclick="window.location.href='MainLanding.html'">Back to Home</button>
+
+    <script>
+      function showBooking() {
+        document.getElementById('customerName').textContent = localStorage.getItem('customerName') || 'N/A';
+        document.getElementById('phoneNumber').textContent = localStorage.getItem('phoneNumber') || 'N/A';
+        document.getElementById('area').textContent = localStorage.getItem('area') || 'N/A';
+        document.getElementById('pickup').textContent = localStorage.getItem('pickup') || 'N/A';
+        document.getElementById('extra').textContent = localStorage.getItem('extra') || 'N/A';
+        document.getElementById('dropoff').textContent = localStorage.getItem('dropoff') || 'N/A';
+        document.getElementById('passengers').textContent = localStorage.getItem('passengers') || 'N/A';
+        document.getElementById('luggage').textContent = localStorage.getItem('luggage') || 'N/A';
+
+        var pet = localStorage.getItem('noPets');
+        document.getElementById('noPets').textContent = (pet === 'true') ? 'No' : 'Yes or not confirmed';
+
+        var pickupType = localStorage.getItem('pickupType');
+        var pickupDate = localStorage.getItem('pickupDate');
+        var pickupTime = localStorage.getItem('pickupTime');
+
+        if (pickupType === 'ASAP') {
+          document.getElementById('pickupTime').textContent = 'ASAP (avg wait ~15 min)';
+        } else if (pickupType === 'Scheduled') {
+          document.getElementById('pickupTime').textContent = pickupDate + ' at ' + pickupTime;
+        } else {
+          document.getElementById('pickupTime').textContent = 'Not specified';
+        }
+      }
+
+      function submitBooking() {
+        window.location.href = "BookingSubmitted.html";
+      }
+
+      window.onload = showBooking;
+    </script>
+
+  </div>
+</body>
+</html>

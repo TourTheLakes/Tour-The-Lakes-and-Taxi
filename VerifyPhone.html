@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Verify Phone</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 400px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"], input[type="tel"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      width: 100%;
+    }
+
+    .message {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Verify Your Phone</h1>
+
+    <label for="phone">Mobile Number:</label>
+    <input type="tel" id="phone" placeholder="+44..." required>
+
+    <button onclick="sendCode()">Send Code</button>
+
+    <div id="codeSection" style="display:none;">
+      <label for="code">Enter Code:</label>
+      <input type="text" id="code" placeholder="Enter 6-digit code">
+
+      <button onclick="verifyCode()">Verify</button>
+    </div>
+
+    <p class="message" id="successMsg" style="display:none;">Phone verified! Redirecting...</p>
+    <p class="error" id="errorMsg" style="display:none;">Incorrect code. Try again.</p>
+  </div>
+
+  <script>
+    let sentCode = "123456"; // Mock code for testing
+
+    function sendCode() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) {
+        alert("Please enter your mobile number.");
+        return;
+      }
+
+      // Save number now so we can use it after
+      localStorage.setItem("phoneNumber", phone);
+      document.getElementById("codeSection").style.display = "block";
+    }
+
+    function verifyCode() {
+      const code = document.getElementById("code").value.trim();
+      if (code === sentCode) {
+        document.getElementById("errorMsg").style.display = "none";
+        document.getElementById("successMsg").style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = "/ConfirmName.html";
+        }, 1000);
+      } else {
+        document.getElementById("errorMsg").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>

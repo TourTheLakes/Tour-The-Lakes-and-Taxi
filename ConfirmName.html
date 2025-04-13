@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirm Your Name</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 400px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      width: 100%;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Who's the booking for?</h1>
+
+    <label for="fullName">Full Name:</label>
+    <input type="text" id="fullName" placeholder="Enter your name" required>
+
+    <p class="error" id="errorMsg">Please enter a name before continuing.</p>
+
+    <button onclick="saveName()">Confirm</button>
+  </div>
+
+  <script>
+    function saveName() {
+      const name = document.getElementById("fullName").value.trim();
+      if (!name) {
+        document.getElementById("errorMsg").style.display = "block";
+        return;
+      }
+
+      localStorage.setItem("customerName", name);
+      window.location.href = "BookingRequest.html";
+    }
+  </script>
+</body>
+</html>

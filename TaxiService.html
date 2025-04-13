@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Taxi Service</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+    }
+
+    p {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- STEP 1: Pickup and Drop-off Form -->
+    <div id="step1">
+      <h2>Hey, let's get you moving:</h2>
+
+      <form id="bookingForm">
+        <label for="area">Please select the most local area to your pickup address:</label>
+        <select id="area" name="area" required>
+          <option value="">--Select Area--</option>
+          <option>Windermere</option>
+          <option>Troutbeck</option>
+          <option>Ambleside</option>
+          <option>Hawkshead</option>
+          <option>Coniston</option>
+          <option>Grasmere</option>
+          <option>Kendal</option>
+          <option value="other">Another area</option>
+        </select>
+
+        <div id="otherAreaBox" style="display: none;">
+          <label for="otherArea">Please specify your area:</label>
+          <input type="text" id="otherArea" name="otherArea">
+        </div>
+
+        <label for="pickup">Full address of your pickup:</label>
+        <input type="text" id="pickup" name="pickup" required>
+
+        <label for="extra">Additional info (optional):</label>
+        <input type="text" id="extra" name="extra">
+
+        <label for="dropoff">Where are you travelling to?</label>
+        <input type="text" id="dropoff" name="dropoff" required>
+
+        <button type="button" onclick="goToStep2()">Next</button>
+      </form>
+    </div>
+
+<!-- STEP 2: Confirmation and Passenger Info -->
+<div id="step2" style="display:none;">
+  <h2>Your pickup address and drop off address shown:</h2>
+  <p><strong>Pickup:</strong> <span id="showPickup"></span></p>
+  <p><strong>Drop-off:</strong> <span id="showDropoff"></span></p>
+
+  <label for="passengers">How many people are travelling?</label>
+  <select id="passengers" name="passengers" required>
+    <option value="">--Select--</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+  </select>
+  <p>It's important for the drivers to know, so we send the correct vehicle.</p>
+
+  <label for="luggage">Luggage:</label>
+  <select id="luggage" name="luggage" required>
+    <option value="">-- Select Luggage Size --</option>
+    <option value="none">No luggage – just me and a smile</option>
+    <option value="small">Small – a backpack or small carry-on</option>
+    <option value="medium">Medium – a couple of suitcases</option>
+    <option value="large">Large – multiple bags or oversized items</option>
+  </select>
+
+  <!-- Pet disclaimer added here -->
+  <div style="background: #f8f8f8; padding: 15px; margin-top: 20px; border-left: 4px solid #cc0000; font-size: 14px;">
+    <strong>Important Notice Regarding Pets</strong><br>
+    We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
+    As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
+    <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+  </div>
+
+  <label style="margin-top: 15px;">
+    <input type="checkbox" id="noPets" required>
+    I acknowledge I am not travelling with a pet.
+  </label>
+
+  <button onclick="goToTimeAndDate()">Next</button>
+</div>
+
+
+<script>
+  const areaSelect = document.getElementById('area');
+  const otherAreaBox = document.getElementById('otherAreaBox');
+  const otherAreaInput = document.getElementById('otherArea');
+
+  const passengers = document.getElementById('passengers');
+  const luggage = document.getElementById('luggage');
+
+  // Create warning element
+  const luggageWarning = document.createElement("div");
+  luggageWarning.id = "luggageWarning";
+  luggageWarning.className = "warning";
+  luggageWarning.style = "background-color: #fff3cd; border-left: 4px solid #ffa500; padding: 10px; font-size: 14px; margin-top: 10px; display: none;";
+  luggageWarning.innerHTML = "Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.";
+
+  // Inject after luggage select
+  luggage.parentNode.insertBefore(luggageWarning, document.getElementById('noPets').parentNode);
+
+  areaSelect.addEventListener('change', function () {
+    if (this.value === 'other') {
+      otherAreaBox.style.display = 'block';
+      otherAreaInput.required = true;
+    } else {
+      otherAreaBox.style.display = 'none';
+      otherAreaInput.required = false;
+    }
+  });
+
+  passengers.addEventListener('change', function () {
+    const count = parseInt(passengers.value);
+    const mediumOption = luggage.querySelector('option[value="medium"]');
+    const largeOption = luggage.querySelector('option[value="large"]');
+
+    if (count > 4) {
+      mediumOption.disabled = true;
+      largeOption.disabled = true;
+      if (luggage.value === 'medium' || luggage.value === 'large') {
+        luggage.value = '';
+      }
+      luggageWarning.style.display = 'block';
+    } else {
+      mediumOption.disabled = false;
+      largeOption.disabled = false;
+      luggageWarning.style.display = 'none';
+    }
+  });
+
+  function goToStep2() {
+    let area = areaSelect.value;
+    const pickup = document.getElementById('pickup').value;
+    const extra = document.getElementById('extra').value;
+    const dropoff = document.getElementById('dropoff').value;
+
+    if (area === 'other') {
+      area = otherAreaInput.value.trim();
+      if (!area) {
+        alert("Please enter your area.");
+        return;
+      }
+    }
+
+    if (!area || !pickup || !dropoff) {
+      alert("Please fill out all mandatory fields.");
+      return;
+    }
+
+    localStorage.setItem("area", area);
+    localStorage.setItem("pickup", pickup);
+    localStorage.setItem("extra", extra);
+    localStorage.setItem("dropoff", dropoff);
+
+    document.getElementById('showPickup').textContent = pickup + (extra ? ' (' + extra + ')' : '');
+    document.getElementById('showDropoff').textContent = dropoff;
+
+    document.getElementById('step1').style.display = "none";
+    document.getElementById('step2').style.display = "block";
+  }
+
+  function goToTimeAndDate() {
+    const passengers = document.getElementById('passengers').value;
+    const luggage = document.getElementById('luggage').value;
+    const noPets = document.getElementById('noPets').checked;
+
+    if (!passengers || !luggage || !noPets) {
+      alert("Please select passengers, luggage, and confirm no pets.");
+      return;
+    }
+
+    localStorage.setItem("passengers", passengers);
+    localStorage.setItem("luggage", luggage);
+    localStorage.setItem("noPets", noPets);
+
+    window.location.href = "TimeAndDate.html";
+  }
+</script>
+
+  </div>
+</body>
+</html>
