@@ -120,6 +120,26 @@
       }
 
       function submitBooking() {
+        const booking = {
+          name: localStorage.getItem('customerName'),
+          phone: localStorage.getItem('phoneNumber'),
+          area: localStorage.getItem('area'),
+          pickup: localStorage.getItem('pickup'),
+          extra: localStorage.getItem('extra'),
+          dropoff: localStorage.getItem('dropoff'),
+          passengers: localStorage.getItem('passengers'),
+          luggage: localStorage.getItem('luggage'),
+          pets: localStorage.getItem('noPets') === 'true' ? 'No' : 'Yes or not confirmed',
+          time:
+            localStorage.getItem('pickupType') === 'ASAP'
+              ? 'ASAP (avg wait ~15 min)'
+              : localStorage.getItem('pickupDate') + ' at ' + localStorage.getItem('pickupTime')
+        };
+
+        const existing = JSON.parse(localStorage.getItem('liveBookings') || '[]');
+        existing.push(booking);
+        localStorage.setItem('liveBookings', JSON.stringify(existing));
+
         window.location.href = "BookingSubmitted.html";
       }
 
