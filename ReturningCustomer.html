@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Returning Customer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <style>
@@ -19,7 +19,7 @@
     }
 
     .container {
-      max-width: 400px;
+      max-width: 500px;
       width: 100%;
     }
 
@@ -28,25 +28,17 @@
       margin-bottom: 20px;
     }
 
-    p {
-      font-size: 14px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
     input, button {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-      font-size: 16px;
+      margin: 10px 0;
     }
 
     #recaptcha-container {
       margin-bottom: 15px;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       body {
         padding: 20px;
       }
@@ -56,16 +48,21 @@
 <body>
   <div class="container">
     <h1>Returning Customer</h1>
-    <p>Enter your mobile number (same as on booking).<br>Example: <strong>‪+447432185516‬</strong></p>
+    <p style="font-size: 14px; color: #333;">
+      Please enter your full phone number including <strong>+</strong> and country code.<br>
+      Example: <strong>‪+447432185516‬</strong>
+    </p>
 
-    <input type="tel" id="phone" placeholder="+44XXXXXXXXXX" required />
+    <input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
     <div id="recaptcha-container"></div>
     <button onclick="sendCode()">Send Code</button>
 
     <div id="verifySection" style="display:none;">
-      <input type="text" id="code" placeholder="Enter 6-digit code" />
+      <input type="text" id="code" placeholder="Enter the code">
       <button onclick="verifyCode()">Verify & Continue</button>
     </div>
+
+    <button onclick="window.location.href='index.html'" style="margin-top: 20px;">Return to Homepage</button>
   </div>
 
   <script>
@@ -81,23 +78,27 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
-      size: "normal",
-      callback: function (response) {
-        // Ready to send code
-      }
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'normal',
+      callback: function(response) {}
     });
+
     recaptchaVerifier.render();
 
     function sendCode() {
       const phone = document.getElementById("phone").value.trim();
-      if (!phone) return alert("Please enter your number.");
+      if (!phone) {
+        alert("Please enter your mobile number.");
+        return;
+      }
+
+      localStorage.setItem("returningPhoneNumber", phone);
 
       auth.signInWithPhoneNumber(phone, window.recaptchaVerifier)
         .then(confirmationResult => {
           window.confirmationResult = confirmationResult;
           document.getElementById("verifySection").style.display = "block";
-          localStorage.setItem("phoneNumber", phone);
+          document.getElementById("recaptcha-container").style.display = "none"; // Hide after sending
         })
         .catch(error => alert(error.message));
     }
@@ -108,7 +109,7 @@
         .then(result => {
           window.location.href = "CustomerBooking.html";
         })
-        .catch(error => alert("Invalid code. Please try again."));
+        .catch(error => alert("Verification failed."));
     }
   </script>
 </body>
