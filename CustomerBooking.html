@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Your Booking</title>
@@ -80,40 +81,41 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // PROTECTION: Redirect if phone number is missing
+    if (!localStorage.getItem("returningPhoneNumber")) {
+      window.location.href = "ReturningCustomer.html";
+    }
+
     const phone = localStorage.getItem("returningPhoneNumber");
     const bookingSection = document.getElementById("bookingDetails");
 
-    if (!phone) {
-      bookingSection.innerHTML = "<p>No phone number found. Please verify again.</p>";
-    } else {
-      db.ref("bookings").orderByChild("phone").equalTo(phone).once("value", snapshot => {
-        bookingSection.innerHTML = "";
+    db.ref("bookings").orderByChild("phone").equalTo(phone).once("value", snapshot => {
+      bookingSection.innerHTML = "";
 
-        if (!snapshot.exists()) {
-          bookingSection.innerHTML = "<p>No bookings found for this number.</p>";
-          return;
-        }
+      if (!snapshot.exists()) {
+        bookingSection.innerHTML = "<p>No bookings found for this number.</p>";
+        return;
+      }
 
-        snapshot.forEach(child => {
-          const booking = child.val();
-          const id = child.key;
+      snapshot.forEach(child => {
+        const booking = child.val();
+        const id = child.key;
 
-          const div = document.createElement("div");
-          div.className = "booking";
-          div.innerHTML = `
-            <p><strong>Name:</strong> ${booking.name}</p>
-            <p><strong>Pickup:</strong> ${booking.pickup}</p>
-            <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
-            <p><strong>Time:</strong> ${booking.time}</p>
-            <div class="actions">
-              <button onclick="location.href='CustomerAmend.html?id=${id}'">Amend</button>
-              <button onclick="cancelBooking('${id}')">Cancel</button>
-            </div>
-          `;
-          bookingSection.appendChild(div);
-        });
+        const div = document.createElement("div");
+        div.className = "booking";
+        div.innerHTML = `
+          <p><strong>Name:</strong> ${booking.name}</p>
+          <p><strong>Pickup:</strong> ${booking.pickup}</p>
+          <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
+          <p><strong>Time:</strong> ${booking.time}</p>
+          <div class="actions">
+            <button onclick="location.href='CustomerAmend.html?id=${id}'">Amend</button>
+            <button onclick="cancelBooking('${id}')">Cancel</button>
+          </div>
+        `;
+        bookingSection.appendChild(div);
       });
-    }
+    });
 
     function cancelBooking(id) {
       if (confirm("Are you sure you want to cancel this booking?")) {
