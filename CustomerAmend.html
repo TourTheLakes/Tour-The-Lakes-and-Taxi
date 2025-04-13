@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Amend Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0 15px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Amend Your Booking</h1>
+
+    <form id="amendForm">
+      <label for="pickup">Pickup:</label>
+      <input type="text" id="pickup" required>
+
+      <label for="dropoff">Drop-off:</label>
+      <input type="text" id="dropoff" required>
+
+      <label for="time">Pickup Time:</label>
+      <input type="text" id="time" required>
+
+      <label for="extra">Extra Info:</label>
+      <textarea id="extra" rows="3"></textarea>
+
+      <button type="submit">Save Changes</button>
+    </form>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get("id");
+
+    if (!bookingId) {
+      alert("Missing booking ID.");
+      window.location.href = "index.html";
+    }
+
+    const pickupInput = document.getElementById("pickup");
+    const dropoffInput = document.getElementById("dropoff");
+    const timeInput = document.getElementById("time");
+    const extraInput = document.getElementById("extra");
+
+    // Load booking data
+    db.ref("bookings/" + bookingId).once("value").then(snapshot => {
+      const data = snapshot.val();
+      if (!data) return alert("Booking not found.");
+
+      pickupInput.value = data.pickup || "";
+      dropoffInput.value = data.dropoff || "";
+      timeInput.value = data.time || "";
+      extraInput.value = data.extra || "";
+    });
+
+    // Handle form submission
+    document.getElementById("amendForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      db.ref("bookings/" + bookingId).update({
+        pickup: pickupInput.value.trim(),
+        dropoff: dropoffInput.value.trim(),
+        time: timeInput.value.trim(),
+        extra: extraInput.value.trim()
+      }).then(() => {
+        alert("Booking updated successfully.");
+        window.location.href = "CustomerBooking.html";
+      });
+    });
+  </script>
+</body>
+</html>
