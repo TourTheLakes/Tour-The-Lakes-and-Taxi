@@ -111,19 +111,18 @@
     </select>
 
     <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
-  
-    <!-- Pet disclaimer added here -->
-  <div style="background: #f8f8f8; padding: 15px; margin-top: 20px; border-left: 4px solid #cc0000; font-size: 14px;">
-    <strong>Important Notice Regarding Pets</strong><br>
-    We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
-    As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
-    <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
-  </div>
 
-  <label style="margin-top: 15px;">
-    <input type="checkbox" id="noPets" required>
-    I acknowledge I am not travelling with a pet.
-  </label>
+    <div class="disclaimer">
+      <strong>Important Notice Regarding Pets</strong><br>
+      We regret to inform you that, due to multiple incidents involving damage to our vehicles, our drivers are no longer accepting animals on board.<br><br>
+      We are <strong>not a pet-friendly service</strong>. Please acknowledge you are not travelling with a pet.<br><br>
+      <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+    </div>
+
+    <label style="display: flex; align-items: center; margin-top: 15px;">
+      <input type="checkbox" id="noPets">
+      <span style="margin-left: 8px;">I acknowledge I am not travelling with a pet.</span>
+    </label>
 
     <button type="submit">Update Booking</button>
   </form>
