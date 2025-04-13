@@ -35,52 +35,59 @@
   <button onclick="sendCode()">Send Verification Code</button>  <div id="otpSection" style="display:none;">
     <input type="text" id="otp" placeholder="Enter OTP">
     <button onclick="verifyCode()">Verify & Continue</button>
-  </div>  <script>
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyDuqigXeAv06q1GeGhWIM7HbPCCjJXXq_g",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
-      projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
-      messagingSenderId: "470758171431",
-      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02",
-      measurementId: "G-W6JYLZX1P"
-    };
-    firebase.initializeApp(firebaseConfig);
+  </div>  
 
-    // Setup recaptcha
-    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-      size: 'normal',
-      callback: function(response) {
-        // CAPTCHA solved - allow sendCode
-      }
-    });
+  <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDuqigXeAv06q1GeGhWIM7HbPCCjJXXq_g",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02",
+    measurementId: "G-W6JYLZX1P"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-    function sendCode() {
-      const phone = document.getElementById("phoneNumber").value;
-      firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
-        .then(confirmationResult => {
-          window.confirmationResult = confirmationResult;
-          document.getElementById("otpSection").style.display = "block";
-          alert("OTP sent!");
-        })
-        .catch(error => {
-          alert(error.message);
-        });
+  // Setup Recaptcha
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    size: 'normal',
+    callback: function(response) {
+      // CAPTCHA solved
     }
+  });
 
-    function verifyCode() {
-      const code = document.getElementById("otp").value;
-      window.confirmationResult.confirm(code)
-        .then(result => {
-          const user = result.user;
-          localStorage.setItem("phoneNumber", user.phoneNumber);
-          alert("Phone verified successfully.");
-          window.location.href = "ConfirmName.html";
-        })
-        .catch(error => {
-          alert("Invalid code. Please try again.");
-        });
-    }
-  </script></body>
+  // *Important: Render the widget*
+  recaptchaVerifier.render();
+
+  function sendCode() {
+    const phone = document.getElementById("phoneNumber").value;
+    firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
+      .then(confirmationResult => {
+        window.confirmationResult = confirmationResult;
+        document.getElementById("otpSection").style.display = "block";
+        alert("OTP sent!");
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+  }
+
+  function verifyCode() {
+    const code = document.getElementById("otp").value;
+    window.confirmationResult.confirm(code)
+      .then(result => {
+        const user = result.user;
+        localStorage.setItem("phoneNumber", user.phoneNumber);
+        alert("Phone verified successfully.");
+        window.location.href = "ConfirmName.html";
+      })
+      .catch(error => {
+        alert("Invalid code. Please try again.");
+      });
+  }
+</script>
+
+
+</body>
 </html>
