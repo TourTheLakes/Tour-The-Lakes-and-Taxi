@@ -50,7 +50,7 @@
     <h1>Returning Customer</h1>
     <p style="font-size: 14px; color: #333;">
       Please enter your full phone number including <strong>+</strong> and country code.<br>
-      Example: <strong>‪+447432185516‬</strong>
+      Example: <strong>‪‪+447432185516‬‬</strong>
     </p>
 
     <input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
@@ -68,9 +68,9 @@
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      authDomain: "‪tourthelakes-1e165.firebaseapp.com‬",
       projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
+      storageBucket: "‪tourthelakes-1e165.appspot.com‬",
       messagingSenderId: "470758171431",
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
     };
@@ -98,7 +98,7 @@
         .then(confirmationResult => {
           window.confirmationResult = confirmationResult;
           document.getElementById("verifySection").style.display = "block";
-          document.getElementById("recaptcha-container").style.display = "none"; // Hide after sending
+          document.getElementById("recaptcha-container").style.display = "none";
         })
         .catch(error => alert(error.message));
     }
@@ -107,6 +107,7 @@
       const code = document.getElementById("code").value.trim();
       window.confirmationResult.confirm(code)
         .then(result => {
+          localStorage.setItem("verifiedTime", Date.now()); // Timestamp stored here
           window.location.href = "CustomerBooking.html";
         })
         .catch(error => alert("Verification failed."));
