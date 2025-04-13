@@ -14,46 +14,47 @@
       display: flex;
       justify-content: center;
       min-height: 100vh;
-    }.container {
-  max-width: 600px;
-  width: 100%;
-}
+    }
 
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
 
-.booking {
-  background: #f9f9f9;
-  padding: 20px;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-.booking p {
-  margin: 10px 0;
-}
+    .booking {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
 
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  width: 100%;
-}
+    .booking p {
+      margin: 10px 0;
+    }
 
-.actions button {
-  margin-right: 10px;
-  width: auto;
-}
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
 
-@media (max-width: 600px) {
-  body {
-    padding: 20px;
-  }
-}
+    .actions button {
+      margin-right: 10px;
+      width: auto;
+    }
 
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -63,7 +64,9 @@ button {
       <p>Loading booking information...</p>
     </div>
     <button onclick="window.location.href='index.html'">Return to Homepage</button>
-  </div>  <script>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -112,10 +115,6 @@ button {
       });
     }
 
-    function amendBooking(id) {
-      alert("Amend logic not implemented yet.");
-    }
-
     function cancelBooking(id) {
       if (confirm("Are you sure you want to cancel this booking?")) {
         firebase.database().ref("bookings/" + id).remove()
@@ -125,5 +124,6 @@ button {
           });
       }
     }
-  </script></body>
+  </script>
+</body>
 </html>
