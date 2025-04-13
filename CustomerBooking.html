@@ -81,12 +81,15 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // PROTECTION: Redirect if phone number is missing
-    if (!localStorage.getItem("returningPhoneNumber")) {
+    const phone = localStorage.getItem("returningPhoneNumber");
+    const timestamp = parseInt(localStorage.getItem("verifiedTime") || 0);
+    const now = Date.now();
+    const maxAge = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+    if (!phone || !timestamp || now - timestamp > maxAge) {
       window.location.href = "ReturningCustomer.html";
     }
 
-    const phone = localStorage.getItem("returningPhoneNumber");
     const bookingSection = document.getElementById("bookingDetails");
 
     db.ref("bookings").orderByChild("phone").equalTo(phone).once("value", snapshot => {
