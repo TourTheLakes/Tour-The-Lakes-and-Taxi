@@ -65,6 +65,11 @@
   <div class="container">
     <h1>Verify Your Phone</h1>
 
+    <p style="font-size: 14px; color: #333;">
+      Please enter your full phone number, starting with <strong>+</strong> and country code.<br>
+      Example: <strong>+447432185516</strong>
+    </p>
+
     <label for="phone">Mobile Number:</label>
     <input type="tel" id="phone" placeholder="+44..." required>
 
@@ -121,6 +126,9 @@
         .then(confirmationResult => {
           window.confirmationResult = confirmationResult;
           document.getElementById("codeSection").style.display = "block";
+
+          //Hide the reCAPTCHA after code is sent
+          document.getElementById("recaptcha-container").style.display = "none";
         })
         .catch(error => {
           alert(error.message);
