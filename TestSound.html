@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Sound</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sound Test</h1>
+  <p>If you hear a sound, autoplay worked.</p>
+
+  <audio id="testSound" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    window.addEventListener("load", () => {
+      const sound = document.getElementById("testSound");
+
+      // Attempt to autoplay after short delay
+      setTimeout(() => {
+        sound.play().catch(err => {
+          console.warn("Autoplay blocked:", err);
+          // Optionally prompt user to click to play
+        });
+      }, 500);
+    });
+  </script>
+</body>
+</html>
