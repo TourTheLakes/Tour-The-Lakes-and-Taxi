@@ -96,12 +96,13 @@
     }
   </style>
 
-  <!-- Independent access check -->
   <script>
     const verifiedUntil = localStorage.getItem("driverVerifiedUntil");
     if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
       alert("Access denied or session expired. Please verify again.");
       localStorage.removeItem("driverVerifiedUntil");
+      localStorage.removeItem("driverDoor");
+      localStorage.removeItem("driverName");
       window.location.href = "DriverVerify.html";
     }
   </script>
@@ -195,7 +196,13 @@
     document.getElementById("logoffBtn").addEventListener("click", () => {
       if (confirm("You are about to Log Off. Proceed?")) {
         db.ref("driverStatus/" + driverDoor).set("Logged Off")
-          .then(() => console.log("Marked as Logged Off"))
+          .then(() => {
+            localStorage.removeItem("driverVerifiedUntil");
+            localStorage.removeItem("driverDoor");
+            localStorage.removeItem("driverName");
+            alert("You have been logged off.");
+            window.location.href = "DriverLogin.html";
+          })
           .catch(console.error);
       }
     });
