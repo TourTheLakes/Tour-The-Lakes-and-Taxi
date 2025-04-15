@@ -82,11 +82,11 @@
     <label for="driverName">First Name Only:</label>
     <input type="text" id="driverName" placeholder="e.g. John">
 
-    <label for="doorCard">Door Card Number (e.g. S###):</label>
+    <label for="doorCard">Door Card Number (e.g. S199):</label>
     <input type="text" id="doorCard" placeholder="S###">
 
     <label for="password">Password:</label>
-    <input type="password" id="password" placeholder="Your secure password">
+    <input type="password" id="password" placeholder="Vehicle Registration">
 
     <button onclick="driverLogin()">Login</button>
   </div>
@@ -110,9 +110,9 @@
     function driverLogin() {
       const name = document.getElementById('driverName').value.trim().toLowerCase();
       const doorCard = document.getElementById('doorCard').value.trim().toUpperCase();
-      const password = document.getElementById('password').value.trim();
+      const password = document.getElementById('password').value.trim().toUpperCase();
 
-      if (!name || !doorCard || !registration) {
+      if (!name || !doorCard || !password) {
         alert("Please fill in all fields.");
         return;
       }
@@ -125,7 +125,7 @@
           if (
             data.name.toLowerCase() === name &&
             data.doorCard.toUpperCase() === doorCard &&
-            data.password === password
+            data.vehicle.registration.toUpperCase() === password
           ) {
             found = true;
             localStorage.setItem("driverName", data.name);
