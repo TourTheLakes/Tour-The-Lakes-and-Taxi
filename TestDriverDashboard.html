@@ -33,14 +33,15 @@
       border-left: 5px solid #0d2a45;
       padding: 20px;
       border-radius: 8px;
-      margin-bottom: 30px;
+      margin-bottom: 15px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       font-size: 16px;
     }
 
     .status-buttons {
       display: flex;
-      margin-top: 15px;
+      justify-content: space-between;
+      gap: 10px;
     }
 
     .status-buttons button {
@@ -49,14 +50,13 @@
       font-size: 16px;
       font-weight: bold;
       border: none;
-      cursor: pointer;
       border-radius: 6px;
+      cursor: pointer;
     }
 
     #availableBtn {
       background-color: #4CAF50;
       color: white;
-      margin-right: 10px;
     }
 
     #busyBtn {
@@ -80,6 +80,10 @@
   <div class="container">
     <h1>Test Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
+    <div class="status-buttons">
+      <button id="availableBtn">Available</button>
+      <button id="busyBtn">Busy</button>
+    </div>
   </div>
 
   <script>
@@ -111,25 +115,12 @@
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
             greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
+              Hi, <strong>${d.name}</strong>. Today you're in a 
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
               up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
               <strong>${d.vehicle.registration}</strong>.
-              <div class="status-buttons">
-                <button id="availableBtn">Available</button>
-                <button id="busyBtn">Busy</button>
-              </div>
             `;
-
-            // Hook the buttons AFTER they exist
-            document.getElementById("availableBtn").onclick = () => {
-              db.ref(status/${d.doorCard}).set("Available");
-            };
-            document.getElementById("busyBtn").onclick = () => {
-              db.ref(status/${d.doorCard}).set("Busy");
-            };
-
             found = true;
             break;
           }
