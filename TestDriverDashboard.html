@@ -135,22 +135,28 @@
       });
     }
 
-    // Ensure buttons are hooked after DOM is ready
+    // Confirmation wrapper for button actions
     document.addEventListener("DOMContentLoaded", () => {
       const availableBtn = document.getElementById("availableBtn");
       const busyBtn = document.getElementById("busyBtn");
 
       if (availableBtn && busyBtn && driverDoor) {
         availableBtn.addEventListener("click", () => {
-          db.ref("driverStatus/" + driverDoor).set("Available")
-            .then(() => console.log("Driver marked Available"))
-            .catch(err => console.error("Error:", err));
+          const confirmAvailable = confirm("You are about to become Available. Proceed?");
+          if (confirmAvailable) {
+            db.ref("driverStatus/" + driverDoor).set("Available")
+              .then(() => console.log("Driver marked Available"))
+              .catch(err => console.error("Error:", err));
+          }
         });
 
         busyBtn.addEventListener("click", () => {
-          db.ref("driverStatus/" + driverDoor).set("Busy")
-            .then(() => console.log("Driver marked Busy"))
-            .catch(err => console.error("Error:", err));
+          const confirmBusy = confirm("You are about to become Busy. Proceed?");
+          if (confirmBusy) {
+            db.ref("driverStatus/" + driverDoor).set("Busy")
+              .then(() => console.log("Driver marked Busy"))
+              .catch(err => console.error("Error:", err));
+          }
         });
       }
     });
