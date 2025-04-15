@@ -8,8 +8,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
   <style>
     body {
-      font-family: sans-serif;
-      background: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d2a45;
       margin: 0;
       padding: 40px;
       display: flex;
@@ -19,19 +19,53 @@
     }
 
     .container {
+      background: #fff;
       max-width: 500px;
       width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0d2a45;
+    }
+
+    p {
+      font-size: 14px;
+      color: #444;
       text-align: center;
       margin-bottom: 20px;
     }
 
     input, button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    input {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #3e9141;
     }
 
     #recaptcha-container {
@@ -48,10 +82,7 @@
 <body>
   <div class="container">
     <h1>Returning Customer</h1>
-    <p style="font-size: 14px; color: #333;">
-      Please enter your full phone number including <strong>+</strong> and country code.<br>
-      Example: <strong>‪‪+447432185516‬‬</strong>
-    </p>
+    <p>Please enter your full phone number including <strong>+</strong> and country code.<br>Example: <strong>‪+447432185516‬</strong></p>
 
     <input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
     <div id="recaptcha-container"></div>
@@ -62,15 +93,15 @@
       <button onclick="verifyCode()">Verify & Continue</button>
     </div>
 
-    <button onclick="window.location.href='index.html'" style="margin-top: 20px;">Return to Homepage</button>
+    <button onclick="window.location.href='index.html'" style="margin-top: 20px; background-color: #666;">Return to Homepage</button>
   </div>
 
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-      authDomain: "‪tourthelakes-1e165.firebaseapp.com‬",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
       projectId: "tourthelakes-1e165",
-      storageBucket: "‪tourthelakes-1e165.appspot.com‬",
+      storageBucket: "tourthelakes-1e165.appspot.com",
       messagingSenderId: "470758171431",
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
     };
@@ -107,7 +138,7 @@
       const code = document.getElementById("code").value.trim();
       window.confirmationResult.confirm(code)
         .then(result => {
-          localStorage.setItem("verifiedTime", Date.now()); // Timestamp stored here
+          localStorage.setItem("verifiedTime", Date.now());
           window.location.href = "CustomerBooking.html";
         })
         .catch(error => alert("Verification failed."));
