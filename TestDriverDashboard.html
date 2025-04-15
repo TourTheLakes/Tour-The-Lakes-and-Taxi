@@ -1,8 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Test Driver Dashboard</title>
+  <title>Driver Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
@@ -14,79 +13,105 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }
+    }.container {
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+}
 
-    .container {
-      max-width: 800px;
-      width: 100%;
-      padding: 40px;
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0d2a45;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0d2a45;
-    }
+.greeting {
+  background: #ffffff;
+  border-left: 5px solid #0d2a45;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
+}
 
-    .greeting {
-      background: #ffffff;
-      border-left: 5px solid #0d2a45;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      font-size: 16px;
-    }
+.status-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 30px;
+}
 
-    .status-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+.status-buttons button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    .status-buttons button {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+#availableBtn {
+  background-color: #4CAF50;
+  color: white;
+}
 
-    #availableBtn {
-      background-color: #4CAF50;
-      color: white;
-    }
+#busyBtn {
+  background-color: #f44336;
+  color: white;
+}
 
-    #busyBtn {
-      background-color: #f44336;
-      color: white;
-    }
+.booking {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  border-left: 4px solid #4CAF50;
+}
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
+.booking p {
+  margin: 8px 0;
+  font-size: 15px;
+}
 
-      .status-buttons button {
-        font-size: 14px;
-        padding: 10px;
-      }
-    }
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  .status-buttons button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Test Driver Dashboard</h1>
+    <h1>Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
     <div class="status-buttons">
       <button id="availableBtn">Available</button>
       <button id="busyBtn">Busy</button>
     </div>
-  </div>
-
-  <script>
+    <div id="bookingsContainer">
+      <p>Loading bookings...</p>
+    </div>
+  </div>  <audio id="chimeNew" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="chimeCancel" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="chimeAmend" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
+  </audio>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -101,80 +126,122 @@
     const db = firebase.database();
 
     const greetingEl = document.getElementById('driverGreeting');
+    const container = document.getElementById('bookingsContainer');
+
     const driverDoor = localStorage.getItem("driverDoor");
     const driverName = localStorage.getItem("driverName");
-    const driverPass = localStorage.getItem("driverPass");
 
-    function verifyAdminAccess() {
-      db.ref("adminDashboardPassword").once("value").then(snapshot => {
-        const correctPassword = snapshot.val();
-        const input = prompt("Admin access required. Enter master password:");
-
-        if (input !== correctPassword) {
-          alert("Access denied. Redirecting...");
-          window.location.href = "DriverLogin.html";
-        }
-      }).catch(err => {
-        console.error("Password check failed:", err);
-        alert("Access denied due to error.");
-        window.location.href = "DriverLogin.html";
-      });
-    }
-
-    // Gatekeeping check
-    if (!driverName || !driverDoor || !driverPass) {
-      verifyAdminAccess();
+    if (!driverDoor || !driverName) {
+      greetingEl.innerHTML = "No driver is logged in.";
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
-        let found = false;
-
         for (const key in drivers) {
           const d = drivers[key];
-          if (
-            d.doorCard === driverDoor &&
-            d.name.toLowerCase() === driverName.toLowerCase() &&
-            d.password === driverPass
-          ) {
+          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
             greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a 
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
               up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.
             `;
-            found = true;
+            break;
+          }
+        }
+      }).catch(err => {
+        greetingEl.innerHTML = "Error loading driver information.";
+        console.error(err);
+      });
+    }
+
+    document.getElementById("availableBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Available. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Available")
+          .then(() => console.log("Marked as Available"))
+          .catch(console.error);
+      }
+    });
+
+    document.getElementById("busyBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Busy. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Busy")
+          .then(() => console.log("Marked as Busy"))
+          .catch(console.error);
+      }
+    });
+
+    const soundNew = document.getElementById('chimeNew');
+    const soundCancel = document.getElementById('chimeCancel');
+    const soundAmend = document.getElementById('chimeAmend');
+
+    let lastSnapshot = {};
+    let userInteracted = false;
+
+    document.addEventListener("click", () => userInteracted = true, { once: true });
+    document.addEventListener("keydown", () => userInteracted = true, { once: true });
+
+    function hashBooking(booking) {
+      return JSON.stringify(booking);
+    }
+
+    db.ref("bookings").on("value", snapshot => {
+      const bookings = snapshot.val() || {};
+      const currentKeys = Object.keys(bookings);
+      const lastKeys = Object.keys(lastSnapshot);
+      let played = false;
+
+      if (userInteracted) {
+        for (const key of currentKeys) {
+          if (!lastSnapshot[key]) {
+            soundNew.currentTime = 0;
+            soundNew.play().catch(() => {});
+            played = true;
+            break;
+          } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
+            soundAmend.currentTime = 0;
+            soundAmend.play().catch(() => {});
+            played = true;
             break;
           }
         }
 
-        if (!found) {
-          greetingEl.innerHTML = "Driver not found or credentials don't match.";
+        if (!played) {
+          for (const key of lastKeys) {
+            if (!bookings[key]) {
+              soundCancel.currentTime = 0;
+              soundCancel.play().catch(() => {});
+              break;
+            }
+          }
         }
-      });
-    }
-
-    // Button logic
-    document.addEventListener("DOMContentLoaded", () => {
-      const availableBtn = document.getElementById("availableBtn");
-      const busyBtn = document.getElementById("busyBtn");
-
-      if (availableBtn && busyBtn && driverDoor) {
-        availableBtn.addEventListener("click", () => {
-          const confirmAvailable = confirm("You are about to become Available. Proceed?");
-          if (confirmAvailable) {
-            db.ref("driverStatus/" + driverDoor).set("Available");
-          }
-        });
-
-        busyBtn.addEventListener("click", () => {
-          const confirmBusy = confirm("You are about to become Busy. Proceed?");
-          if (confirmBusy) {
-            db.ref("driverStatus/" + driverDoor).set("Busy");
-          }
-        });
       }
+
+      lastSnapshot = bookings;
+      container.innerHTML = "";
+
+      if (!currentKeys.length) {
+        container.innerHTML = "<p>No bookings received yet.</p>";
+        return;
+      }
+
+      const bookingList = currentKeys.map(key => bookings[key]).reverse();
+      bookingList.forEach(booking => {
+        const card = document.createElement('div');
+        card.className = 'booking';
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${booking.name}</p>
+          <p><strong>Phone:</strong> ${booking.phone}</p>
+          <p><strong>Area:</strong> ${booking.area}</p>
+          <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+          <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+          <p><strong>Passengers:</strong> ${booking.passengers}</p>
+          <p><strong>Luggage:</strong> ${booking.luggage}</p>
+          <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
+          <p><strong>Pickup Time:</strong> ${booking.time}</p>
+        `;
+        container.appendChild(card);
+      });
     });
-  </script>
-</body>
+  </script></body>
 </html>
