@@ -8,31 +8,39 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef3f8;
       margin: 0;
       padding: 40px;
       display: flex;
       justify-content: center;
     }
+
     .container {
       max-width: 800px;
       width: 100%;
     }
+
     h1 {
       text-align: center;
       margin-bottom: 30px;
+      color: #0d2a45;
     }
+
     .booking {
       background: #fff;
       padding: 20px;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       margin-bottom: 20px;
+      border-left: 4px solid #4CAF50;
     }
+
     .booking p {
       margin: 8px 0;
+      font-size: 15px;
     }
+
     @media screen and (max-width: 600px) {
       body {
         padding: 20px;
@@ -48,9 +56,14 @@
     </div>
   </div>
 
-  <audio id="dingSound" preload="auto">
-    <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.mp3" type="audio/mpeg">
+  <!-- Sounds -->
+  <audio id="chimeNew" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="chimeCancel" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3" type="audio/mpeg">
   </audio>
 
   <script>
@@ -67,9 +80,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const container = document.getElementById('bookingsContainer');
-    const sound = document.getElementById('dingSound');
 
-    let lastKeys = [];
+    const soundNew = document.getElementById('chimeNew');
+    const soundCancel = document.getElementById('chimeCancel');
+
+    let lastSnapshot = {};
     let userInteracted = false;
 
     document.addEventListener("click", () => userInteracted = true, { once: true });
@@ -77,22 +92,34 @@
 
     db.ref("bookings").on("value", snapshot => {
       const bookings = snapshot.val();
+      const currentKeys = bookings ? Object.keys(bookings) : [];
+      const lastKeys = Object.keys(lastSnapshot);
+
+      if (userInteracted) {
+        if (currentKeys.length > lastKeys.length) {
+          soundNew.currentTime = 0;
+          soundNew.play().catch(() => {});
+        } else if (currentKeys.length < lastKeys.length) {
+          soundCancel.currentTime = 0;
+          soundCancel.play().catch(() => {});
+        } else {
+          for (const key of currentKeys) {
+            if (JSON.stringify(bookings[key]) !== JSON.stringify(lastSnapshot[key])) {
+              soundNew.currentTime = 0;
+              soundNew.play().catch(() => {});
+              break;
+            }
+          }
+        }
+      }
+
+      lastSnapshot = bookings || {};
       container.innerHTML = "";
 
       if (!bookings) {
         container.innerHTML = "<p>No bookings received yet.</p>";
         return;
       }
-
-      const currentKeys = Object.keys(bookings);
-      const isNew = currentKeys.length > lastKeys.length;
-
-      if (userInteracted && isNew) {
-        sound.currentTime = 0;
-        sound.play().catch(() => {});
-      }
-
-      lastKeys = currentKeys;
 
       const bookingList = Object.values(bookings);
       bookingList.reverse().forEach(booking => {
