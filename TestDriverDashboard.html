@@ -38,9 +38,40 @@
       font-size: 16px;
     }
 
+    .status-buttons {
+      display: flex;
+      margin-top: 15px;
+    }
+
+    .status-buttons button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    #availableBtn {
+      background-color: #4CAF50;
+      color: white;
+      margin-right: 10px;
+    }
+
+    #busyBtn {
+      background-color: #f44336;
+      color: white;
+    }
+
     @media (max-width: 600px) {
       .container {
         padding: 20px;
+      }
+
+      .status-buttons button {
+        font-size: 14px;
+        padding: 10px;
       }
     }
   </style>
@@ -79,13 +110,23 @@
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-greetingEl.innerHTML = `
-  Hi, <strong>${d.name}</strong>. Today you're in a 
-  <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
-  up to <strong>${d.vehicle.seats}</strong> passengers.
-  Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
-  <strong>${d.vehicle.registration}</strong>.
-`;
+            greetingEl.innerHTML = `
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
+              up to <strong>${d.vehicle.seats}</strong> passengers.
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
+              <strong>${d.vehicle.registration}</strong>.
+              <div class="status-buttons">
+                <button id="availableBtn">Available</button>
+                <button id="busyBtn">Busy</button>
+              </div>
+            `;
+            document.getElementById("availableBtn").onclick = () => {
+              db.ref(status/${d.doorCard}).set("Available");
+            };
+            document.getElementById("busyBtn").onclick = () => {
+              db.ref(status/${d.doorCard}).set("Busy");
+            };
             found = true;
             break;
           }
