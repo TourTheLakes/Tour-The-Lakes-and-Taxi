@@ -79,13 +79,13 @@
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-            greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a 
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make}</strong> that seats 
-              up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
-              <strong>${d.vehicle.registration}</strong>.
-            `;
+greetingEl.innerHTML = `
+  Hi, <strong>${d.name}</strong>. Today you're in a 
+  <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
+  up to <strong>${d.vehicle.seats}</strong> passengers.
+  Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
+  <strong>${d.vehicle.registration}</strong>.
+`;
             found = true;
             break;
           }
