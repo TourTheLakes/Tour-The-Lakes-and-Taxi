@@ -147,6 +147,7 @@
 
         if (matchedDriver) {
           localStorage.setItem("driverName", matchedDriver.name);
+          localStorage.setItem("driverDoor", matchedDriver.doorCard); // REQUIRED for dashboard
           localStorage.setItem("vehicle", JSON.stringify(matchedDriver.vehicle));
           window.location.href = "TestDriverDashboard.html";
         } else {
