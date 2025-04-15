@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,33 +14,97 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }.container {
-  max-width: 800px;
-  width: 100%;
-  padding: 40px;
-}h1 { text-align: center; margin-bottom: 30px; color: #0d2a45; }
+    }
 
-.greeting { background: #ffffff; border-left: 5px solid #0d2a45; padding: 20px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); font-size: 16px; }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
 
-.status-buttons { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 30px; }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0d2a45;
+    }
 
-.status-buttons button { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; }
+    .greeting {
+      background: #ffffff;
+      border-left: 5px solid #0d2a45;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-size: 16px;
+    }
 
-#availableBtn { background-color: #4CAF50; color: white; }
+    .status-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
 
-#logoffBtn { background-color: #ff9800; color: white; }
+    .status-buttons button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
 
-#busyBtn { background-color: #f44336; color: white; }
+    #availableBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
 
-.booking { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06); margin-bottom: 20px; border-left: 4px solid #4CAF50; }
+    #logoffBtn {
+      background-color: #ff9800;
+      color: white;
+    }
 
-.booking p { margin: 8px 0; font-size: 15px; }
+    #busyBtn {
+      background-color: #f44336;
+      color: white;
+    }
 
-@media screen and (max-width: 600px) { .container { padding: 20px; }
+    .booking {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+      border-left: 4px solid #4CAF50;
+    }
 
-.status-buttons button { font-size: 14px; padding: 10px; } }
+    .booking p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
 
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .status-buttons button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
   </style>
+
+  <!-- Independent access check -->
+  <script>
+    const verifiedUntil = localStorage.getItem("driverVerifiedUntil");
+    if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
+      alert("Access denied or session expired. Please verify again.");
+      localStorage.removeItem("driverVerifiedUntil");
+      window.location.href = "DriverVerify.html";
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -52,7 +118,9 @@
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>  <audio id="chimeNew" preload="auto">
+  </div>
+
+  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
@@ -63,7 +131,9 @@
   <audio id="chimeAmend" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>  <script>
+  </audio>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -72,136 +142,136 @@
       storageBucket: "tourthelakes-1e165.appspot.com",
       messagingSenderId: "470758171431",
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-    };firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-const greetingEl = document.getElementById('driverGreeting');
-const container = document.getElementById('bookingsContainer');
+    const greetingEl = document.getElementById('driverGreeting');
+    const container = document.getElementById('bookingsContainer');
 
-const driverDoor = localStorage.getItem("driverDoor");
-const driverName = localStorage.getItem("driverName");
+    const driverDoor = localStorage.getItem("driverDoor");
+    const driverName = localStorage.getItem("driverName");
 
-if (!driverDoor || !driverName) {
-  greetingEl.innerHTML = "No driver is logged in.";
-} else {
-  db.ref("drivers").once("value").then(snapshot => {
-    const drivers = snapshot.val();
-    for (const key in drivers) {
-      const d = drivers[key];
-      if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-        greetingEl.innerHTML = `
-          Hi, <strong>${d.name}</strong>. Today you're in a
-          <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
-          up to <strong>${d.vehicle.seats}</strong> passengers.
-          Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
-          <strong>${d.vehicle.registration}</strong>.
-        `;
-        break;
-      }
-    }
-  }).catch(err => {
-    greetingEl.innerHTML = "Error loading driver information.";
-    console.error(err);
-  });
-}
-
-document.getElementById("availableBtn").addEventListener("click", () => {
-  if (confirm("You are about to become Available. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Available")
-      .then(() => console.log("Marked as Available"))
-      .catch(console.error);
-  }
-});
-
-document.getElementById("busyBtn").addEventListener("click", () => {
-  if (confirm("You are about to become Busy. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Busy")
-      .then(() => console.log("Marked as Busy"))
-      .catch(console.error);
-  }
-});
-
-document.getElementById("logoffBtn").addEventListener("click", () => {
-  if (confirm("You are about to Log Off. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Logged Off")
-      .then(() => console.log("Marked as Logged Off"))
-      .catch(console.error);
-  }
-});
-
-const soundNew = document.getElementById('chimeNew');
-const soundCancel = document.getElementById('chimeCancel');
-const soundAmend = document.getElementById('chimeAmend');
-
-let lastSnapshot = {};
-let userInteracted = false;
-
-document.addEventListener("click", () => userInteracted = true, { once: true });
-document.addEventListener("keydown", () => userInteracted = true, { once: true });
-
-function hashBooking(booking) {
-  return JSON.stringify(booking);
-}
-
-db.ref("bookings").on("value", snapshot => {
-  const bookings = snapshot.val() || {};
-  const currentKeys = Object.keys(bookings);
-  const lastKeys = Object.keys(lastSnapshot);
-  let played = false;
-
-  if (userInteracted) {
-    for (const key of currentKeys) {
-      if (!lastSnapshot[key]) {
-        soundNew.currentTime = 0;
-        soundNew.play().catch(() => {});
-        played = true;
-        break;
-      } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
-        soundAmend.currentTime = 0;
-        soundAmend.play().catch(() => {});
-        played = true;
-        break;
-      }
+    if (!driverDoor || !driverName) {
+      greetingEl.innerHTML = "No driver is logged in.";
+    } else {
+      db.ref("drivers").once("value").then(snapshot => {
+        const drivers = snapshot.val();
+        for (const key in drivers) {
+          const d = drivers[key];
+          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+            greetingEl.innerHTML = `
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
+              up to <strong>${d.vehicle.seats}</strong> passengers.
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
+              <strong>${d.vehicle.registration}</strong>.
+            `;
+            break;
+          }
+        }
+      }).catch(err => {
+        greetingEl.innerHTML = "Error loading driver information.";
+        console.error(err);
+      });
     }
 
-    if (!played) {
-      for (const key of lastKeys) {
-        if (!bookings[key]) {
-          soundCancel.currentTime = 0;
-          soundCancel.play().catch(() => {});
-          break;
+    document.getElementById("availableBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Available. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Available")
+          .then(() => console.log("Marked as Available"))
+          .catch(console.error);
+      }
+    });
+
+    document.getElementById("busyBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Busy. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Busy")
+          .then(() => console.log("Marked as Busy"))
+          .catch(console.error);
+      }
+    });
+
+    document.getElementById("logoffBtn").addEventListener("click", () => {
+      if (confirm("You are about to Log Off. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Logged Off")
+          .then(() => console.log("Marked as Logged Off"))
+          .catch(console.error);
+      }
+    });
+
+    const soundNew = document.getElementById('chimeNew');
+    const soundCancel = document.getElementById('chimeCancel');
+    const soundAmend = document.getElementById('chimeAmend');
+
+    let lastSnapshot = {};
+    let userInteracted = false;
+
+    document.addEventListener("click", () => userInteracted = true, { once: true });
+    document.addEventListener("keydown", () => userInteracted = true, { once: true });
+
+    function hashBooking(booking) {
+      return JSON.stringify(booking);
+    }
+
+    db.ref("bookings").on("value", snapshot => {
+      const bookings = snapshot.val() || {};
+      const currentKeys = Object.keys(bookings);
+      const lastKeys = Object.keys(lastSnapshot);
+      let played = false;
+
+      if (userInteracted) {
+        for (const key of currentKeys) {
+          if (!lastSnapshot[key]) {
+            soundNew.currentTime = 0;
+            soundNew.play().catch(() => {});
+            played = true;
+            break;
+          } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
+            soundAmend.currentTime = 0;
+            soundAmend.play().catch(() => {});
+            played = true;
+            break;
+          }
+        }
+
+        if (!played) {
+          for (const key of lastKeys) {
+            if (!bookings[key]) {
+              soundCancel.currentTime = 0;
+              soundCancel.play().catch(() => {});
+              break;
+            }
+          }
         }
       }
-    }
-  }
 
-  lastSnapshot = bookings;
-  container.innerHTML = "";
+      lastSnapshot = bookings;
+      container.innerHTML = "";
 
-  if (!currentKeys.length) {
-    container.innerHTML = "<p>No bookings received yet.</p>";
-    return;
-  }
+      if (!currentKeys.length) {
+        container.innerHTML = "<p>No bookings received yet.</p>";
+        return;
+      }
 
-  const bookingList = currentKeys.map(key => bookings[key]).reverse();
-  bookingList.forEach(booking => {
-    const card = document.createElement('div');
-    card.className = 'booking';
-    card.innerHTML = `
-      <p><strong>Name:</strong> ${booking.name}</p>
-      <p><strong>Phone:</strong> ${booking.phone}</p>
-      <p><strong>Area:</strong> ${booking.area}</p>
-      <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
-      <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
-      <p><strong>Passengers:</strong> ${booking.passengers}</p>
-      <p><strong>Luggage:</strong> ${booking.luggage}</p>
-      <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
-      <p><strong>Pickup Time:</strong> ${booking.time}</p>
-    `;
-    container.appendChild(card);
-  });
-});
-
-</script></body>
-
+      const bookingList = currentKeys.map(key => bookings[key]).reverse();
+      bookingList.forEach(booking => {
+        const card = document.createElement('div');
+        card.className = 'booking';
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${booking.name}</p>
+          <p><strong>Phone:</strong> ${booking.phone}</p>
+          <p><strong>Area:</strong> ${booking.area}</p>
+          <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+          <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+          <p><strong>Passengers:</strong> ${booking.passengers}</p>
+          <p><strong>Luggage:</strong> ${booking.luggage}</p>
+          <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
+          <p><strong>Pickup Time:</strong> ${booking.time}</p>
+        `;
+        container.appendChild(card);
+      });
+    });
+  </script>
+</body>
 </html>
