@@ -13,80 +13,70 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }.container {
-  max-width: 800px;
-  width: 100%;
-  padding: 40px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #0d2a45;
-}
-
-.greeting {
-  background: #ffffff;
-  border-left: 5px solid #0d2a45;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  font-size: 16px;
-}
-
-.status-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
-.status-buttons button {
-  flex: 1;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#availableBtn {
-  background-color: #4CAF50;
-  color: white;
-}
-
-#busyBtn {
-  background-color: #f44336;
-  color: white;
-}
-
-.booking {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  margin-bottom: 20px;
-  border-left: 4px solid #4CAF50;
-}
-
-.booking p {
-  margin: 8px 0;
-  font-size: 15px;
-}
-
-@media screen and (max-width: 600px) {
-  .container {
-    padding: 20px;
-  }
-
-  .status-buttons button {
-    font-size: 14px;
-    padding: 10px;
-  }
-}
-
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0d2a45;
+    }
+    .greeting {
+      background: #ffffff;
+      border-left: 5px solid #0d2a45;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-size: 16px;
+    }
+    .status-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .status-buttons button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #availableBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
+    #busyBtn {
+      background-color: #f44336;
+      color: white;
+    }
+    .booking {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+      border-left: 4px solid #4CAF50;
+    }
+    .booking p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      .status-buttons button {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -100,7 +90,9 @@ h1 {
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>  <audio id="chimeNew" preload="auto">
+  </div>
+
+  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
@@ -111,7 +103,9 @@ h1 {
   <audio id="chimeAmend" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>  <script>
+  </audio>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -125,15 +119,32 @@ h1 {
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Security Gate: If login credentials missing, prompt admin password
+    const driverDoor = localStorage.getItem("driverDoor");
+    const driverName = localStorage.getItem("driverName");
+    const driverPass = localStorage.getItem("driverPass");
+
+    if (!driverDoor || !driverName || !driverPass) {
+      db.ref("adminDashboardPassword").once("value").then(snapshot => {
+        const correctPass = snapshot.val();
+        const userInput = prompt("Restricted access. Enter admin password:");
+
+        if (userInput !== correctPass) {
+          alert("Access denied.");
+          window.location.href = "DriverLogin.html";
+        }
+      }).catch(err => {
+        console.error("Access check failed:", err);
+        alert("Access check failed.");
+        window.location.href = "DriverLogin.html";
+      });
+    }
+
     const greetingEl = document.getElementById('driverGreeting');
     const container = document.getElementById('bookingsContainer');
 
-    const driverDoor = localStorage.getItem("driverDoor");
-    const driverName = localStorage.getItem("driverName");
-
-    if (!driverDoor || !driverName) {
-      greetingEl.innerHTML = "No driver is logged in.";
-    } else {
+    // Show driver greeting
+    if (driverDoor && driverName) {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
         for (const key in drivers) {
@@ -155,6 +166,7 @@ h1 {
       });
     }
 
+    // Button actions
     document.getElementById("availableBtn").addEventListener("click", () => {
       if (confirm("You are about to become Available. Proceed?")) {
         db.ref("driverStatus/" + driverDoor).set("Available")
@@ -171,6 +183,7 @@ h1 {
       }
     });
 
+    // Booking sound notifications
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
     const soundAmend = document.getElementById('chimeAmend');
@@ -243,5 +256,6 @@ h1 {
         container.appendChild(card);
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
