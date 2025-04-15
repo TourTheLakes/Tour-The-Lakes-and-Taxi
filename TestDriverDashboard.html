@@ -24,15 +24,8 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 10px;
-      color: #0d2a45;
-    }
-
-    #availability {
-      text-align: center;
-      font-size: 16px;
       margin-bottom: 30px;
-      color: #444;
+      color: #0d2a45;
     }
 
     .greeting {
@@ -55,7 +48,6 @@
 <body>
   <div class="container">
     <h1>Test Driver Dashboard</h1>
-    <p id="availability">Checking available vehicles...</p>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
   </div>
 
@@ -87,13 +79,13 @@
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-            greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a 
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
-              up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
-              <strong>${d.vehicle.registration}</strong>.
-            `;
+greetingEl.innerHTML = `
+  Hi, <strong>${d.name}</strong>. Today you're in a 
+  <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
+  up to <strong>${d.vehicle.seats}</strong> passengers.
+  Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
+  <strong>${d.vehicle.registration}</strong>.
+`;
             found = true;
             break;
           }
@@ -107,17 +99,6 @@
         greetingEl.innerHTML = "Error loading driver information.";
       });
     }
-
-    // Vehicle availability
-    const availabilityText = document.getElementById("availability");
-    db.ref("status").on("value", snapshot => {
-      const statuses = snapshot.val();
-      let count = 0;
-      for (const key in statuses) {
-        if (statuses[key] === "Available") count++;
-      }
-      availabilityText.innerText = We currently have ${count} car${count !== 1 ? 's' : ''} available to take your booking.;
-    });
   </script>
 </body>
 </html>
