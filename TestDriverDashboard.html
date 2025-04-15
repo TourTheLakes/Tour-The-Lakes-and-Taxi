@@ -121,12 +121,15 @@
                 <button id="busyBtn">Busy</button>
               </div>
             `;
+
+            // Hook the buttons AFTER they exist
             document.getElementById("availableBtn").onclick = () => {
               db.ref(status/${d.doorCard}).set("Available");
             };
             document.getElementById("busyBtn").onclick = () => {
               db.ref(status/${d.doorCard}).set("Busy");
             };
+
             found = true;
             break;
           }
