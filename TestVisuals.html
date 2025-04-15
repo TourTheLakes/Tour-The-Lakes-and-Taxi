@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visuals Showcase</title>
+  <style>
+    :root {
+      --primary: #002c4c;
+      --accent: #00a3e0;
+      --bg: #f5f8fa;
+      --text: #111;
+    }body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+h1 {
+  color: var(--primary);
+  margin-bottom: 30px;
+}
+
+.box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  max-width: 600px;
+  width: 100%;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"], select, textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease-in-out;
+}
+
+button:hover {
+  background: var(--accent);
+}
+
+.tabbed-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.tabbed-buttons button {
+  background: #e6eff5;
+  color: var(--primary);
+  padding: 10px 15px;
+  border: 2px solid var(--primary);
+}
+
+.tabbed-buttons button.active {
+  background: var(--primary);
+  color: white;
+}
+
+  </style>
+</head>
+<body>
+  <h1>Test Visuals Page</h1>  <div class="tabbed-buttons">
+    <button class="active">Booking</button>
+    <button>Driver</button>
+    <button>Admin</button>
+  </div>  <div class="box">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" placeholder="Enter your name"><label for="area">Select Area</label>
+<select id="area">
+  <option>Windermere</option>
+  <option>Ambleside</option>
+  <option>Coniston</option>
+</select>
+
+<label for="note">Additional Notes</label>
+<textarea id="note" rows="4" placeholder="Any extra info here..."></textarea>
+
+<button>Continue</button>
+
+  </div>
+</body>
+</html>
