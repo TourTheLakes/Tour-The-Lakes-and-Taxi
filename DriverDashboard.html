@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
@@ -14,56 +13,94 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }
-    .container {
-      max-width: 800px;
-      width: 100%;
-      padding: 40px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0d2a45;
-    }
-    .greeting {
-      background: #ffffff;
-      border-left: 5px solid #0d2a45;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 30px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      font-size: 16px;
-    }
-    .booking {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      margin-bottom: 20px;
-      border-left: 4px solid #4CAF50;
-    }
-    .booking p {
-      margin: 8px 0;
-      font-size: 15px;
-    }
-    @media screen and (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-    }
+    }.container {
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0d2a45;
+}
+
+.greeting {
+  background: #ffffff;
+  border-left: 5px solid #0d2a45;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
+}
+
+.status-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.status-buttons button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#availableBtn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+#busyBtn {
+  background-color: #f44336;
+  color: white;
+}
+
+.booking {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  border-left: 4px solid #4CAF50;
+}
+
+.booking p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
+
+  .status-buttons button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
+    <div class="status-buttons">
+      <button id="availableBtn">Available</button>
+      <button id="busyBtn">Busy</button>
+    </div>
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>
-
-  <!-- Sounds -->
-  <audio id="chimeNew" preload="auto">
+  </div>  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
@@ -74,9 +111,7 @@
   <audio id="chimeAmend" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>
-
-  <script>
+  </audio>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -114,8 +149,27 @@
             break;
           }
         }
+      }).catch(err => {
+        greetingEl.innerHTML = "Error loading driver information.";
+        console.error(err);
       });
     }
+
+    document.getElementById("availableBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Available. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Available")
+          .then(() => console.log("Marked as Available"))
+          .catch(console.error);
+      }
+    });
+
+    document.getElementById("busyBtn").addEventListener("click", () => {
+      if (confirm("You are about to become Busy. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Busy")
+          .then(() => console.log("Marked as Busy"))
+          .catch(console.error);
+      }
+    });
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
@@ -189,6 +243,5 @@
         container.appendChild(card);
       });
     });
-  </script>
-</body>
+  </script></body>
 </html>
