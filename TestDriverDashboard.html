@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Test Driver Dashboard</title>
@@ -15,19 +14,16 @@
       display: flex;
       justify-content: center;
     }
-
     .container {
       max-width: 800px;
       width: 100%;
       padding: 40px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
       color: #0d2a45;
     }
-
     .greeting {
       background: #ffffff;
       border-left: 5px solid #0d2a45;
@@ -37,13 +33,11 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       font-size: 16px;
     }
-
     .status-buttons {
       display: flex;
       justify-content: space-between;
       gap: 10px;
     }
-
     .status-buttons button {
       flex: 1;
       padding: 12px;
@@ -53,26 +47,11 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
-    #availableBtn {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    #busyBtn {
-      background-color: #f44336;
-      color: white;
-    }
-
+    #availableBtn { background-color: #4CAF50; color: white; }
+    #busyBtn { background-color: #f44336; color: white; }
     @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-
-      .status-buttons button {
-        font-size: 14px;
-        padding: 10px;
-      }
+      .container { padding: 20px; }
+      .status-buttons button { font-size: 14px; padding: 10px; }
     }
   </style>
 </head>
@@ -85,7 +64,6 @@
       <button id="busyBtn">Busy</button>
     </div>
   </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
@@ -96,70 +74,67 @@
       messagingSenderId: "470758171431",
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db = firebase.database();const greetingEl = document.getElementById('driverGreeting');
+const driverDoor = localStorage.getItem("driverDoor");
+const driverName = localStorage.getItem("driverName");
 
-    const greetingEl = document.getElementById('driverGreeting');
-    const driverDoor = localStorage.getItem("driverDoor");
-    const driverName = localStorage.getItem("driverName");
-
-    if (!driverDoor || !driverName) {
-      greetingEl.innerHTML = "No driver is logged in.";
-    } else {
-      db.ref("drivers").once("value").then(snapshot => {
-        const drivers = snapshot.val();
-        let found = false;
-
-        for (const key in drivers) {
-          const d = drivers[key];
-          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-            greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a 
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
-              up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
-              <strong>${d.vehicle.registration}</strong>.
-            `;
-            found = true;
-            break;
-          }
-        }
-
-        if (!found) {
-          greetingEl.innerHTML = "Driver not found in database.";
-        }
-      }).catch(err => {
-        console.error(err);
-        greetingEl.innerHTML = "Error loading driver information.";
-      });
+// Protect against direct access
+if (!driverDoor || !driverName) {
+  const masterPrompt = prompt("Restricted area. Please enter admin access password:");
+  db.ref("adminDashboardPassword").once("value").then(snapshot => {
+    const realPassword = snapshot.val();
+    if (masterPrompt !== realPassword) {
+      alert("Access denied. Redirecting...");
+      window.location.href = "MainLanding.html";
     }
+  });
+} else {
+  db.ref("drivers").once("value").then(snapshot => {
+    const drivers = snapshot.val();
+    let found = false;
+    for (const key in drivers) {
+      const d = drivers[key];
+      if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+        greetingEl.innerHTML = `
+          Hi, <strong>${d.name}</strong>. Today you're in a 
+          <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
+          up to <strong>${d.vehicle.seats}</strong> passengers.
+          Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
+          <strong>${d.vehicle.registration}</strong>.
+        `;
+        break;
+      }
+    }
+  });
+}
 
-    // Confirmation wrapper for button actions
-    document.addEventListener("DOMContentLoaded", () => {
-      const availableBtn = document.getElementById("availableBtn");
-      const busyBtn = document.getElementById("busyBtn");
+// Confirmation for button clicks
+document.addEventListener("DOMContentLoaded", () => {
+  const availableBtn = document.getElementById("availableBtn");
+  const busyBtn = document.getElementById("busyBtn");
 
-      if (availableBtn && busyBtn && driverDoor) {
-        availableBtn.addEventListener("click", () => {
-          const confirmAvailable = confirm("You are about to become Available. Proceed?");
-          if (confirmAvailable) {
-            db.ref("driverStatus/" + driverDoor).set("Available")
-              .then(() => console.log("Driver marked Available"))
-              .catch(err => console.error("Error:", err));
-          }
-        });
-
-        busyBtn.addEventListener("click", () => {
-          const confirmBusy = confirm("You are about to become Busy. Proceed?");
-          if (confirmBusy) {
-            db.ref("driverStatus/" + driverDoor).set("Busy")
-              .then(() => console.log("Driver marked Busy"))
-              .catch(err => console.error("Error:", err));
-          }
-        });
+  if (availableBtn && busyBtn && driverDoor) {
+    availableBtn.addEventListener("click", () => {
+      const confirmAvailable = confirm("You are about to become Available. Proceed?");
+      if (confirmAvailable) {
+        db.ref("driverStatus/" + driverDoor).set("Available")
+          .then(() => console.log("Driver marked Available"))
+          .catch(err => console.error("Error:", err));
       }
     });
+
+    busyBtn.addEventListener("click", () => {
+      const confirmBusy = confirm("You are about to become Busy. Proceed?");
+      if (confirmBusy) {
+        db.ref("driverStatus/" + driverDoor).set("Busy")
+          .then(() => console.log("Driver marked Busy"))
+          .catch(err => console.error("Error:", err));
+      }
+    });
+  }
+});
+
   </script>
 </body>
 </html>
