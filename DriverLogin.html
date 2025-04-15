@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Driver Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 30px;
+      padding: 12px;
+      width: 100%;
+      font-size: 16px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Driver Login</h1>
+    <label for="name">First Name</label>
+    <input type="text" id="name"><label for="doorCard">Door Card Number</label>
+<input type="text" id="doorCard">
+
+<label for="password">Password</label>
+<input type="password" id="password">
+
+<button onclick="loginDriver()">Login</button>
+
+<p class="error" id="error">Invalid credentials. Please try again.</p>
+
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function loginDriver() {
+      const name = document.getElementById('name').value.trim().toLowerCase();
+      const doorCard = document.getElementById('doorCard').value.trim();
+      const password = document.getElementById('password').value;
+      const error = document.getElementById('error');
+
+      db.ref("drivers").orderByChild("name_lower").equalTo(name).once("value", snapshot => {
+        let found = false;
+        snapshot.forEach(child => {
+          const driver = child.val();
+          if (driver.doorCard === doorCard && driver.password === password) {
+            localStorage.setItem("driverID", child.key);
+            window.location.href = "DriverDashboard.html";
+            found = true;
+          }
+        });
+
+        if (!found) error.style.display = 'block';
+      });
+    }
+  </script></body>
+</html>
