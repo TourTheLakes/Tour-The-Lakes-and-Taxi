@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Test Driver Dashboard</title>
@@ -14,66 +13,65 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }
+    }.container {
+  max-width: 800px;
+  width: 100%;
+  padding: 40px;
+}
 
-    .container {
-      max-width: 800px;
-      width: 100%;
-      padding: 40px;
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #0d2a45;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0d2a45;
-    }
+.greeting {
+  background: #ffffff;
+  border-left: 5px solid #0d2a45;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  font-size: 16px;
+}
 
-    .greeting {
-      background: #ffffff;
-      border-left: 5px solid #0d2a45;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      font-size: 16px;
-    }
+.status-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
 
-    .status-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
+.status-buttons button {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
 
-    .status-buttons button {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+#availableBtn {
+  background-color: #4CAF50;
+  color: white;
+}
 
-    #availableBtn {
-      background-color: #4CAF50;
-      color: white;
-    }
+#busyBtn {
+  background-color: #f44336;
+  color: white;
+}
 
-    #busyBtn {
-      background-color: #f44336;
-      color: white;
-    }
+@media (max-width: 600px) {
+  .container {
+    padding: 20px;
+  }
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
+  .status-buttons button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
 
-      .status-buttons button {
-        font-size: 14px;
-        padding: 10px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -84,9 +82,7 @@
       <button id="availableBtn">Available</button>
       <button id="busyBtn">Busy</button>
     </div>
-  </div>
-
-  <script>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -134,6 +130,18 @@
         greetingEl.innerHTML = "Error loading driver information.";
       });
     }
-  </script>
-</body>
+
+    // Independent Firebase logic for status buttons
+    document.getElementById("availableBtn").addEventListener("click", () => {
+      if (driverDoor) {
+        db.ref("driverStatus/" + driverDoor).set("Available");
+      }
+    });
+
+    document.getElementById("busyBtn").addEventListener("click", () => {
+      if (driverDoor) {
+        db.ref("driverStatus/" + driverDoor).set("Busy");
+      }
+    });
+  </script></body>
 </html>
