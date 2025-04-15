@@ -6,37 +6,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: sans-serif;
-      background: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d2a45; /* Inspired dark blue */
       margin: 0;
       padding: 40px;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #fff;
     }
 
     .container {
+      background-color: #ffffff;
+      color: #000;
       max-width: 600px;
       width: 100%;
       text-align: center;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     h1 {
       margin-bottom: 10px;
+      font-weight: 600;
     }
 
     p {
       margin-bottom: 30px;
+      font-size: 16px;
     }
 
     button {
-      padding: 10px 20px;
+      background-color: #0d2a45;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 8px;
       margin: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #1e3c5d;
     }
 
     .returning {
       margin-bottom: 40px;
+    }
+
+    .returning p {
+      font-size: 14px;
+      color: #555;
     }
 
     @media screen and (max-width: 480px) {
@@ -57,7 +81,7 @@
     <!-- RETURNING CUSTOMER SECTION -->
     <div class="returning">
       <button onclick="location.href='ReturningCustomer.html'">RETURNING CUSTOMER</button>
-      <p style="font-size: 14px; color: #555;">View, Amend or Cancel your existing booking</p>
+      <p>View, Amend or Cancel your existing booking</p>
     </div>
 
     <h1>Tour The Lakes</h1>
