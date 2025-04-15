@@ -4,50 +4,75 @@
   <meta charset="UTF-8">
   <title>Verify Phone</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Firebase scripts (non-module global versions) -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
-
   <style>
     body {
-      font-family: sans-serif;
-      background: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d2a45;
       margin: 0;
       padding: 40px;
       display: flex;
       justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
     .container {
-      max-width: 400px;
+      background: #fff;
+      max-width: 450px;
       width: 100%;
-      padding: 20px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
+      color: #0d2a45;
+    }
+
+    p {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 20px;
     }
 
     label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
       font-weight: bold;
+      margin-bottom: 6px;
+      display: block;
+      color: #444;
     }
 
     input[type="text"], input[type="tel"] {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 15px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       box-sizing: border-box;
     }
 
     button {
-      margin-top: 10px;
-      padding: 10px 20px;
+      background-color: #0d2a45;
+      color: white;
+      padding: 12px;
+      border: none;
       width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #1e3c5d;
     }
 
     .message {
@@ -59,6 +84,17 @@
     .error {
       color: red;
       font-size: 14px;
+      margin-top: 10px;
+    }
+
+    #recaptcha-container {
+      margin-bottom: 15px;
+    }
+
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -66,15 +102,15 @@
   <div class="container">
     <h1>Verify Your Phone</h1>
 
-    <p style="font-size: 14px; color: #333;">
+    <p>
       Please enter your full phone number, starting with <strong>+</strong> and country code.<br>
-      Example: <strong>+447432185516</strong>
+      Example: <strong>‪+447432185516‬</strong>
     </p>
 
     <label for="phone">Mobile Number:</label>
     <input type="tel" id="phone" placeholder="+44..." required>
 
-    <div id="recaptcha-container" style="margin-bottom: 15px;"></div>
+    <div id="recaptcha-container"></div>
 
     <button onclick="sendCode()">Send Code</button>
 
@@ -89,7 +125,6 @@
   </div>
 
   <script>
-    // Firebase config (corrected bucket)
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -100,16 +135,12 @@
       measurementId: "G-W6JY1LZXTP"
     };
 
-    // Init Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Recaptcha
     window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
       size: 'normal',
-      callback: function(response) {
-        // reCAPTCHA solved
-      }
+      callback: function(response) {}
     });
 
     recaptchaVerifier.render();
@@ -127,8 +158,6 @@
         .then(confirmationResult => {
           window.confirmationResult = confirmationResult;
           document.getElementById("codeSection").style.display = "block";
-
-          //Hide the reCAPTCHA after code is sent
           document.getElementById("recaptcha-container").style.display = "none";
         })
         .catch(error => {
