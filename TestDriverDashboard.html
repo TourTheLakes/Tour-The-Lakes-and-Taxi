@@ -11,7 +11,7 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #eef3f8;
       margin: 0;
-      padding: 40px;
+      padding: 0;
       display: flex;
       justify-content: center;
     }
@@ -19,6 +19,7 @@
     .container {
       max-width: 800px;
       width: 100%;
+      padding: 40px;
     }
 
     h1 {
@@ -35,6 +36,12 @@
       margin-bottom: 30px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -60,8 +67,9 @@
 
     const greetingEl = document.getElementById('driverGreeting');
     const driverDoor = localStorage.getItem("driverDoor");
+    const driverName = localStorage.getItem("driverName");
 
-    if (!driverDoor) {
+    if (!driverDoor || !driverName) {
       greetingEl.innerHTML = "No driver is logged in.";
     } else {
       db.ref("drivers").once("value").then(snapshot => {
@@ -70,7 +78,7 @@
 
         for (const key in drivers) {
           const d = drivers[key];
-          if (d.doorCard === driverDoor) {
+          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
             greetingEl.innerHTML = `
               Hi, <strong>${d.name}</strong>. Today you're in a 
               <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make}</strong> that seats 
