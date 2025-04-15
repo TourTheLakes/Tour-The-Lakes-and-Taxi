@@ -1,66 +1,85 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Driver Login</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
   <style>
     body {
       font-family: sans-serif;
-      background: #fff;
-      margin: 0;
-      padding: 40px;
+      background: #f2f2f2;
       display: flex;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    .container {
+
+    .login-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
       max-width: 400px;
       width: 100%;
     }
-    h1 {
+
+    h2 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
+
     label {
       font-weight: bold;
       display: block;
-      margin-top: 15px;
+      margin-top: 10px;
     }
-    input {
+
+    input[type="text"],
+    input[type="password"] {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
       box-sizing: border-box;
     }
+
     button {
-      margin-top: 30px;
-      padding: 12px;
       width: 100%;
-      font-size: 16px;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .error {
-      color: red;
-      margin-top: 10px;
-      display: none;
+
+    button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Driver Login</h1>
-    <label for="name">First Name</label>
-    <input type="text" id="name"><label for="doorCard">Door Card Number</label>
-<input type="text" id="doorCard">
+  <div class="login-container">
+    <h2>Driver Login</h2>
 
-<label for="password">Password</label>
-<input type="password" id="password">
+    <label for="name">First Name:</label>
+    <input type="text" id="name" placeholder="e.g. Ivo">
 
-<button onclick="loginDriver()">Login</button>
+    <label for="doorCard">Door Card Number:</label>
+    <input type="text" id="doorCard" maxlength="3" placeholder="e.g. 199">
 
-<p class="error" id="error">Invalid credentials. Please try again.</p>
+    <label for="password">Password:</label>
+    <input type="password" id="password" placeholder="e.g. RX69NBL">
 
-  </div>  <script>
+    <button onclick="driverLogin()">Login</button>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -74,25 +93,46 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function loginDriver() {
-      const name = document.getElementById('name').value.trim().toLowerCase();
-      const doorCard = document.getElementById('doorCard').value.trim();
-      const password = document.getElementById('password').value;
-      const error = document.getElementById('error');
+    async function driverLogin() {
+      const name = document.getElementById("name").value.trim().toLowerCase();
+      const doorCard = document.getElementById("doorCard").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      db.ref("drivers").orderByChild("name_lower").equalTo(name).once("value", snapshot => {
-        let found = false;
-        snapshot.forEach(child => {
-          const driver = child.val();
-          if (driver.doorCard === doorCard && driver.password === password) {
-            localStorage.setItem("driverID", child.key);
-            window.location.href = "DriverDashboard.html";
-            found = true;
+      if (!name || !doorCard || !password) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      try {
+        const snapshot = await db.ref("drivers").once("value");
+        const drivers = snapshot.val();
+
+        let matchedDriver = null;
+
+        for (const key in drivers) {
+          const driver = drivers[key];
+          if (
+            driver.name.toLowerCase() === name &&
+            driver.doorCard === doorCard &&
+            driver.password === password
+          ) {
+            matchedDriver = driver;
+            break;
           }
-        });
+        }
 
-        if (!found) error.style.display = 'block';
-      });
+        if (matchedDriver) {
+          localStorage.setItem("driverName", matchedDriver.name);
+          localStorage.setItem("vehicle", JSON.stringify(matchedDriver.vehicle));
+          window.location.href = "DriverDashboard.html";
+        } else {
+          alert("Login failed. Please check your credentials.");
+        }
+      } catch (error) {
+        alert("Error checking credentials. Try again.");
+        console.error(error);
+      }
     }
-  </script></body>
+  </script>
+</body>
 </html>
