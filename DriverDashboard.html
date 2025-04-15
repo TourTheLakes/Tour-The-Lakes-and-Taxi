@@ -86,7 +86,6 @@ h1 {
     padding: 10px;
   }
 }
-
   </style>
 </head>
 <body>
@@ -100,7 +99,9 @@ h1 {
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>  <audio id="chimeNew" preload="auto">
+  </div>
+
+  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
@@ -111,7 +112,9 @@ h1 {
   <audio id="chimeAmend" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>  <script>
+  </audio>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -123,6 +126,23 @@ h1 {
     };
 
     firebase.initializeApp(firebaseConfig);
+  </script>
+
+  <!-- Gatekeeper Script (standalone and early) -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const driverName = localStorage.getItem("driverName");
+      const driverDoor = localStorage.getItem("driverDoor");
+      const driverPass = localStorage.getItem("driverPass");
+
+      if (!(driverName && driverDoor && driverPass)) {
+        alert("Restricted access. Please log in first.");
+        window.location.href = "DriverLogin.html";
+      }
+    });
+  </script>
+
+  <script>
     const db = firebase.database();
 
     const greetingEl = document.getElementById('driverGreeting');
@@ -243,5 +263,6 @@ h1 {
         container.appendChild(card);
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
