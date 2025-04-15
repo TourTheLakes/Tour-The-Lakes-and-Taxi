@@ -141,6 +141,8 @@
 
             if (matchFound) {
               alert("Phone verified. Redirecting...");
+              const fourHoursFromNow = Date.now() + (4 * 60 * 60 * 1000);
+              localStorage.setItem("driverVerifiedUntil", fourHoursFromNow.toString());
               window.location.href = "DriverDashboard.html";
             } else {
               alert("Phone verified, but no matching driver profile found.");
