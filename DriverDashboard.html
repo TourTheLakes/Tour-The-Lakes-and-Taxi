@@ -13,90 +13,49 @@
       padding: 0;
       display: flex;
       justify-content: center;
-    }.container {
-  max-width: 800px;
-  width: 100%;
-  padding: 40px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #0d2a45;
-}
-
-.greeting {
-  background: #ffffff;
-  border-left: 5px solid #0d2a45;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  font-size: 16px;
-}
-
-.status-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
-.status-buttons button {
-  flex: 1;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-#availableBtn {
-  background-color: #4CAF50;
-  color: white;
-}
-
-#busyBtn {
-  background-color: #f44336;
-  color: white;
-}
-
-.booking {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  margin-bottom: 20px;
-  border-left: 4px solid #4CAF50;
-}
-
-.booking p {
-  margin: 8px 0;
-  font-size: 15px;
-}
-
-@media screen and (max-width: 600px) {
-  .container {
-    padding: 20px;
-  }
-
-  .status-buttons button {
-    font-size: 14px;
-    padding: 10px;
-  }
-}
-
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #0d2a45;
+    }
+    .greeting {
+      background: #ffffff;
+      border-left: 5px solid #0d2a45;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-size: 16px;
+    }
+    .booking {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      margin-bottom: 20px;
+      border-left: 4px solid #4CAF50;
+    }
+    .booking p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
-    <div class="status-buttons">
-      <button id="availableBtn">Available</button>
-      <button id="busyBtn">Busy</button>
-    </div>
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
@@ -127,18 +86,38 @@ h1 {
 
     const greetingEl = document.getElementById('driverGreeting');
     const container = document.getElementById('bookingsContainer');
-
     const driverDoor = localStorage.getItem("driverDoor");
     const driverName = localStorage.getItem("driverName");
+    const driverPass = localStorage.getItem("driverPass");
 
-    if (!driverDoor || !driverName) {
-      greetingEl.innerHTML = "No driver is logged in.";
+    function verifyAdminAccess() {
+      db.ref("adminDashboardPassword").once("value").then(snapshot => {
+        const correctPassword = snapshot.val();
+        const input = prompt("Admin access required. Enter master password:");
+
+        if (input !== correctPassword) {
+          alert("Access denied. Redirecting...");
+          window.location.href = "DriverLogin.html";
+        }
+      }).catch(err => {
+        console.error("Password check failed:", err);
+        alert("Access denied due to error.");
+        window.location.href = "DriverLogin.html";
+      });
+    }
+
+    if (!driverName || !driverDoor || !driverPass) {
+      verifyAdminAccess();
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
         for (const key in drivers) {
           const d = drivers[key];
-          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+          if (
+            d.doorCard === driverDoor &&
+            d.name.toLowerCase() === driverName.toLowerCase() &&
+            d.password === driverPass
+          ) {
             greetingEl.innerHTML = `
               Hi, <strong>${d.name}</strong>. Today you're in a
               <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
@@ -149,32 +128,12 @@ h1 {
             break;
           }
         }
-      }).catch(err => {
-        greetingEl.innerHTML = "Error loading driver information.";
-        console.error(err);
       });
     }
-
-    document.getElementById("availableBtn").addEventListener("click", () => {
-      if (confirm("You are about to become Available. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Available")
-          .then(() => console.log("Marked as Available"))
-          .catch(console.error);
-      }
-    });
-
-    document.getElementById("busyBtn").addEventListener("click", () => {
-      if (confirm("You are about to become Busy. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Busy")
-          .then(() => console.log("Marked as Busy"))
-          .catch(console.error);
-      }
-    });
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
     const soundAmend = document.getElementById('chimeAmend');
-
     let lastSnapshot = {};
     let userInteracted = false;
 
