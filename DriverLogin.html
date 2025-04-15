@@ -80,9 +80,9 @@
     <h1>Driver Login</h1>
 
     <label for="driverName">First Name Only:</label>
-    <input type="text" id="driverName" placeholder="e.g. Ivo">
+    <input type="text" id="driverName" placeholder="e.g. John">
 
-    <label for="doorCard">Door Card Number (e.g. S199):</label>
+    <label for="doorCard">Door Card Number (e.g. S###):</label>
     <input type="text" id="doorCard" placeholder="S###">
 
     <label for="password">Password:</label>
@@ -112,7 +112,7 @@
       const doorCard = document.getElementById('doorCard').value.trim().toUpperCase();
       const password = document.getElementById('password').value.trim();
 
-      if (!name || !doorCard || !password) {
+      if (!name || !doorCard || !registration) {
         alert("Please fill in all fields.");
         return;
       }
