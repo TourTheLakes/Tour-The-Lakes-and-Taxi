@@ -33,15 +33,14 @@
       border-left: 5px solid #0d2a45;
       padding: 20px;
       border-radius: 8px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       font-size: 16px;
     }
 
     .status-buttons {
       display: flex;
-      justify-content: space-between;
-      gap: 10px;
+      margin-top: 10px;
     }
 
     .status-buttons button {
@@ -50,13 +49,14 @@
       font-size: 16px;
       font-weight: bold;
       border: none;
-      border-radius: 6px;
       cursor: pointer;
+      border-radius: 6px;
     }
 
     #availableBtn {
       background-color: #4CAF50;
       color: white;
+      margin-right: 10px;
     }
 
     #busyBtn {
@@ -80,10 +80,6 @@
   <div class="container">
     <h1>Test Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting">Loading driver info...</div>
-    <div class="status-buttons">
-      <button id="availableBtn">Available</button>
-      <button id="busyBtn">Busy</button>
-    </div>
   </div>
 
   <script>
@@ -109,25 +105,42 @@
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
-        let found = false;
-
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+            // Greeting text
             greetingEl.innerHTML = `
-              Hi, <strong>${d.name}</strong>. Today you're in a 
-              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats 
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
               up to <strong>${d.vehicle.seats}</strong> passengers.
-              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is 
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.
             `;
-            found = true;
+
+            // Add status buttons
+            const btnContainer = document.createElement("div");
+            btnContainer.className = "status-buttons";
+
+            const availableBtn = document.createElement("button");
+            availableBtn.id = "availableBtn";
+            availableBtn.textContent = "Available";
+            availableBtn.onclick = () => {
+              db.ref(status/${d.doorCard}).set("Available");
+            };
+
+            const busyBtn = document.createElement("button");
+            busyBtn.id = "busyBtn";
+            busyBtn.textContent = "Busy";
+            busyBtn.onclick = () => {
+              db.ref(status/${d.doorCard}).set("Busy");
+            };
+
+            btnContainer.appendChild(availableBtn);
+            btnContainer.appendChild(busyBtn);
+            greetingEl.appendChild(btnContainer);
+
             break;
           }
-        }
-
-        if (!found) {
-          greetingEl.innerHTML = "Driver not found in database.";
         }
       }).catch(err => {
         console.error(err);
