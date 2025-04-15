@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
@@ -59,14 +60,23 @@
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>  <audio id="chimeNew" preload="auto">
+  </div>
+
+  <!-- Sounds -->
+  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
   <audio id="chimeCancel" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3" type="audio/mpeg">
-  </audio>  <script>
+  </audio>
+  <audio id="chimeAmend" preload="auto">
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -109,6 +119,7 @@
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
+    const soundAmend = document.getElementById('chimeAmend');
 
     let lastSnapshot = {};
     let userInteracted = false;
@@ -116,39 +127,52 @@
     document.addEventListener("click", () => userInteracted = true, { once: true });
     document.addEventListener("keydown", () => userInteracted = true, { once: true });
 
+    function hashBooking(booking) {
+      return JSON.stringify(booking);
+    }
+
     db.ref("bookings").on("value", snapshot => {
-      const bookings = snapshot.val();
-      const currentKeys = bookings ? Object.keys(bookings) : [];
+      const bookings = snapshot.val() || {};
+      const currentKeys = Object.keys(bookings);
       const lastKeys = Object.keys(lastSnapshot);
+      let played = false;
 
       if (userInteracted) {
-        if (currentKeys.length > lastKeys.length) {
-          soundNew.currentTime = 0;
-          soundNew.play().catch(() => {});
-        } else if (currentKeys.length < lastKeys.length) {
-          soundCancel.currentTime = 0;
-          soundCancel.play().catch(() => {});
-        } else {
-          for (const key of currentKeys) {
-            if (JSON.stringify(bookings[key]) !== JSON.stringify(lastSnapshot[key])) {
-              soundNew.currentTime = 0;
-              soundNew.play().catch(() => {});
+        for (const key of currentKeys) {
+          if (!lastSnapshot[key]) {
+            soundNew.currentTime = 0;
+            soundNew.play().catch(() => {});
+            played = true;
+            break;
+          } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
+            soundAmend.currentTime = 0;
+            soundAmend.play().catch(() => {});
+            played = true;
+            break;
+          }
+        }
+
+        if (!played) {
+          for (const key of lastKeys) {
+            if (!bookings[key]) {
+              soundCancel.currentTime = 0;
+              soundCancel.play().catch(() => {});
               break;
             }
           }
         }
       }
 
-      lastSnapshot = bookings || {};
+      lastSnapshot = bookings;
       container.innerHTML = "";
 
-      if (!bookings) {
+      if (!currentKeys.length) {
         container.innerHTML = "<p>No bookings received yet.</p>";
         return;
       }
 
-      const bookingList = Object.values(bookings);
-      bookingList.reverse().forEach(booking => {
+      const bookingList = currentKeys.map(key => bookings[key]).reverse();
+      bookingList.forEach(booking => {
         const card = document.createElement('div');
         card.className = 'booking';
         card.innerHTML = `
@@ -165,5 +189,6 @@
         container.appendChild(card);
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
