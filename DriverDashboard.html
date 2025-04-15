@@ -129,15 +129,15 @@
     };
 
     if (driverInfo && driverInfo.vehicle) {
-      greeting.innerHTML = Hi, <strong>${driverInfo.name}</strong>. Today you're in a <strong>${driverInfo.vehicle.color}</strong> <strong>${driverInfo.vehicle.make}</strong> that seats up to <strong>${driverInfo.vehicle.seats}</strong> passengers. Your door card number is <strong>${driverInfo.doorCard}</strong> and the vehicle registration is <strong>${driverInfo.vehicle.registration}</strong>.;
+    greeting.innerHTML = Hi, <strong>${driverInfo.name}</strong>. Today you're in a <strong>${driverInfo.vehicle.color}</strong> <strong>${driverInfo.vehicle.make}</strong> that seats up to <strong>${driverInfo.vehicle.seats}</strong> passengers. Your door card number is <strong>${driverInfo.doorCard}</strong> and the vehicle registration is <strong>${driverInfo.vehicle.registration}</strong>.;
     }
 
     document.getElementById("availableBtn").onclick = () => {
-      db.ref(status/${driverInfo.doorCard}).set("Available");
+    db.ref(status/${driverInfo.doorCard}).set("Available");
     };
 
     document.getElementById("busyBtn").onclick = () => {
-      db.ref(status/${driverInfo.doorCard}).set("Busy");
+    db.ref(status/${driverInfo.doorCard}).set("Busy");
     };
 
     db.ref("bookings").on("value", snapshot => {
