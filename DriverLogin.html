@@ -4,15 +4,10 @@
   <meta charset="UTF-8">
   <title>Driver Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-
   <style>
     body {
       font-family: sans-serif;
-      background: #fff;
+      background: linear-gradient(to bottom right, #2c3e50, #4ca1af);
       margin: 0;
       padding: 40px;
       display: flex;
@@ -22,58 +17,60 @@
     }
 
     .container {
-      max-width: 600px;
+      background: #fdfdfd;
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
       width: 100%;
       text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
     h1 {
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      text-align: left;
-      margin-top: 15px;
       font-weight: bold;
+      margin: 15px 0 5px;
+      text-align: left;
     }
 
     input[type="text"],
     input[type="password"] {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
       box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
 
     button {
-      padding: 10px 20px;
       margin-top: 30px;
+      padding: 12px 20px;
       width: 100%;
-      background-color: #4CAF50;
-      color: white;
-      font-weight: bold;
+      background: #16365f;
+      color: #fff;
       border: none;
+      font-weight: bold;
+      border-radius: 4px;
+      font-size: 16px;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #45a049;
+      background: #0f2744;
     }
 
-    .error {
-      color: red;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    @media screen and (max-width: 480px) {
+    @media (max-width: 480px) {
       body {
         padding: 20px;
       }
 
       button {
         width: 100%;
+        margin-top: 20px;
       }
     }
   </style>
@@ -83,18 +80,19 @@
     <h1>Driver Login</h1>
 
     <label for="driverName">First Name Only:</label>
-    <input type="text" id="driverName" autocomplete="off">
+    <input type="text" id="driverName" placeholder="e.g. Ivo">
 
     <label for="doorCard">Door Card Number (e.g. S199):</label>
-    <input type="text" id="doorCard" maxlength="4" autocomplete="off">
+    <input type="text" id="doorCard" placeholder="S###">
 
     <label for="password">Password:</label>
-    <input type="password" id="password" autocomplete="off">
+    <input type="password" id="password" placeholder="Your secure password">
 
-    <button onclick="verifyDriver()">Login</button>
-    <div id="error" class="error"></div>
+    <button onclick="driverLogin()">Login</button>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
@@ -109,42 +107,39 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function verifyDriver() {
-      const name = document.getElementById("driverName").value.trim().toLowerCase();
-      const door = document.getElementById("doorCard").value.trim().toUpperCase();
-      const pass = document.getElementById("password").value.trim();
-      const errorBox = document.getElementById("error");
+    function driverLogin() {
+      const name = document.getElementById('driverName').value.trim().toLowerCase();
+      const doorCard = document.getElementById('doorCard').value.trim().toUpperCase();
+      const password = document.getElementById('password').value.trim();
 
-      errorBox.textContent = "";
-
-      if (!name || !door || !pass) {
-        errorBox.textContent = "Please fill in all fields.";
-        return;
-      }
-
-      if (!/^S\d{3}$/.test(door)) {
-        errorBox.textContent = "Door Card must begin with 'S' followed by 3 digits (e.g. S199).";
+      if (!name || !doorCard || !password) {
+        alert("Please fill in all fields.");
         return;
       }
 
       db.ref("drivers").once("value", snapshot => {
-        const drivers = snapshot.val();
-        const match = Object.values(drivers).find(driver =>
-          driver.name.toLowerCase() === name &&
-          driver.doorCard.toUpperCase() === door &&
-          driver.password === pass
-        );
+        let found = false;
 
-        if (match) {
-          localStorage.setItem("driverName", match.name);
-          localStorage.setItem("vehicleMake", match.vehicle.make);
-          localStorage.setItem("vehicleModel", match.vehicle.model);
-          localStorage.setItem("vehicleColor", match.vehicle.color);
-          localStorage.setItem("vehicleReg", match.vehicle.registration);
-          localStorage.setItem("vehicleSeats", match.vehicle.seats);
-          window.location.href = "DriverDashboard.html";
-        } else {
-          errorBox.textContent = "Login failed. Please check your credentials.";
+        snapshot.forEach(child => {
+          const data = child.val();
+          if (
+            data.name.toLowerCase() === name &&
+            data.doorCard.toUpperCase() === doorCard &&
+            data.password === password
+          ) {
+            found = true;
+            localStorage.setItem("driverName", data.name);
+            localStorage.setItem("vehicleMake", data.vehicle.make);
+            localStorage.setItem("vehicleModel", data.vehicle.model);
+            localStorage.setItem("vehicleColor", data.vehicle.color);
+            localStorage.setItem("vehicleRegistration", data.vehicle.registration);
+            localStorage.setItem("vehicleSeats", data.vehicle.seats);
+            window.location.href = "DriverDashboard.html";
+          }
+        });
+
+        if (!found) {
+          alert("Invalid login details.");
         }
       });
     }
