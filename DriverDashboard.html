@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
@@ -11,22 +10,29 @@
       font-family: 'Segoe UI', sans-serif;
       background-color: #eef3f8;
       margin: 0;
-      padding: 40px;
+      padding: 0;
       display: flex;
       justify-content: center;
     }
-
     .container {
       max-width: 800px;
       width: 100%;
+      padding: 40px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
       color: #0d2a45;
     }
-
+    .greeting {
+      background: #ffffff;
+      border-left: 5px solid #0d2a45;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      font-size: 16px;
+    }
     .booking {
       background: #fff;
       padding: 20px;
@@ -35,14 +41,12 @@
       margin-bottom: 20px;
       border-left: 4px solid #4CAF50;
     }
-
     .booking p {
       margin: 8px 0;
       font-size: 15px;
     }
-
     @media screen and (max-width: 600px) {
-      body {
+      .container {
         padding: 20px;
       }
     }
@@ -51,22 +55,18 @@
 <body>
   <div class="container">
     <h1>Driver Dashboard</h1>
+    <div id="driverGreeting" class="greeting">Loading driver info...</div>
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>
-
-  <!-- Sounds -->
-  <audio id="chimeNew" preload="auto">
+  </div>  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
   <audio id="chimeCancel" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3" type="audio/mpeg">
-  </audio>
-
-  <script>
+  </audio>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -79,7 +79,33 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    const greetingEl = document.getElementById('driverGreeting');
     const container = document.getElementById('bookingsContainer');
+
+    const driverDoor = localStorage.getItem("driverDoor");
+    const driverName = localStorage.getItem("driverName");
+
+    if (!driverDoor || !driverName) {
+      greetingEl.innerHTML = "No driver is logged in.";
+    } else {
+      db.ref("drivers").once("value").then(snapshot => {
+        const drivers = snapshot.val();
+        for (const key in drivers) {
+          const d = drivers[key];
+          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+            greetingEl.innerHTML = `
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
+              up to <strong>${d.vehicle.seats}</strong> passengers.
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
+              <strong>${d.vehicle.registration}</strong>.
+            `;
+            break;
+          }
+        }
+      });
+    }
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
@@ -139,6 +165,5 @@
         container.appendChild(card);
       });
     });
-  </script>
-</body>
+  </script></body>
 </html>
