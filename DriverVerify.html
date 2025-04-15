@@ -98,16 +98,17 @@
 
     function sendCode() {
       const phone = document.getElementById('phoneNumber').value;
-      firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier)
-        .then(result => {
-          confirmationResult = result;
-          document.getElementById('verifySection').style.display = 'block';
-          alert("Code sent successfully.");
-        })
-        .catch(error => {
-          console.error(error);
-          alert("Error sending code. Check phone number format.");
-        });
+
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+        return firebase.auth().signInWithPhoneNumber(phone, window.recaptchaVerifier);
+      }).then(result => {
+        confirmationResult = result;
+        document.getElementById('verifySection').style.display = 'block';
+        alert("Code sent successfully.");
+      }).catch(error => {
+        console.error(error);
+        alert("Error sending code. Check phone number format.");
+      });
     }
 
     function verifyCode() {
