@@ -136,7 +136,7 @@
         for (const key in drivers) {
           const driver = drivers[key];
           if (
-            driver.name.toLowerCase() === name &&
+            driver.name?.toLowerCase() === name &&
             driver.doorCard === doorCard &&
             driver.password === password
           ) {
@@ -147,8 +147,9 @@
 
         if (matchedDriver) {
           localStorage.setItem("driverName", matchedDriver.name);
-          localStorage.setItem("driverDoor", matchedDriver.doorCard); // REQUIRED for dashboard
+          localStorage.setItem("driverDoor", matchedDriver.doorCard);
           localStorage.setItem("vehicle", JSON.stringify(matchedDriver.vehicle));
+          localStorage.setItem("driverVerifiedUntil", Date.now() + 4 * 60 * 60 * 1000); // 4 hours
           window.location.href = "DriverDashboard.html";
         } else {
           alert("Login failed. Please check your credentials.");
