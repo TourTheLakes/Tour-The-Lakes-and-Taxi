@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,8 @@
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
     body {
-      font-family: sans-serif;
-      background: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0d2a45;
       margin: 0;
       padding: 40px;
       display: flex;
@@ -17,29 +18,48 @@
     .container {
       max-width: 600px;
       width: 100%;
-      padding: 20px;
+      padding: 30px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
-    h1, h2 {
+    h1 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      color: #0d2a45;
     }
     label {
       display: block;
       margin-top: 15px;
       margin-bottom: 5px;
-      font-weight: bold;
+      font-weight: 600;
+      color: #333;
     }
     input, select {
       width: 100%;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
       box-sizing: border-box;
     }
     button {
-      margin-top: 20px;
-      padding: 10px 20px;
+      margin-top: 25px;
+      padding: 12px 20px;
       width: 100%;
+      background-color: #0d2a45;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #1e3c5d;
     }
     .warning {
       background-color: #fff3cd;
@@ -48,6 +68,8 @@
       font-size: 14px;
       margin-top: 10px;
       display: none;
+      border-radius: 4px;
+      color: #333;
     }
     .disclaimer {
       background: #f8f8f8;
@@ -55,6 +77,8 @@
       margin-top: 20px;
       border-left: 4px solid #cc0000;
       font-size: 14px;
+      border-radius: 4px;
+      color: #333;
     }
     @media screen and (max-width: 480px) {
       body {
@@ -112,18 +136,17 @@
 
     <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
 
-    <!-- Pet disclaimer block -->
-<div style="background: #f8f8f8; padding: 15px; margin-top: 20px; border-left: 4px solid #cc0000; font-size: 14px;">
-  <strong>Important Notice Regarding Pets</strong><br>
-  We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
-  As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
-  <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
-</div>
+    <div class="disclaimer">
+      <strong>Important Notice Regarding Pets</strong><br>
+      We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
+      As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
+      <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+    </div>
 
-<label style="margin-top: 15px;">
-  <input type="checkbox" id="noPets" required>
-  I acknowledge I am not travelling with a pet.
-</label>
+    <label style="margin-top: 15px;">
+      <input type="checkbox" id="noPets" required>
+      I acknowledge I am not travelling with a pet.
+    </label>
 
     <button type="submit">Update Booking</button>
   </form>
