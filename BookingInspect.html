@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inspect Booking</title>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef3f8;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      max-width: 600px;
+      width: 100%;
+    }
+    h2 {
+      text-align: center;
+      color: #0d2a45;
+      margin-bottom: 20px;
+    }
+    p {
+      margin: 8px 0;
+      font-size: 15px;
+      color: #333;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+    .buttons button {
+      flex: 1;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+    }
+    .accept { background-color: #4CAF50; }
+    .unassign { background-color: #f44336; }
+    .return { background-color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Booking Details</h2>
+    <div id="bookingDetails">Loading...</div>
+    <div class="buttons">
+      <button class="accept" onclick="acceptBooking()">Accept</button>
+      <button class="unassign" onclick="unassignBooking()">Unassign</button>
+      <button class="return" onclick="goBack()">Return</button>
+    </div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const bookingId = localStorage.getItem("inspectBookingId");
+    const driverName = localStorage.getItem("driverName") || "Unknown Driver";
+
+    if (!bookingId) {
+      document.getElementById("bookingDetails").innerHTML = "No booking ID found.";
+    } else {
+      db.ref("bookings/" + bookingId).once("value").then(snapshot => {
+        const booking = snapshot.val();
+        if (booking) {
+          document.getElementById("bookingDetails").innerHTML = `
+            <p><strong>Name:</strong> ${booking.name}</p>
+            <p><strong>Phone:</strong> ${booking.phone}</p>
+            <p><strong>Area:</strong> ${booking.area}</p>
+            <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+            <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+            <p><strong>Passengers:</strong> ${booking.passengers}</p>
+            <p><strong>Luggage:</strong> ${booking.luggage}</p>
+            <p><strong>Pets:</strong> ${booking.pets}</p>
+            <p><strong>Pickup Time:</strong> ${booking.time}</p>
+            <p><strong>Status:</strong> ${booking.driver ? 'Accepted by ' + booking.driver : 'Unassigned'}</p>
+          `;
+        } else {
+          document.getElementById("bookingDetails").innerHTML = "Booking not found.";
+        }
+      });
+    }
+
+    function acceptBooking() {
+      db.ref("bookings/" + bookingId).update({ driver: driverName })
+        .then(() => {
+          alert("Booking assigned to you.");
+          window.location.href = "DriverDashboard.html";
+        });
+    }
+
+    function unassignBooking() {
+      db.ref("bookings/" + bookingId).update({ driver: null })
+        .then(() => {
+          alert("Booking unassigned.");
+          window.location.href = "DriverDashboard.html";
+        });
+    }
+
+    function goBack() {
+      window.location.href = "DriverDashboard.html";
+    }
+  </script></body>
+</html>
