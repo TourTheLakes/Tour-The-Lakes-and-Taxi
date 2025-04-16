@@ -164,16 +164,20 @@
       });
     }
 
-    document.getElementById("availableBtn").onclick = () => {
-      if (confirm("You are about to become Available. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Available");
-      }
-    };
-    document.getElementById("busyBtn").onclick = () => {
-      if (confirm("You are about to become Busy. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Busy");
-      }
-    };
+document.getElementById("availableBtn").onclick = () => {
+  if (confirm("You are about to become Available. Proceed?")) {
+    unlockSounds(); // This enables autoplay
+    db.ref("driverStatus/" + driverDoor).set("Available");
+  }
+};
+    
+document.getElementById("busyBtn").onclick = () => {
+  if (confirm("You are about to become Busy. Proceed?")) {
+    unlockSounds(); // Re-activate just in case
+    db.ref("driverStatus/" + driverDoor).set("Busy");
+  }
+};
+    
     document.getElementById("logoffBtn").onclick = () => {
       if (confirm("You are about to Log Off. Proceed?")) {
         db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
