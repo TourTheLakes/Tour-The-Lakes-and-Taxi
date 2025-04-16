@@ -177,6 +177,7 @@
 
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
+    unlockSounds(); // Ensures audio chimes are allowed
     db.ref("driverStatus/" + driverDoor).set("Available").then(() => {
       document.getElementById("availableBtn").classList.add("pulsing");
       document.getElementById("busyBtn").classList.remove("pulsing");
@@ -186,6 +187,7 @@ document.getElementById("availableBtn").onclick = () => {
     
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
+    unlockSounds(); // Just in case it wasn't already activated
     db.ref("driverStatus/" + driverDoor).set("Busy").then(() => {
       document.getElementById("busyBtn").classList.add("pulsing");
       document.getElementById("availableBtn").classList.remove("pulsing");
