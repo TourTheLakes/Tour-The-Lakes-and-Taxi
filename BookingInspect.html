@@ -1,8 +1,9 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inspect Booking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
@@ -14,54 +15,71 @@
       display: flex;
       justify-content: center;
     }
+
     .container {
+      max-width: 600px;
       background: #fff;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-      max-width: 600px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       width: 100%;
     }
+
     h2 {
       text-align: center;
       color: #0d2a45;
       margin-bottom: 20px;
     }
+
     p {
-      margin: 8px 0;
       font-size: 15px;
-      color: #333;
+      margin: 10px 0;
     }
+
     .buttons {
+      margin-top: 30px;
       display: flex;
       gap: 10px;
-      margin-top: 30px;
+      justify-content: space-between;
     }
+
     .buttons button {
       flex: 1;
       padding: 12px;
       font-size: 16px;
-      font-weight: bold;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
       color: white;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .accept { background-color: #4CAF50; }
-    .unassign { background-color: #f44336; }
-    .return { background-color: #888; }
+
+    #acceptBtn {
+      background-color: #4CAF50;
+    }
+
+    #unassignBtn {
+      background-color: #f44336;
+    }
+
+    #returnBtn {
+      background-color: #555;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Booking Details</h2>
-    <div id="bookingDetails">Loading...</div>
+    <h2>Inspect Booking</h2>
+    <div id="bookingDetails">Loading booking...</div>
+
     <div class="buttons">
-      <button class="accept" onclick="acceptBooking()">Accept</button>
-      <button class="unassign" onclick="unassignBooking()">Unassign</button>
-      <button class="return" onclick="goBack()">Return</button>
+      <button id="acceptBtn">Accept</button>
+      <button id="unassignBtn">Unassign</button>
+      <button id="returnBtn">Return</button>
     </div>
-  </div>  <script>
+  </div>
+
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -74,51 +92,52 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const bookingId = localStorage.getItem("inspectBookingId");
-    const driverName = localStorage.getItem("driverName") || "Unknown Driver";
+    const bookingKey = localStorage.getItem("bookingInspectKey");
+    const container = document.getElementById("bookingDetails");
 
-    if (!bookingId) {
-      document.getElementById("bookingDetails").innerHTML = "No booking ID found.";
+    if (!bookingKey) {
+      container.innerHTML = "<p>No booking ID found.</p>";
     } else {
-      db.ref("bookings/" + bookingId).once("value").then(snapshot => {
+      db.ref("bookings/" + bookingKey).once("value").then(snapshot => {
         const booking = snapshot.val();
-        if (booking) {
-          document.getElementById("bookingDetails").innerHTML = `
-            <p><strong>Name:</strong> ${booking.name}</p>
-            <p><strong>Phone:</strong> ${booking.phone}</p>
-            <p><strong>Area:</strong> ${booking.area}</p>
-            <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
-            <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
-            <p><strong>Passengers:</strong> ${booking.passengers}</p>
-            <p><strong>Luggage:</strong> ${booking.luggage}</p>
-            <p><strong>Pets:</strong> ${booking.pets}</p>
-            <p><strong>Pickup Time:</strong> ${booking.time}</p>
-            <p><strong>Status:</strong> ${booking.driver ? 'Accepted by ' + booking.driver : 'Unassigned'}</p>
-          `;
-        } else {
-          document.getElementById("bookingDetails").innerHTML = "Booking not found.";
+        if (!booking) {
+          container.innerHTML = "<p>Booking not found in database.</p>";
+          return;
         }
+
+        container.innerHTML = `
+          <p><strong>Name:</strong> ${booking.name}</p>
+          <p><strong>Phone:</strong> ${booking.phone}</p>
+          <p><strong>Area:</strong> ${booking.area}</p>
+          <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+          <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+          <p><strong>Passengers:</strong> ${booking.passengers}</p>
+          <p><strong>Luggage:</strong> ${booking.luggage}</p>
+          <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
+          <p><strong>Pickup Time:</strong> ${booking.time}</p>
+        `;
+      }).catch(err => {
+        container.innerHTML = "<p>Error loading booking.</p>";
+        console.error(err);
       });
     }
 
-    function acceptBooking() {
-      db.ref("bookings/" + bookingId).update({ driver: driverName })
-        .then(() => {
-          alert("Booking assigned to you.");
-          window.location.href = "DriverDashboard.html";
-        });
-    }
+    document.getElementById("acceptBtn").onclick = () => {
+      const driverName = localStorage.getItem("driverName") || "Unknown Driver";
+      db.ref("bookings/" + bookingKey + "/claimed").set(driverName).then(() => {
+        window.location.href = "DriverDashboard.html";
+      });
+    };
 
-    function unassignBooking() {
-      db.ref("bookings/" + bookingId).update({ driver: null })
-        .then(() => {
-          alert("Booking unassigned.");
-          window.location.href = "DriverDashboard.html";
-        });
-    }
+    document.getElementById("unassignBtn").onclick = () => {
+      db.ref("bookings/" + bookingKey + "/claimed").remove().then(() => {
+        window.location.href = "DriverDashboard.html";
+      });
+    };
 
-    function goBack() {
+    document.getElementById("returnBtn").onclick = () => {
       window.location.href = "DriverDashboard.html";
-    }
-  </script></body>
+    };
+  </script>
+</body>
 </html>
