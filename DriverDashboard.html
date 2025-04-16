@@ -94,7 +94,7 @@
 }
 
 .flashing-border {
-  animation: flashBorder 1s infinite;
+animation: flashBorder 1s infinite;
 }
 
      </style>
@@ -177,21 +177,19 @@
 
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
-    unlockSounds(); // This enables autoplay
-    db.ref("driverStatus/" + driverDoor).set("Available").then(() => {
-      document.getElementById("availableBtn").classList.add("flashing-border");
-      document.getElementById("busyBtn").classList.remove("flashing-border");
-    });
+    unlockSounds(); // run immediately
+    document.getElementById("availableBtn").classList.add("flashing-border");
+    document.getElementById("busyBtn").classList.remove("flashing-border");
+    db.ref("driverStatus/" + driverDoor).set("Available");
   }
 };
     
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
-    unlockSounds(); // Re-activate just in case
-    db.ref("driverStatus/" + driverDoor).set("Busy").then(() => {
-      document.getElementById("busyBtn").classList.add("flashing-border");
-      document.getElementById("availableBtn").classList.remove("flashing-border");
-    });
+    unlockSounds(); // run immediately
+    document.getElementById("busyBtn").classList.add("flashing-border");
+    document.getElementById("availableBtn").classList.remove("flashing-border");
+    db.ref("driverStatus/" + driverDoor).set("Busy");
   }
 };
     
