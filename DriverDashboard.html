@@ -370,7 +370,7 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   claimedBox.className = "claimed-info";
   claimedBox.innerHTML = `
     <p><strong>Claimed By:</strong><br>${booking.claimedBy}</p>
-    <p style="margin-top: 15px;">This booking has already been accepted and is now being handled by this driver.</p>
+    <p style="margin-top: 15px;">This booking has been accepted and is now being handled by this driver.</p>
   `;
   row.appendChild(claimedBox);
 
