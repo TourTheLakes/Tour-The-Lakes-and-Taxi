@@ -349,10 +349,13 @@ card.innerHTML = `
   <p><strong>Pickup Time:</strong> ${booking.time}</p>
 `;
 
-card.onclick = () => {
-  localStorage.setItem("bookingInspectKey", key);
-  window.location.href = "BookingInspect.html";
-};
+if (!booking.claimedBy || booking.claimedBy === "unasigned" ||
+    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) {
+  card.onclick = () => {
+    localStorage.setItem("bookingInspectKey", key);
+    window.location.href = "BookingInspect.html;
+  };
+}
 
 if (booking.claimedBy === "unassigned") {
   card.style.borderLeftColor = "#f44336";
