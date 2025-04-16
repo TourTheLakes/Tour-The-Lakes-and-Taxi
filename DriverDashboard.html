@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -87,7 +88,17 @@
         padding: 10px;
       }
     }
-  </style>
+    @keyframes pulse {
+      0% {opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1;}
+    }
+
+    .pilsing {
+      animation:pulse 5s infinite;
+    }
+     </style>
+  
   <script>
     const verifiedUntil = localStorage.getItem("driverVerifiedUntil");
     if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
@@ -166,29 +177,35 @@
 
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
-    unlockSounds(); // This enables autoplay
-    db.ref("driverStatus/" + driverDoor).set("Available");
+    db.ref("driverStatus/" + driverDoor).set("Available").then(() => {
+      document.getElementById("availableBtn").classList.add("pulsing");
+      document.getElementById("busyBtn").classList.remove("pulsing");
+    });
   }
 };
     
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
-    unlockSounds(); // Re-activate just in case
-    db.ref("driverStatus/" + driverDoor).set("Busy");
+    db.ref("driverStatus/" + driverDoor).set("Busy").then(() => {
+      document.getElementById("busyBtn").classList.add("pulsing");
+      document.getElementById("availableBtn").classList.remove("pulsing");
+    });
   }
 };
     
-    document.getElementById("logoffBtn").onclick = () => {
-      if (confirm("You are about to Log Off. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
-          localStorage.removeItem("driverVerifiedUntil");
-          localStorage.removeItem("driverDoor");
-          localStorage.removeItem("driverName");
-          localStorage.removeItem("vehicle");
-          window.location.href = "DriverLogin.html";
-        });
-      }
-    };
+document.getElementById("logoffBtn").onclick = () => {
+  if (confirm("You are about to Log Off. Proceed?")) {
+    db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
+      localStorage.removeItem("driverVerifiedUntil");
+      localStorage.removeItem("driverDoor");
+      localStorage.removeItem("driverName");
+      localStorage.removeItem("vehicle");
+      document.getElementById("availableBtn").classList.remove("pulsing");
+      document.getElementById("busyBtn").classList.remove("pulsing");
+      window.location.href = "DriverLogin.html";
+    });
+  }
+};
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
