@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Taxi Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d2a45;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      max-width: 600px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    h2 {
+      text-align: center;
+      color: #0d2a45;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+      color: #333;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      background: #0d2a45;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    #recaptcha-container {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Step 1: Taxi Service -->
+    <div id="step1" class="step active">
+      <h2>Pickup and Drop-off</h2>
+      <label for="area">Area:</label>
+      <select id="area">
+        <option value="">--Select Area--</option>
+        <option>Windermere</option>
+        <option>Troutbeck</option>
+        <option>Ambleside</option>
+        <option>Hawkshead</option>
+        <option>Coniston</option>
+        <option>Grasmere</option>
+        <option>Kendal</option>
+        <option value="other">Another area</option>
+      </select>
+      <div id="otherAreaBox" style="display: none;">
+        <label for="otherArea">Please specify your area:</label>
+        <input type="text" id="otherArea">
+      </div>
+      <label for="pickup">Pickup Address:</label>
+      <input type="text" id="pickup">
+      <label for="extra">Extra Info (optional):</label>
+      <input type="text" id="extra">
+      <label for="dropoff">Drop-off Location:</label>
+      <input type="text" id="dropoff">
+      <button onclick="nextStep1()">Next</button>
+    </div><!-- Step 2: Time and Date -->
+<div id="step2" class="step">
+  <h2>Pickup Time</h2>
+  <label><input type="checkbox" id="asap"> ASAP Pickup</label>
+  <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
+  <div id="timeFields">
+    <label for="pickupDate">Pickup Date:</label>
+    <input type="date" id="pickupDate">
+    <label for="pickupTime">Pickup Time:</label>
+    <select id="pickupTime"></select>
+  </div>
+  <button onclick="back(1)">Back</button>
+  <button onclick="nextStep2()">Next</button>
+</div>
+
+<!-- Step 3: Name -->
+<div id="step3" class="step">
+  <h2>Who's the booking for?</h2>
+  <label for="fullName">Full Name:</label>
+  <input type="text" id="fullName">
+  <button onclick="back(2)">Back</button>
+  <button onclick="nextStep3()">Next</button>
+</div>
+
+<!-- Step 4: Phone Verification -->
+<div id="step4" class="step">
+  <h2>Verify Your Phone</h2>
+  <label for="phone">Mobile Number:</label>
+  <input type="tel" id="phone" placeholder="+44...">
+  <div id="recaptcha-container"></div>
+  <button onclick="sendCode()">Send Code</button>
+  <div id="codeBox" style="display:none;">
+    <label for="code">Enter Code:</label>
+    <input type="text" id="code">
+    <button onclick="verifyCode()">Verify</button>
+  </div>
+</div>
+
+  </div>  <script>
+    const firebaseConfig = { apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ", authDomain: "tourthelakes-1e165.firebaseapp.com", databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com", projectId: "tourthelakes-1e165", storageBucket: "tourthelakes-1e165.appspot.com", messagingSenderId: "470758171431", appId: "1:470758171431:web:f06dd39b0f15b63b2bff02" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    let currentStep = 1;
+
+    function showStep(n) {
+      document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+    }
+
+    function back(n) {
+      showStep(n);
+    }
+
+    const areaSelect = document.getElementById("area");
+    const otherAreaBox = document.getElementById("otherAreaBox");
+    areaSelect.addEventListener("change", () => {
+      otherAreaBox.style.display = areaSelect.value === "other" ? "block" : "none";
+    });
+
+    function nextStep1() {
+      const area = areaSelect.value === "other" ? document.getElementById("otherArea").value : areaSelect.value;
+      const pickup = document.getElementById("pickup").value;
+      const extra = document.getElementById("extra").value;
+      const dropoff = document.getElementById("dropoff").value;
+      if (!area || !pickup || !dropoff) return alert("All fields are required");
+      localStorage.setItem("area", area);
+      localStorage.setItem("pickup", pickup);
+      localStorage.setItem("extra", extra);
+      localStorage.setItem("dropoff", dropoff);
+      showStep(2);
+    }
+
+    const pickupTime = document.getElementById("pickupTime");
+    document.getElementById("pickupDate").addEventListener("change", () => {
+      pickupTime.innerHTML = "";
+      let date = new Date(document.getElementById("pickupDate").value);
+      date.setHours(0,0,0,0);
+      for (let h = 0; h < 24; h++) for (let m = 0; m < 60; m += 15) {
+        let time = ${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')};
+        let opt = new Option(time, time);
+        pickupTime.add(opt);
+      }
+    });
+    document.getElementById("asap").addEventListener("change", (e) => {
+      document.getElementById("timeFields").style.display = e.target.checked ? "none" : "block";
+      document.getElementById("asapMessage").style.display = e.target.checked ? "block" : "none";
+    });
+
+    function nextStep2() {
+      if (document.getElementById("asap").checked) {
+        localStorage.setItem("pickupType", "ASAP");
+        localStorage.removeItem("pickupDate");
+        localStorage.removeItem("pickupTime");
+      } else {
+        let date = document.getElementById("pickupDate").value;
+        let time = pickupTime.value;
+        if (!date || !time) return alert("Please select date and time");
+        localStorage.setItem("pickupType", "Scheduled");
+        localStorage.setItem("pickupDate", date);
+        localStorage.setItem("pickupTime", time);
+      }
+      showStep(3);
+    }
+
+    function nextStep3() {
+      const name = document.getElementById("fullName").value.trim();
+      if (!name) return alert("Please enter your name");
+      localStorage.setItem("customerName", name);
+      showStep(4);
+    }
+
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'normal' });
+    recaptchaVerifier.render();
+
+    function sendCode() {
+      const phone = document.getElementById("phone").value.trim();
+      if (!phone) return alert("Please enter a valid phone number");
+      localStorage.setItem("phoneNumber", phone);
+      auth.signInWithPhoneNumber(phone, window.recaptchaVerifier).then((result) => {
+        window.confirmationResult = result;
+        document.getElementById("codeBox").style.display = "block";
+      }).catch((error) => alert(error.message));
+    }
+
+    function verifyCode() {
+      const code = document.getElementById("code").value.trim();
+      window.confirmationResult.confirm(code).then(() => {
+        alert("Phone verified! Booking submitted.");
+        const booking = {
+          name: localStorage.getItem('customerName'),
+          phone: localStorage.getItem('phoneNumber'),
+          area: localStorage.getItem('area'),
+          pickup: localStorage.getItem('pickup'),
+          extra: localStorage.getItem('extra'),
+          dropoff: localStorage.getItem('dropoff'),
+          time: localStorage.getItem('pickupType') === 'ASAP' ? 'ASAP (avg wait ~15 min)' : ${localStorage.getItem('pickupDate')} at ${localStorage.getItem('pickupTime')}
+        };
+        db.ref('bookings').push(booking).then(() => window.location.href = 'BookingSubmitted.html');
+      }).catch(() => alert("Invalid code"));
+    }
+  </script></body>
+</html>
