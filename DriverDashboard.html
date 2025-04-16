@@ -381,7 +381,7 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
       if (driver.name === booking.claimedBy) {
         const phonePara = document.createElement("p");
         phonePara.innerHTML = `<strong>Phone</strong> ${driver.phone}`;
-        claimeBox.inserBefore(phonePara, claimedBox.childern[1]);
+        claimedBox.inserBefore(phonePara, claimedBox.childern[1]);
         break;
       }
     }
