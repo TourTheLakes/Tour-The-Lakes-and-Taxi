@@ -364,29 +364,18 @@ if (booking.claimedBy === "unassigned") {
 
 row.appendChild(card);
 
+// Only show claimed info box if booking is claimed
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   const claimedBox = document.createElement("div");
   claimedBox.className = "claimed-info";
-  claimedBox.innerHTML = <p><strong>Claimed By:</strong><br>${booking.claimedBy}</p><p>Loading driver info...</p>;
+  claimedBox.innerHTML = `
+    <p><strong>Claimed By:</strong><br>${booking.claimedBy}</p>
+    <p style="margin-top: 15px;">This booking has already been accepted and is now being handled by this driver.</p>
+  `;
   row.appendChild(claimedBox);
-
-  // Lookup full driver data from Firebase
-  db.ref("drivers").once("value").then(driverSnap => {
-    const drivers = driverSnap.val();
-    for (const key in drivers) {
-      const driver = drivers[key];
-      if (driver.name === booking.claimedBy) {
-        claimedBox.innerHTML = 
-          `<p><strong>Claimed By:</strong> ${driver.name}</p>
-          <p><strong>Phone:</strong> ${driver.phone}</p>
-          <p><strong>Vehicle:</strong> ${driver.vehicle.color} ${driver.vehicle.make}</p>
-          <p><strong>Registration:</strong> ${driver.vehicle.registration}</p>
-          <p><strong>Seats:</strong> ${driver.vehicle.seats}</p>`;
-        break;
-      }
-    }
-  });
 }
+
+container.appendChild(row);
 
 
       });
