@@ -378,7 +378,7 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     const drivers = snapshot.val();
     for (const key in drivers) {
       const driver = drivers[key];
-      if (driver.name === booking.claimedBy) {
+      if (driver.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
         const phonePara = document.createElement("p");
         phonePara.innerHTML = `<strong>Phone</strong> ${driver.phone}`;
         claimedBox.inserBefore(phonePara, claimedBox.childern[1]);
