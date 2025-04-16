@@ -385,6 +385,11 @@ db.ref("drivers").once("value").then(snapshot => {
       const phonePara = document.createElement("p");
       phonePara.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
       claimedBox.insertBefore(phonePara, claimedBox.children[1]);
+
+      const vehiclePara = document.createElement("p");
+      vehiclePara.innerHTML = `<strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}`;
+      claimedBox.insertBefore(vehiclePara, claimedBox.children[2]);
+      
       break;
     }
   }
