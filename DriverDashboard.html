@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
@@ -15,19 +14,16 @@
       display: flex;
       justify-content: center;
     }
-
     .container {
       max-width: 800px;
       width: 100%;
       padding: 40px;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
       color: #0d2a45;
     }
-
     .greeting {
       background: #ffffff;
       border-left: 5px solid #0d2a45;
@@ -37,14 +33,12 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
       font-size: 16px;
     }
-
     .status-buttons {
       display: flex;
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 30px;
     }
-
     .status-buttons button {
       flex: 1;
       padding: 12px;
@@ -54,22 +48,18 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     #availableBtn {
       background-color: #4CAF50;
       color: white;
     }
-
     #logoffBtn {
       background-color: #ff9800;
       color: white;
     }
-
     #busyBtn {
       background-color: #f44336;
       color: white;
     }
-
     .booking {
       background: #fff;
       padding: 20px;
@@ -77,25 +67,25 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       margin-bottom: 20px;
       border-left: 4px solid #4CAF50;
+      cursor: pointer;
     }
-
+    .booking:hover {
+      background-color: #f1f1f1;
+    }
     .booking p {
       margin: 8px 0;
       font-size: 15px;
     }
-
     @media screen and (max-width: 600px) {
       .container {
         padding: 20px;
       }
-
       .status-buttons button {
         font-size: 14px;
         padding: 10px;
       }
     }
   </style>
-
   <script>
     const verifiedUntil = localStorage.getItem("driverVerifiedUntil");
     if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
@@ -120,9 +110,7 @@
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
     </div>
-  </div>
-
-  <audio id="chimeNew" preload="auto">
+  </div>  <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
@@ -133,9 +121,7 @@
   <audio id="chimeAmend" preload="auto">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>
-
-  <script>
+  </audio>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -150,7 +136,6 @@
 
     const greetingEl = document.getElementById('driverGreeting');
     const container = document.getElementById('bookingsContainer');
-
     const driverDoor = localStorage.getItem("driverDoor");
     const driverName = localStorage.getItem("driverName");
 
@@ -172,42 +157,30 @@
             break;
           }
         }
-      }).catch(err => {
-        greetingEl.innerHTML = "Error loading driver information.";
-        console.error(err);
       });
     }
 
-    document.getElementById("availableBtn").addEventListener("click", () => {
+    document.getElementById("availableBtn").onclick = () => {
       if (confirm("You are about to become Available. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Available")
-          .then(() => console.log("Marked as Available"))
-          .catch(console.error);
+        db.ref("driverStatus/" + driverDoor).set("Available");
       }
-    });
-
-    document.getElementById("busyBtn").addEventListener("click", () => {
+    };
+    document.getElementById("busyBtn").onclick = () => {
       if (confirm("You are about to become Busy. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Busy")
-          .then(() => console.log("Marked as Busy"))
-          .catch(console.error);
+        db.ref("driverStatus/" + driverDoor).set("Busy");
       }
-    });
-
-    document.getElementById("logoffBtn").addEventListener("click", () => {
+    };
+    document.getElementById("logoffBtn").onclick = () => {
       if (confirm("You are about to Log Off. Proceed?")) {
-        db.ref("driverStatus/" + driverDoor).set("Logged Off")
-          .then(() => {
-            localStorage.removeItem("driverVerifiedUntil");
-            localStorage.removeItem("driverDoor");
-            localStorage.removeItem("driverName");
-            localStorage.removeItem("vehicle");
-            alert("You have been logged off.");
-            window.location.href = "DriverLogin.html";
-          })
-          .catch(console.error);
+        db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
+          localStorage.removeItem("driverVerifiedUntil");
+          localStorage.removeItem("driverDoor");
+          localStorage.removeItem("driverName");
+          localStorage.removeItem("vehicle");
+          window.location.href = "DriverLogin.html";
+        });
       }
-    });
+    };
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
@@ -232,23 +205,19 @@
       if (userInteracted) {
         for (const key of currentKeys) {
           if (!lastSnapshot[key]) {
-            soundNew.currentTime = 0;
-            soundNew.play().catch(() => {});
+            soundNew.play();
             played = true;
             break;
           } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
-            soundAmend.currentTime = 0;
-            soundAmend.play().catch(() => {});
+            soundAmend.play();
             played = true;
             break;
           }
         }
-
         if (!played) {
           for (const key of lastKeys) {
             if (!bookings[key]) {
-              soundCancel.currentTime = 0;
-              soundCancel.play().catch(() => {});
+              soundCancel.play();
               break;
             }
           }
@@ -263,8 +232,8 @@
         return;
       }
 
-      const bookingList = currentKeys.map(key => bookings[key]).reverse();
-      bookingList.forEach(booking => {
+      currentKeys.reverse().forEach(key => {
+        const booking = bookings[key];
         const card = document.createElement('div');
         card.className = 'booking';
         card.innerHTML = `
@@ -278,9 +247,12 @@
           <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
           <p><strong>Pickup Time:</strong> ${booking.time}</p>
         `;
+        card.onclick = () => {
+          localStorage.setItem("bookingInspectKey", key);
+          window.location.href = "BookingInspect.html";
+        };
         container.appendChild(card);
       });
     });
-  </script>
-</body>
+  </script></body>
 </html>
