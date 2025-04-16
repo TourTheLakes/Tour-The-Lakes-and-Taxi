@@ -373,6 +373,19 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     <p style="margin-top: 15px;">This booking has already been accepted and is now being handled by this driver.</p>
   `;
   row.appendChild(claimedBox);
+
+  db.ref("drivers").once("value").then(snapshot => {
+    const drivers = snapshot.val();
+    for (const key in drivers) {
+      const driver = drivers[key];
+      if (driver.name === booking.claimedBy) {
+        const phonePara = document.createElement("p");
+        phonePara.innerHTML = `<strong>Phone</strong> ${driver.phone}`;
+        claimeBox.inserBefore(phonePara, claimedBox.childern[1]);
+        break;
+      }
+    }
+  });
 }
 
 container.appendChild(row);
