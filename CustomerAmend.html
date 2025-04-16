@@ -155,7 +155,13 @@
 <script>
 
   const phone = localStorage.getItem("returningPhoneNumber");
-  if (!phone) {
+  const verifiedTime = parseInt(localStorage.getItem("verifiedTime") || 0);
+  const now = Date.now();
+  const maxAge = 15 * 60 * 1000; //15 minutes
+  
+  if (!phone || !verifiedTime || now - verifiedTime > maxAge) {
+    localStorage.removeItem("returningPhoneNumber");
+    localStorage.removeItem("verifiedTime");
     window.location.href = "ReturningCustomer.html";
   }
   
@@ -172,6 +178,9 @@
   const db = firebase.database();
 
   const id = new URLSearchParams(location.search).get("id");
+  if (!id) {
+    window.location.href = "ReturningCustomer.html";
+  }
   const form = document.getElementById("amendForm");
   const areaSelect = document.getElementById("area");
   const luggage = document.getElementById("luggage");
