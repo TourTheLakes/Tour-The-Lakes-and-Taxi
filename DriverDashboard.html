@@ -88,15 +88,7 @@
         padding: 10px;
       }
     }
-@keyframes pulse {
-  0% { background-color: #4CAF50; }
-  50% { background-color: yellow; }
-  100% { background-color: #4CAF50; }
-}
 
-.pulsing {
-  animation: pulse 1s infinite;
-}
      </style>
   
   <script>
@@ -177,21 +169,15 @@
 
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
-    unlockSounds(); // Ensures audio chimes are allowed
-    db.ref("driverStatus/" + driverDoor).set("Available").then(() => {
-      document.getElementById("availableBtn").classList.add("pulsing");
-      document.getElementById("busyBtn").classList.remove("pulsing");
-    });
+    unlockSounds(); // This enables autoplay
+    db.ref("driverStatus/" + driverDoor).set("Available");
   }
 };
     
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
-    unlockSounds(); // Just in case it wasn't already activated
-    db.ref("driverStatus/" + driverDoor).set("Busy").then(() => {
-      document.getElementById("busyBtn").classList.add("pulsing");
-      document.getElementById("availableBtn").classList.remove("pulsing");
-    });
+    unlockSounds(); // Re-activate just in case
+    db.ref("driverStatus/" + driverDoor).set("Busy");
   }
 };
     
