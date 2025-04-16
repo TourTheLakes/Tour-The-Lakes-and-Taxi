@@ -389,6 +389,14 @@ db.ref("drivers").once("value").then(snapshot => {
       const vehiclePara = document.createElement("p");
       vehiclePara.innerHTML = `<strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}`;
       claimedBox.insertBefore(vehiclePara, claimedBox.children[2]);
+
+      const regPara = document.createElement("p");
+      regPara.innerHTML = `<strong>Registration:</strong> ${d.vehicle.registration}`;
+      claimedBox.insertBefore(regPara, claimedBox.children[3]);
+
+      const seatsPara = document.createElement("p");
+      seatsPara.innerHTML = `<strong>Seats:</strong> ${d.vehicle.seats}`;
+      claimedBox.insertBefore(seatsPara, claimedBox.children[4]);
       
       break;
     }
