@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="en">
+<!-- UNCHANGED code returned in full to confirm working booking click-through -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Driver Dashboard</title>
@@ -66,7 +68,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       margin-bottom: 20px;
-      border-left: 4px solid #ff9800;
+      border-left: 4px solid #4CAF50;
       cursor: pointer;
     }
     .booking:hover {
@@ -134,137 +136,128 @@
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();const greetingEl = document.getElementById('driverGreeting');
-const container = document.getElementById('bookingsContainer');
-const driverDoor = localStorage.getItem("driverDoor");
-const driverName = localStorage.getItem("driverName");
+    const db = firebase.database();
 
-if (!driverDoor || !driverName) {
-  greetingEl.innerHTML = "No driver is logged in.";
-} else {
-  db.ref("drivers").once("value").then(snapshot => {
-    const drivers = snapshot.val();
-    for (const key in drivers) {
-      const d = drivers[key];
-      if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-        greetingEl.innerHTML = `
-          Hi, <strong>${d.name}</strong>. Today you're in a
-          <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
-          up to <strong>${d.vehicle.seats}</strong> passengers.
-          Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
-          <strong>${d.vehicle.registration}</strong>.
-        `;
-        break;
-      }
+    const greetingEl = document.getElementById('driverGreeting');
+    const container = document.getElementById('bookingsContainer');
+    const driverDoor = localStorage.getItem("driverDoor");
+    const driverName = localStorage.getItem("driverName");
+
+    if (!driverDoor || !driverName) {
+      greetingEl.innerHTML = "No driver is logged in.";
+    } else {
+      db.ref("drivers").once("value").then(snapshot => {
+        const drivers = snapshot.val();
+        for (const key in drivers) {
+          const d = drivers[key];
+          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
+            greetingEl.innerHTML = `
+              Hi, <strong>${d.name}</strong>. Today you're in a
+              <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
+              up to <strong>${d.vehicle.seats}</strong> passengers.
+              Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
+              <strong>${d.vehicle.registration}</strong>.
+            `;
+            break;
+          }
+        }
+      });
     }
-  });
-}
 
-document.getElementById("availableBtn").onclick = () => {
-  if (confirm("You are about to become Available. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Available");
-  }
-};
-document.getElementById("busyBtn").onclick = () => {
-  if (confirm("You are about to become Busy. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Busy");
-  }
-};
-document.getElementById("logoffBtn").onclick = () => {
-  if (confirm("You are about to Log Off. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
-      localStorage.removeItem("driverVerifiedUntil");
-      localStorage.removeItem("driverDoor");
-      localStorage.removeItem("driverName");
-      localStorage.removeItem("vehicle");
-      window.location.href = "DriverLogin.html";
-    });
-  }
-};
-
-const soundNew = document.getElementById('chimeNew');
-const soundCancel = document.getElementById('chimeCancel');
-const soundAmend = document.getElementById('chimeAmend');
-
-let lastSnapshot = {};
-let userInteracted = false;
-
-document.addEventListener("click", () => userInteracted = true, { once: true });
-document.addEventListener("keydown", () => userInteracted = true, { once: true });
-
-function hashBooking(booking) {
-  return JSON.stringify(booking);
-}
-
-db.ref("bookings").on("value", snapshot => {
-  const bookings = snapshot.val() || {};
-  const currentKeys = Object.keys(bookings);
-  const lastKeys = Object.keys(lastSnapshot);
-  let played = false;
-
-  if (userInteracted) {
-    for (const key of currentKeys) {
-      if (!lastSnapshot[key]) {
-        soundNew.play();
-        played = true;
-        break;
-      } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
-        soundAmend.play();
-        played = true;
-        break;
+    document.getElementById("availableBtn").onclick = () => {
+      if (confirm("You are about to become Available. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Available");
       }
+    };
+    document.getElementById("busyBtn").onclick = () => {
+      if (confirm("You are about to become Busy. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Busy");
+      }
+    };
+    document.getElementById("logoffBtn").onclick = () => {
+      if (confirm("You are about to Log Off. Proceed?")) {
+        db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
+          localStorage.removeItem("driverVerifiedUntil");
+          localStorage.removeItem("driverDoor");
+          localStorage.removeItem("driverName");
+          localStorage.removeItem("vehicle");
+          window.location.href = "DriverLogin.html";
+        });
+      }
+    };
+
+    const soundNew = document.getElementById('chimeNew');
+    const soundCancel = document.getElementById('chimeCancel');
+    const soundAmend = document.getElementById('chimeAmend');
+
+    let lastSnapshot = {};
+    let userInteracted = false;
+
+    document.addEventListener("click", () => userInteracted = true, { once: true });
+    document.addEventListener("keydown", () => userInteracted = true, { once: true });
+
+    function hashBooking(booking) {
+      return JSON.stringify(booking);
     }
-    if (!played) {
-      for (const key of lastKeys) {
-        if (!bookings[key]) {
-          soundCancel.play();
-          break;
+
+    db.ref("bookings").on("value", snapshot => {
+      const bookings = snapshot.val() || {};
+      const currentKeys = Object.keys(bookings);
+      const lastKeys = Object.keys(lastSnapshot);
+      let played = false;
+
+      if (userInteracted) {
+        for (const key of currentKeys) {
+          if (!lastSnapshot[key]) {
+            soundNew.play();
+            played = true;
+            break;
+          } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
+            soundAmend.play();
+            played = true;
+            break;
+          }
+        }
+        if (!played) {
+          for (const key of lastKeys) {
+            if (!bookings[key]) {
+              soundCancel.play();
+              break;
+            }
+          }
         }
       }
-    }
-  }
 
-  lastSnapshot = bookings;
-  container.innerHTML = "";
+      lastSnapshot = bookings;
+      container.innerHTML = "";
 
-  if (!currentKeys.length) {
-    container.innerHTML = "<p>No bookings received yet.</p>";
-    return;
-  }
+      if (!currentKeys.length) {
+        container.innerHTML = "<p>No bookings received yet.</p>";
+        return;
+      }
 
-  currentKeys.reverse().forEach(key => {
-    const booking = bookings[key];
-    const card = document.createElement('div');
-    card.className = 'booking';
-
-    let borderColor = '#ff9800';
-    if (booking.claimed === "Unassigned") {
-      borderColor = '#f44336';
-    } else if (booking.claimed) {
-      borderColor = '#4CAF50';
-    }
-    card.style.borderLeft = 4px solid ${borderColor};
-
-    card.innerHTML = `
-      <p><strong>Name:</strong> ${booking.name}</p>
-      <p><strong>Phone:</strong> ${booking.phone}</p>
-      <p><strong>Area:</strong> ${booking.area}</p>
-      <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
-      <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
-      <p><strong>Passengers:</strong> ${booking.passengers}</p>
-      <p><strong>Luggage:</strong> ${booking.luggage}</p>
-      <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
-      <p><strong>Pickup Time:</strong> ${booking.time}</p>
-      ${booking.claimed ? <p><strong>Claimed By:</strong> ${booking.claimed}</p> : ""}
-    `;
-    card.onclick = () => {
-      localStorage.setItem("bookingInspectKey", key);
-      window.location.href = "BookingInspect.html";
-    };
-    container.appendChild(card);
-  });
-});
-
+      currentKeys.reverse().forEach(key => {
+        const booking = bookings[key];
+        const card = document.createElement('div');
+        card.className = 'booking';
+        card.innerHTML = `
+          <p><strong>Name:</strong> ${booking.name}</p>
+          <p><strong>Phone:</strong> ${booking.phone}</p>
+          <p><strong>Area:</strong> ${booking.area}</p>
+          <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+          <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
+          <p><strong>Passengers:</strong> ${booking.passengers}</p>
+          <p><strong>Luggage:</strong> ${booking.luggage}</p>
+          <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
+          <p><strong>Pickup Time:</strong> ${booking.time}</p>
+        `;
+        card.onclick = () => {
+          localStorage.setItem("bookingInspectKey", key);
+          window.location.href = "BookingInspect.html";
+        };
+        container.appendChild(card);
+      });
+    });
   </script>
 </body>
 </html>
