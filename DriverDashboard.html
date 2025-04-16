@@ -193,6 +193,14 @@
     let lastSnapshot = {};
     let userInteracted = false;
 
+    function unlockSounds() {
+  soundNew.play().then(() => soundNew.pause()).catch(() => {});
+  soundCancel.play().then(() => soundCancel.pause()).catch(() => {});
+  soundAmend.play().then(() => soundAmend.pause()).catch(() => {});
+  userInteracted = true;
+}
+
+
     document.addEventListener("click", () => userInteracted = true, { once: true });
     document.addEventListener("keydown", () => userInteracted = true, { once: true });
 
