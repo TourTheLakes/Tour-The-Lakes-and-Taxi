@@ -93,6 +93,7 @@
     const db = firebase.database();
 
     const bookingKey = localStorage.getItem("bookingInspectKey");
+    const driverName = localStorage.getItem("driverName") || "";
     const container = document.getElementById("bookingDetails");
 
     if (!bookingKey) {
@@ -105,6 +106,18 @@
           return;
         }
 
+        const claimedBy = booking.claimedBy || "unassigned";
+        const isClaimed = claimedBy !== "unassigned";
+        const isClaimedByCurrentDriver = claimedBy.toLowerCase() ===
+          driverName.toLowerCase();
+        
+if (isClaimed && !isClaimedByCurrentDriver) {
+  alert("This booking is already being handled by another driver.");
+  setTimeout(() => {
+  window.location.href = "DriverDashboard.html";
+  }, 200);
+  return;
+}
         container.innerHTML = `
           <p><strong>Name:</strong> ${booking.name}</p>
           <p><strong>Phone:</strong> ${booking.phone}</p>
@@ -115,19 +128,24 @@
           <p><strong>Luggage:</strong> ${booking.luggage}</p>
           <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
           <p><strong>Pickup Time:</strong> ${booking.time}</p>
+          ${isClaimed ? `<p><strong>Claimed By:</strong> ${claimedBy}</p>` : ``}
         `;
+        document.getElementById("acceptBtn").style.display = (!isClaimed) ?
+          "block" : "none";
+        document.getElementById("unassignBtn").style.display = 
+          (isClaimedByCurrentDriver) ? "block" : "none";
+        
       }).catch(err => {
         container.innerHTML = "<p>Error loading booking.</p>";
         console.error(err);
       });
     }
 
-    document.getElementById("acceptBtn").onclick = () => {
-      const driverName = localStorage.getItem("driverName") || "Unknown Driver";
-      db.ref("bookings/" + bookingKey + "/claimedBy").set(driverName).then(() => {
-        window.location.href = "DriverDashboard.html";
-      });
-    };
+document.getElementById("acceptBtn").onclick = () => {
+  db.ref("bookings/" + bookingKey + "/claimedBy").set(driverName).then(() => {
+    window.location.href = "DriverDashboard.html";
+  });
+};
 
 document.getElementById("unassignBtn").onclick = () => {
   db.ref("bookings/" + bookingKey + "/claimedBy").set("unassigned").then(() => {
