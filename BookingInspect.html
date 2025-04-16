@@ -124,13 +124,13 @@
 
     document.getElementById("acceptBtn").onclick = () => {
       const driverName = localStorage.getItem("driverName") || "Unknown Driver";
-      db.ref("bookings/" + bookingKey + "/claimed").set(driverName).then(() => {
+      db.ref("bookings/" + bookingKey + "/claimedBy").set(driverName).then(() => {
         window.location.href = "DriverDashboard.html";
       });
     };
 
     document.getElementById("unassignBtn").onclick = () => {
-      db.ref("bookings/" + bookingKey + "/claimed").remove().then(() => {
+      db.ref("bookings/" + bookingKey + "/claimedBy").remove().then(() => {
         window.location.href = "DriverDashboard.html";
       });
     };
