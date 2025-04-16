@@ -1,4 +1,3 @@
-<!-- UNCHANGED code returned in full to confirm working booking click-through -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,6 +87,15 @@
         padding: 10px;
       }
     }
+@keyframes flashBorder {
+  0% { border: 2px solid white; }
+  50% { border: 2px solid yellow; }
+  100% { border: 2px solid white; }
+}
+
+.flashing-border {
+  animation: flashBorder 1s infinite;
+}
 
      </style>
   
@@ -170,14 +178,20 @@
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
     unlockSounds(); // This enables autoplay
-    db.ref("driverStatus/" + driverDoor).set("Available");
+    db.ref("driverStatus/" + driverDoor).set("Available").then(() => {
+      document.getElementById("availableBtn").classList.add("flashing-border");
+      document.getElementById("busyBtn").classList.remove("flashing-border");
+    });
   }
 };
     
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
     unlockSounds(); // Re-activate just in case
-    db.ref("driverStatus/" + driverDoor).set("Busy");
+    db.ref("driverStatus/" + driverDoor).set("Busy").then(() => {
+      document.getElementById("busyBtn").classList.add("flashing-border");
+      document.getElementById("availableBtn").classList.remove("flashing-border");
+    });
   }
 };
     
@@ -188,8 +202,10 @@ document.getElementById("logoffBtn").onclick = () => {
       localStorage.removeItem("driverDoor");
       localStorage.removeItem("driverName");
       localStorage.removeItem("vehicle");
-      document.getElementById("availableBtn").classList.remove("pulsing");
-      document.getElementById("busyBtn").classList.remove("pulsing");
+document.getElementById("availableBtn").classList.remove("pulsing");
+document.getElementById("busyBtn").classList.remove("pulsing");
+document.getElementById("availableBtn").classList.remove("flashing-border");
+document.getElementById("busyBtn").classList.remove("flashing-border");
       window.location.href = "DriverLogin.html";
     });
   }
