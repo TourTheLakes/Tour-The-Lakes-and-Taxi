@@ -153,6 +153,12 @@
 </div>
 
 <script>
+
+  const phone = localStorage.getItem("returningPhoneNumber");
+  if (!phne) {
+    window.location.href = "ReturningCustomer.html";
+  }
+  
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
     authDomain: "tourthelakes-1e165.firebaseapp.com",
