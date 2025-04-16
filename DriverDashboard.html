@@ -374,18 +374,18 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   `;
   row.appendChild(claimedBox);
 
-  db.ref("drivers").once("value").then(snapshot => {
-    const drivers = snapshot.val();
-    for (const key in drivers) {
-      const driver = drivers[key];
-      if (driver.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
-        const phonePara = document.createElement("p");
-        phonePara.innerHTML = `<strong>Phone</strong> ${driver.phone}`;
-        claimedBox.inserBefore(phonePara, claimedBox.childern[1]);
-        break;
-      }
-    }
-  });
+db.ref("drivers").once("value").then(snapshot => {
+  const drivers = snapshot.val();
+  for (const key in drivers) {
+    const driver = drivers[key];
+    if (driver.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
+      const phonePara = document.createElement("p");
+      phonePara.innerHTML = <strong>Phone:</strong> ${driver.phone};
+      claimedBox.insertBefore(phonePara, claimedBox.children[1]);
+      break;
+    }
+  }
+});
 }
 
 container.appendChild(row);
