@@ -377,14 +377,14 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
 db.ref("drivers").once("value").then(snapshot => {
   const drivers = snapshot.val();
   for (const key in drivers) {
-    const driver = drivers[key];
-    if (driver.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
+    const d = drivers[key];
+    if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
       const phonePara = document.createElement("p");
-      phonePara.innerHTML = <strong>Phone:</strong> ${driver.phone};
+      phonePara.innerHTML = `<strong>${d.phone}</strong>`;
       claimedBox.insertBefore(phonePara, claimedBox.children[1]);
       break;
-    }
-  }
+    }
+  }
 });
 }
 
