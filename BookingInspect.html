@@ -129,11 +129,11 @@
       });
     };
 
-    document.getElementById("unassignBtn").onclick = () => {
-      db.ref("bookings/" + bookingKey + "/claimedBy").remove().then(() => {
-        window.location.href = "DriverDashboard.html";
-      });
-    };
+document.getElementById("unassignBtn").onclick = () => {
+  db.ref("bookings/" + bookingKey + "/claimedBy").set("unassigned").then(() => {
+    window.location.href = "DriverDashboard.html";
+  });
+};
 
     document.getElementById("returnBtn").onclick = () => {
       window.location.href = "DriverDashboard.html";
