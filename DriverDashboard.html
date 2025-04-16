@@ -190,11 +190,15 @@
     const soundCancel = document.getElementById('chimeCancel');
     const soundAmend = document.getElementById('chimeAmend');
 
-    let lastSnapshot = {};
-    let userInteracted = false;
+    // Pre-warm sounds with a silent trigger
+document.addEventListener("click", () => {
+  soundNew.play().then(() => soundNew.pause()).catch(() => {});
+  soundCancel.play().then(() => soundCancel.pause()).catch(() => {});
+  soundAmend.play().then(() => soundAmend.pause()).catch(() => {});
+}, { once: true });
+    
 
-    document.addEventListener("click", () => userInteracted = true, { once: true });
-    document.addEventListener("keydown", () => userInteracted = true, { once: true });
+    let lastSnapshot = {};
 
     function hashBooking(booking) {
       return JSON.stringify(booking);
