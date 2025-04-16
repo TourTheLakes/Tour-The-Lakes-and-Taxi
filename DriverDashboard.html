@@ -349,11 +349,11 @@ card.innerHTML = `
   <p><strong>Pickup Time:</strong> ${booking.time}</p>
 `;
 
-if (!booking.claimedBy || booking.claimedBy === "unasigned" ||
+if (!booking.claimedBy || booking.claimedBy === "unassigned" ||
     booking.claimedBy.toLowerCase() === driverName.toLowerCase()) {
   card.onclick = () => {
     localStorage.setItem("bookingInspectKey", key);
-    window.location.href = "BookingInspect.html;
+    window.location.href = "BookingInspect.html";
   };
 }
 
