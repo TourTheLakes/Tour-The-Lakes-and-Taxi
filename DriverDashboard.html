@@ -87,14 +87,26 @@
         padding: 10px;
       }
     }
-@keyframes flashBorder {
-  0% { background-color: #ffffff; color: black; }
-  50% { background-color: yellow; color: black; }
-  100% { background-color: #ffffff; color: black; }
+@keyframes pulseAvailable {
+  0% { background-color: #4CAF50; }
+  50% { background-color: #81C784; }
+  100% { background-color: #4CAF50; }
 }
 
-.flashing-border {
-animation: flashBorder 3s infinite;
+    @keyframes pulseBusy {
+  0% { background-color: #f44336; }
+  50% { background-color: #e57373; }
+  100% { background-color: #f44336; }
+}
+
+.flashing-available {
+animation: pulseAvailable 3s infinite;
+  color: white;
+}
+
+    .flashing-busy {
+animation: pulseBusy 3s infinite;
+  color: white;
 }
 
      </style>
@@ -158,11 +170,11 @@ animation: flashBorder 3s infinite;
   db.ref("driverStatus/" + driverDoor).once("value").then(snapshot => {
     const status = snapshot.val();
     if (status === "Available") {
-      document.getElementById("availableBtn").classList.add("flashing-border");
-      document.getElementById("busyBtn").classList.remove("flashing-border");
+      document.getElementById("availableBtn").classList.add("flashing-available");
+      document.getElementById("busyBtn").classList.remove("flashing-busy");
     } else if (status === "Busy") {
-      document.getElementById("busyBtn").classList.add("flashing-border");
-      document.getElementById("availableBtn").classList.remove("flashing-border");
+      document.getElementById("busyBtn").classList.add("flashing-busy");
+      document.getElementById("availableBtn").classList.remove("flashing-available");
     }
   });
 }
@@ -191,8 +203,8 @@ animation: flashBorder 3s infinite;
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
     unlockSounds(); // run immediately
-    document.getElementById("availableBtn").classList.add("flashing-button");
-    document.getElementById("busyBtn").classList.remove("flashing-buuton");
+    document.getElementById("availableBtn").classList.add("flashing-available");
+    document.getElementById("busyBtn").classList.remove("flashing-busy");
     db.ref("driverStatus/" + driverDoor).set("Available");
   }
 };
@@ -200,8 +212,8 @@ document.getElementById("availableBtn").onclick = () => {
 document.getElementById("busyBtn").onclick = () => {
   if (confirm("You are about to become Busy. Proceed?")) {
     unlockSounds(); // run immediately
-    document.getElementById("busyBtn").classList.add("flashing-button");
-    document.getElementById("availableBtn").classList.remove("flashing-button");
+    document.getElementById("busyBtn").classList.add("flashing-busy");
+    document.getElementById("availableBtn").classList.remove("flashing-available");
     db.ref("driverStatus/" + driverDoor).set("Busy");
   }
 };
@@ -213,10 +225,10 @@ document.getElementById("logoffBtn").onclick = () => {
       localStorage.removeItem("driverDoor");
       localStorage.removeItem("driverName");
       localStorage.removeItem("vehicle");
-document.getElementById("availableBtn").classList.remove("pulsing");
-document.getElementById("busyBtn").classList.remove("pulsing");
-document.getElementById("availableBtn").classList.remove("flashing-button");
-document.getElementById("busyBtn").classList.remove("flashing-button");
+      document.getElementById("availableBtn").classList.remove("pulsing");
+      document.getElementById("busyBtn").classList.remove("pulsing");
+      document.getElementById("availableBtn").classList.remove("flashing-available");
+      document.getElementById("busyBtn").classList.remove("flashing-busy");
       window.location.href = "DriverLogin.html";
     });
   }
