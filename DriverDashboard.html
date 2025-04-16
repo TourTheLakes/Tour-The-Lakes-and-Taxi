@@ -256,6 +256,13 @@
           window.location.href = "BookingInspect.html";
         };
         container.appendChild(card);
+if (booking.claimedBy === "unassigned") {
+  card.style.borderLeftColor = "#f44336"; // Red
+} else if (booking.claimedBy) {
+  card.style.borderLeftColor = "#4CAF50"; // Green
+} else {
+  card.style.borderLeftColor = "#ffbf00"; // Amber
+}
       });
     });
   </script>
