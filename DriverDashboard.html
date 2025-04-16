@@ -376,13 +376,12 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     for (const key in drivers) {
       const driver = drivers[key];
       if (driver.name === booking.claimedBy) {
-        claimedBox.innerHTML = `
-          <p><strong>Claimed By:</strong> ${driver.name}</p>
+        claimedBox.innerHTML = 
+          `<p><strong>Claimed By:</strong> ${driver.name}</p>
           <p><strong>Phone:</strong> ${driver.phone}</p>
           <p><strong>Vehicle:</strong> ${driver.vehicle.color} ${driver.vehicle.make}</p>
           <p><strong>Registration:</strong> ${driver.vehicle.registration}</p>
-          <p><strong>Seats:</strong> ${driver.vehicle.seats}</p>
-        `;
+          <p><strong>Seats:</strong> ${driver.vehicle.seats}</p>`;
         break;
       }
     }
