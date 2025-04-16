@@ -380,7 +380,7 @@ db.ref("drivers").once("value").then(snapshot => {
     const d = drivers[key];
     if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
       const phonePara = document.createElement("p");
-      phonePara.innerHTML = `<strong>${d.phone}</strong>`;
+      phonePara.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
       claimedBox.insertBefore(phonePara, claimedBox.children[1]);
       break;
     }
