@@ -286,7 +286,9 @@ document.getElementById("logoffBtn").onclick = () => {
   userInteracted = true;
 }
 
-
+    let userInteracted = false;
+    let lastSnapshot = {};
+    
     document.addEventListener("click", () => userInteracted = true, { once: true });
     document.addEventListener("keydown", () => userInteracted = true, { once: true });
 
@@ -294,6 +296,10 @@ document.getElementById("logoffBtn").onclick = () => {
       return JSON.stringify(booking);
     }
 
+    let driversCache = {};
+    db.ref("drivers").once("value").then(driverSnap => {
+      driversCache = driverSnap.val() || {};
+    
     db.ref("bookings").on("value", snapshot => {
       const bookings = snapshot.val() || {};
       const currentKeys = Object.keys(bookings);
@@ -366,8 +372,7 @@ if (booking.claimedBy === "unassigned") {
 }
 
 row.appendChild(card);
-
-// Only show claimed info box if booking is claimed
+        
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   const claimedBox = document.createElement("div");
   claimedBox.className = "claimed-info";
@@ -375,40 +380,26 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     <p><strong>Claimed By:</strong> ${booking.claimedBy}</p>
     <p style="margin-top: 15px;">This booking has been accepted and is now being handled by this driver.</p>
   `;
-  row.appendChild(claimedBox);
 
-db.ref("drivers").once("value").then(snapshot => {
-  const drivers = snapshot.val();
-  for (const key in drivers) {
-    const d = drivers[key];
+  for (const key in driversCache) {
+    const d = driversCache[key];
     if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
-      const phonePara = document.createElement("p");
-      phonePara.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
-      claimedBox.insertBefore(phonePara, claimedBox.children[1]);
-
-      const vehiclePara = document.createElement("p");
-      vehiclePara.innerHTML = `<strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}`;
-      claimedBox.insertBefore(vehiclePara, claimedBox.children[2]);
-
-      const regPara = document.createElement("p");
-      regPara.innerHTML = `<strong>Registration:</strong> ${d.vehicle.registration}`;
-      claimedBox.insertBefore(regPara, claimedBox.children[3]);
-
-      const seatsPara = document.createElement("p");
-      seatsPara.innerHTML = `<strong>Seats:</strong> ${d.vehicle.seats}`;
-      claimedBox.insertBefore(seatsPara, claimedBox.children[4]);
-      
+      claimedBox.insertAdjacentHTML("beforeend", `
+      <p><strong>Phone Number:</strong> ${d.phone}</p>
+      <p><strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}</p>
+      <p><strong>Registration:</strong> ${d.vehicle.registration}</p>
+      <p><strong>Seats:</strong> ${d.vehicle.seats}</p>
+      `);
       break;
     }
   }
-});
+  row.appendChild(claimedBox);
 }
-
-container.appendChild(row);
-
-
+        container.appendChild(row);
       });
     });
+   });
+    
   </script>
 </body>
 </html>
