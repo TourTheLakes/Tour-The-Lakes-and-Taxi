@@ -162,6 +162,8 @@
         const div = document.createElement("div");
         div.className = "booking";
         div.innerHTML = `
+        <div style="display: flex; flex-direction: row; gap: 20px;">
+         <div style="flex: 1;">   
           <p><strong>Name:</strong> ${booking.name}</p>
           <p><strong>Pickup:</strong> ${booking.pickup}</p>
           <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
@@ -170,11 +172,16 @@
             <button onclick="location.href='CustomerAmend.html?id=${id}'">Amend</button>
             <button onclick="cancelBooking('${id}')">Cancel</button>
           </div>
+        </div>
+      <div class="claimed-info" style="flex: 1;" id="claimedBox-${id}">
+          <p><em>Awaiting driver claim...</em></p>
+          </div>
+            </div>
         `;
 
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
-  const claimedBox = document.createElement("div");
-  claimedBox.className = "claimed-info";
+  const claimedBox = document.getElementById(`claimedBox-${id}`);
+if (claimedBox) claimedBox.className = "claimed-info";
   claimedBox.innerHTML = `<p><strong>Claimed By:</strong> ${booking.claimedBy}</p>`;
 
   db.ref("drivers").once("value").then(driverSnap => {
@@ -198,8 +205,6 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
       }
     }
   });
-
-  div.appendChild(claimedBox);
 }
         
         bookingSection.appendChild(div);
