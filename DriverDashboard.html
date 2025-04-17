@@ -358,22 +358,65 @@ document.getElementById("busyBtn").onclick = () => {
 };
     
 document.getElementById("logoffBtn").onclick = () => {
+  if (!driverDoor || !driverName) return;
+
   if (confirm("You are about to Log Off. Proceed?")) {
-    db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
-      localStorage.removeItem("driverVerifiedUntil");
-      localStorage.removeItem("driverDoor");
-      localStorage.removeItem("driverName");
-      localStorage.removeItem("vehicle");
-      document.getElementById("availableBtn").classList.remove("pulsing");
-      document.getElementById("busyBtn").classList.remove("pulsing");
-      document.getElementById("availableBtn").classList.remove("flashing-available");
-      document.getElementById("busyBtn").classList.remove("flashing-busy");
-      document.getElementById("driverGreeting").classList.remove("available", "busy");
-      document.getElementById("driverGreeting").classList.add("default");
-      window.location.href = "DriverLogin.html";
-    });
-  }
+    // Check shift first
+    db.ref("driverShifts/" + driverDoor).once("value").then(shiftSnap => {
+      const shift = shiftSnap.val() || {};
+
+      if (shift.until !== "19:00") {
+        // Check for future bookings during extended shift
+        db.ref("bookings").once("value").then(bookingsSnap => {
+          const bookings = bookingsSnap.val() || {};
+          const now = new Date();
+          let conflict = false;
+
+          for (const key in bookings) {
+            const b = bookings[key];
+            if (
+              b.claimedBy &&
+              b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
+              b.pickupType === "Scheduled" &&
+              b.time
+            ) {
+              const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
+              const bookingTime = new Date(`${bookingDate}T${b.time}`);
+              if (bookingTime > now) {
+                conflict = true;
+                break;
+              }
+            }
+          }
+
+          if (conflict) {
+            alert("You have a booking during your extended shift. Please handle it or press 'Finish Early' first.");
+          } else {
+            proceedLogoff(); // No conflict, allow logoff
+          }
+        });
+      } else {
+        proceedLogoff(); // Not extended, allow logoff
+      }
+    });
+  }
 };
+
+// Clean logoff function
+function proceedLogoff() {
+  db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
+    localStorage.removeItem("driverVerifiedUntil");
+    localStorage.removeItem("driverDoor");
+    localStorage.removeItem("driverName");
+    localStorage.removeItem("vehicle");
+    document.getElementById("availableBtn").classList.remove("pulsing", "flashing-available");
+    document.getElementById("busyBtn").classList.remove("pulsing", "flashing-busy");
+    document.getElementById("driverGreeting").classList.remove("available", "busy");
+    document.getElementById("driverGreeting").classList.add("default");
+    window.location.href = "DriverLogin.html";
+  });
+}
+
 
     const soundNew = document.getElementById('chimeNew');
     const soundCancel = document.getElementById('chimeCancel');
