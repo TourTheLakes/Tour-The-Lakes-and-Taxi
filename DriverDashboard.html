@@ -50,6 +50,10 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    #extendShiftBtn {
+      background-color: #4CAF50;
+      color: white;
+    }
     #availableBtn {
       background-color: #4CAF50;
       color: white;
@@ -59,6 +63,10 @@
       color: white;
     }
     #busyBtn {
+      background-color: #f44336;
+      color: white;
+    }
+    #finishEarlyBtn {
       background-color: #f44336;
       color: white;
     }
@@ -156,9 +164,11 @@ animation: pulseBusy 3s infinite;
     <h1>Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting default">Loading driver info...</div>
     <div class="status-buttons">
+      <button id="extendShiftBtn">Extend Shift</button>
       <button id="availableBtn">Available</button>
       <button id="logoffBtn">Log Off</button>
       <button id="busyBtn">Busy</button>
+      <button id="finishEarlyBtn">Finish Early</button>
     </div>
     <div id="bookingsContainer">
       <p>Loading bookings...</p>
@@ -176,18 +186,6 @@ animation: pulseBusy 3s infinite;
 
   <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
   <select id="shiftUntil"></select>
-
-  <button id="extendShiftBtn" style="margin-top: 15px; background-color:
-    #4CAF50; color: white; border: none; padding: 10px; border-radius: 6px;
-    cursor: pointer;">
-    Extend Shift
-  </button>
-
-  <button id="finishEarlyBtn" style="margin-top: 15px; background-color:
-    #f44336; color: white; border: none; padding: 10px; border-radius: 6px;
-    cursor: pointer;">
-    Finish Early
-  </button>
 </div>
   
   <audio id="chimeNew" preload="auto">
