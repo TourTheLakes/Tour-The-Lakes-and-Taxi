@@ -160,21 +160,10 @@ animation: pulseBusy 3s infinite;
   </script>
 </head>
 <body>
+  
   <div class="container">
     <h1>Driver Dashboard</h1>
     <div id="driverGreeting" class="greeting default">Loading driver info...</div>
-    <div class="status-buttons">
-      <button id="extendShiftBtn">Extend Shift</button>
-      <button id="availableBtn">Available</button>
-      <button id="logoffBtn">Log Off</button>
-      <button id="busyBtn">Busy</button>
-      <button id="finishEarlyBtn">Finish Early</button>
-    </div>
-    <div id="bookingsContainer">
-      <p>Loading bookings...</p>
-    </div>
-  </div>
-
 <div id="shiftControls" style="background: #f9f9f9; padding: 15px;
   border-radius: 8px; margin-bottom: 20px;">
   <p id="shiftStatus" style="margin: 0 0 10px 0;">
@@ -187,8 +176,20 @@ animation: pulseBusy 3s infinite;
   <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
   <select id="shiftUntil"></select>
 </div>
+    
+    <div class="status-buttons">
+      <button id="extendShiftBtn">Extend Shift</button>
+      <button id="availableBtn">Available</button>
+      <button id="logoffBtn">Log Off</button>
+      <button id="busyBtn">Busy</button>
+      <button id="finishEarlyBtn">Finish Early</button>
+    </div>
+    <div id="bookingsContainer">
+      <p>Loading bookings...</p>
+    </div>
+  </div>
   
-  <audio id="chimeNew" preload="auto">
+    <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
   </audio>
