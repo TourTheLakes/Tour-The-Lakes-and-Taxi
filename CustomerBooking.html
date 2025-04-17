@@ -207,7 +207,7 @@
         if (booking.claimedBy && booking.claimedBy !== "unassigned") {
           const claimedBox = document.createElement("div");
           claimedBox.className = "claimed-info";
-          claimedBox.innerHTML = <p><strong>Claimed By:</strong> ${booking.claimedBy}</p>;
+          claimedBox.innerHTML = `<p><strong>Claimed By:</strong> ${booking.claimedBy}</p>`;
 
           db.ref("drivers").once("value").then(driverSnap => {
             const drivers = driverSnap.val();
@@ -215,7 +215,7 @@
               const d = drivers[key];
               if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
                 const phoneLine = document.createElement("p");
-                phoneLine.innerHTML = <strong>Phone Number:</strong> ${d.phone};
+                phoneLine.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
                 claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
                 break;
               }
