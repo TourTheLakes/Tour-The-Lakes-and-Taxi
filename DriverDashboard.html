@@ -1,587 +1,701 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Driver Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #eef3f8;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      max-width: 800px;
-      width: 100%;
-      padding: 40px;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #0d2a45;
-    }
-    .greeting {
-      background: #ffffff;
-      border-left: 5px solid #0d2a45;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      font-size: 16px;
-    }
-    .status-buttons {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
-    .status-buttons button {
-      flex: 1;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #availableBtn {
-      background-color: #4CAF50;
-      color: white;
-    }
-    #logoffBtn {
-      background-color: #ff9800;
-      color: white;
-    }
-    #busyBtn {
-      background-color: #f44336;
-      color: white;
-    }
-    .booking {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      margin-bottom: 20px;
-      border-left: 4px solid #4CAF50;
-      cursor: pointer;
-    }
-    .booking:hover {
-      background-color: #f1f1f1;
-    }
-    .booking p {
-      margin: 8px 0;
-      font-size: 15px;
-    }
-    @media screen and (max-width: 600px) {
+  <head>
+    <meta charset="UTF-8" />
+    <title>Driver Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #eef3f8;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+      }
       .container {
+        max-width: 800px;
+        width: 100%;
+        padding: 40px;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #0d2a45;
+      }
+      .greeting {
+        background: #ffffff;
+        border-left: 5px solid #0d2a45;
         padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        font-size: 16px;
+      }
+      .status-buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 30px;
       }
       .status-buttons button {
-        font-size: 14px;
-        padding: 10px;
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
       }
-    }
-@keyframes pulseAvailable {
-  0% { background-color: #4CAF50; }
-  50% { background-color: #e8f5e9; }
-  100% { background-color: #4CAF50; }
-}
-    @keyframes pulseBusy {
-  0% { background-color: #f44336; }
-  50% { background-color: #ffebee; }
-  100% { background-color: #f44336; }
-}
-.flashing-available {
-animation: pulseAvailable 3s infinite;
-  color: white;
-}
-    .flashing-busy {
-animation: pulseBusy 3s infinite;
-  color: white;
-}
-    .greeting.default {
-      border-left: 5px solid #0d2a45;
-    }
-        .greeting.available {
-      border-left: 5px solid #4CAF50;
-    }
-        .greeting.busy {
-      border-left: 5px solid #f44336;
-    }
-
-    .booking-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 20px;
-    }
-
-    .booking-half {
-      width: 50%;
-    }
-
-    .claimed-info {
-      width: 50%;
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      border-left: 4px solid #0d2a45;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-      font-size: 15px;
-      color: #333;
-    }
-    
-
-     </style>
-  
-  <script>
-    const verifiedUntil = localStorage.getItem("driverVerifiedUntil");
-    if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
-      alert("Access denied or session expired. Please verify again.");
-      localStorage.removeItem("driverVerifiedUntil");
-      localStorage.removeItem("driverDoor");
-      localStorage.removeItem("driverName");
-      localStorage.removeItem("vehicle");
-      window.location.href = "DriverLogin.html";
-    }
-  </script>
-</head>
-<body>
-  <div class="container">
-    <h1>Driver Dashboard</h1>
-    <div id="driverGreeting" class="greeting default">Loading driver info...</div>
-    <div class="status-buttons">
-      <button id="availableBtn">Available</button>
-      <button id="logoffBtn">Log Off</button>
-      <button id="busyBtn">Busy</button>
-    </div>
-    <div id="bookingsContainer">
-      <p>Loading bookings...</p>
-    </div>
-  </div>
-
-<div id="shiftControls" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-  <p id="shiftStatus" style="margin: 0 0 10px 0;">
-    Loading your schedule...
-  </p>
-
-  <label for="shiftFrom">From:</label>
-  <select id="shiftFrom"></select>
-
-  <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
-  <select id="shiftUntil"></select>
-
-  <button id="finishEarlyBtn" style="margin-top: 15px; background-color: #f44336; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
-    Finish Early
-  </button>
-</div>
-
-  
-  <audio id="chimeNew" preload="auto">
-    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="chimeCancel" preload="auto">
-    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="chimeAmend" preload="auto">
-    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3" type="audio/mpeg">
-  </audio>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
-      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-      projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
-      messagingSenderId: "470758171431",
-      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-const shiftFrom = document.getElementById("shiftFrom");
-const shiftUntil = document.getElementById("shiftUntil");
-const shiftStatus = document.getElementById("shiftStatus");
-
-// Fill both dropdowns with 00:00 to 23:00
-function populateShiftDropdowns() {
-  for (let h = 0; h <= 23; h++) {
-    const label = h.toString().padStart(2, "0") + ":00";
-    shiftFrom.appendChild(new Option(label, label));
-    shiftUntil.appendChild(new Option(label, label));
-  }
-
-  shiftFrom.value = "09:00";
-  shiftUntil.value = "19:00";
-  updateShiftStatus();
-}
-
-populateShiftDropdowns();
-
-// Update the visual status message
-function updateShiftStatus() {
-  const from = shiftFrom.value;
-  const until = shiftUntil.value;
-  shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong> - <strong>${until}</strong>. To extend your hours, select below:`;
-}
-
-// Save to Firebase, but only if valid
-function saveShiftToFirebase() {
-  const from = shiftFrom.value;
-  const until = shiftUntil.value;
-
-  if (!isValidShift(from, until)) {
-    alert("Invalid time range. 'Until' must be later than 'From'.");
-    return;
-  }
-
-  if (!driverDoor) return;
-
-  db.ref("driverShifts/" + driverDoor).set({
-    from: from,
-    until: until
-  }).then(() => {
-    updateShiftStatus();
-  });
-}
-
-// Prevent invalid time ranges
-function isValidShift(from, until) {
-  const [fH] = from.split(":").map(Number);
-  const [uH] = until.split(":").map(Number);
-  return fH < uH;
-}
-
-shiftFrom.addEventListener("change", () => {
-  if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
-    alert("Start time must be before end time.");
-    shiftFrom.value = "09:00";
-  }
-  saveShiftToFirebase();
-});
-
-shiftUntil.addEventListener("change", () => {
-  if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
-    alert("End time must be after start time.");
-    shiftUntil.value = "19:00";
-  }
-  saveShiftToFirebase();
-});
-
-// Load saved shift
-if (driverDoor) {
-  db.ref("driverShifts/" + driverDoor).once("value").then(snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      shiftFrom.value = data.from || "09:00";
-      shiftUntil.value = data.until || "19:00";
-    } else {
-      shiftFrom.value = "09:00";
-      shiftUntil.value = "19:00";
-    }
-    updateShiftStatus();
-  });
-}
-
-
- const finishEarlyBtn = document.getElementById("finishEarlyBtn");
-
-finishEarlyBtn.addEventListener("click", function () {
-  if (!driverDoor || !driverName) return;
-
-  db.ref("bookings").once("value").then(snapshot => {
-    const bookings = snapshot.val() || {};
-    const now = new Date();
-    let conflict = false;
-
-    for (const key in bookings) {
-      const b = bookings[key];
-      if (
-        b.claimedBy &&
-        b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
-        b.pickupType === "Scheduled" &&
-        b.time
-      ) {
-        const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
-        const bookingTime = new Date(`${bookingDate}T${b.time}`);
-        if (bookingTime > now) {
-          conflict = true;
-          break;
+      #availableBtn {
+        background-color: #4caf50;
+        color: white;
+      }
+      #logoffBtn {
+        background-color: #ff9800;
+        color: white;
+      }
+      #busyBtn {
+        background-color: #f44336;
+        color: white;
+      }
+      .booking {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 20px;
+        border-left: 4px solid #4caf50;
+        cursor: pointer;
+      }
+      .booking:hover {
+        background-color: #f1f1f1;
+      }
+      .booking p {
+        margin: 8px 0;
+        font-size: 15px;
+      }
+      @media screen and (max-width: 600px) {
+        .container {
+          padding: 20px;
+        }
+        .status-buttons button {
+          font-size: 14px;
+          padding: 10px;
         }
       }
-    }
+      @keyframes pulseAvailable {
+        0% {
+          background-color: #4caf50;
+        }
+        50% {
+          background-color: #e8f5e9;
+        }
+        100% {
+          background-color: #4caf50;
+        }
+      }
+      @keyframes pulseBusy {
+        0% {
+          background-color: #f44336;
+        }
+        50% {
+          background-color: #ffebee;
+        }
+        100% {
+          background-color: #f44336;
+        }
+      }
+      .flashing-available {
+        animation: pulseAvailable 3s infinite;
+        color: white;
+      }
+      .flashing-busy {
+        animation: pulseBusy 3s infinite;
+        color: white;
+      }
+      .greeting.default {
+        border-left: 5px solid #0d2a45;
+      }
+      .greeting.available {
+        border-left: 5px solid #4caf50;
+      }
+      .greeting.busy {
+        border-left: 5px solid #f44336;
+      }
 
-    if (conflict) {
-      alert("There is a booking that prevents you from finishing early.");
-    } else {
-      db.ref("driverShifts/" + driverDoor).set({
-        from: "09:00",
-        until: "19:00"
-      }).then(() => {
-        shiftFrom.value = "09:00";
-        shiftUntil.value = "19:00";
-        alert("Shift reverted to standard hours.");
-      });
-    }
-  });
-});
-   
+      .booking-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+      }
 
-    if (driverDoor) {
-  db.ref("driverStatus/" + driverDoor).once("value").then(snapshot => {
-    const status = snapshot.val();
-    if (status === "Available") {
-      document.getElementById("availableBtn").classList.add("flashing-available");
-      document.getElementById("busyBtn").classList.remove("flashing-busy");
-    } else if (status === "Busy") {
-      document.getElementById("busyBtn").classList.add("flashing-busy");
-      document.getElementById("availableBtn").classList.remove("flashing-available");
-    }
-  });
-}
+      .booking-half {
+        width: 50%;
+      }
 
-    if (!driverDoor || !driverName) {
-      greetingEl.innerHTML = "No driver is logged in.";
-    } else {
-      db.ref("drivers").once("value").then(snapshot => {
-        const drivers = snapshot.val();
-        for (const key in drivers) {
-          const d = drivers[key];
-          if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-            greetingEl.innerHTML = `
+      .claimed-info {
+        width: 50%;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        border-left: 4px solid #0d2a45;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        font-size: 15px;
+        color: #333;
+      }
+    </style>
+
+    <script>
+      const verifiedUntil = localStorage.getItem("driverVerifiedUntil")
+      if (!verifiedUntil || Date.now() > parseInt(verifiedUntil)) {
+        alert("Access denied or session expired. Please verify again.")
+        localStorage.removeItem("driverVerifiedUntil")
+        localStorage.removeItem("driverDoor")
+        localStorage.removeItem("driverName")
+        localStorage.removeItem("vehicle")
+        window.location.href = "DriverLogin.html"
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Driver Dashboard</h1>
+      <div id="driverGreeting" class="greeting default">
+        Loading driver info...
+      </div>
+      <div class="status-buttons">
+        <button id="availableBtn">Available</button>
+        <button id="logoffBtn">Log Off</button>
+        <button id="busyBtn">Busy</button>
+      </div>
+      <div id="bookingsContainer">
+        <p>Loading bookings...</p>
+      </div>
+    </div>
+
+    <div
+      id="shiftControls"
+      style="
+        background: #f9f9f9;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      "
+    >
+      <p id="shiftStatus" style="margin: 0 0 10px 0">
+        Loading your schedule...
+      </p>
+
+      <label for="shiftFrom">From:</label>
+      <select id="shiftFrom"></select>
+
+      <label for="shiftUntil" style="margin-left: 10px">Until:</label>
+      <select id="shiftUntil"></select>
+
+      <button
+        id="finishEarlyBtn"
+        style="
+          margin-top: 15px;
+          background-color: #f44336;
+          color: white;
+          border: none;
+          padding: 10px;
+          border-radius: 6px;
+          cursor: pointer;
+        "
+      >
+        Finish Early
+      </button>
+    </div>
+
+    <audio id="chimeNew" preload="auto">
+      <source
+        src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg"
+        type="audio/ogg"
+      />
+      <source
+        src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+    <audio id="chimeCancel" preload="auto">
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"
+        type="audio/ogg"
+      />
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+    <audio id="chimeAmend" preload="auto">
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"
+        type="audio/ogg"
+      />
+      <source
+        src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.mp3"
+        type="audio/mpeg"
+      />
+    </audio>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+        authDomain: "tourthelakes-1e165.firebaseapp.com",
+        databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+        projectId: "tourthelakes-1e165",
+        storageBucket: "tourthelakes-1e165.appspot.com",
+        messagingSenderId: "470758171431",
+        appId: "1:470758171431:web:f06dd39b0f15b63b2bff02",
+      }
+      firebase.initializeApp(firebaseConfig)
+      const db = firebase.database()
+
+      const shiftFrom = document.getElementById("shiftFrom")
+      const shiftUntil = document.getElementById("shiftUntil")
+      const shiftStatus = document.getElementById("shiftStatus")
+
+      // Fill both dropdowns with 00:00 to 23:00
+      function populateShiftDropdowns() {
+        for (let h = 0; h <= 23; h++) {
+          const label = h.toString().padStart(2, "0") + ":00"
+          shiftFrom.appendChild(new Option(label, label))
+          shiftUntil.appendChild(new Option(label, label))
+        }
+
+        shiftFrom.value = "09:00"
+        shiftUntil.value = "19:00"
+        updateShiftStatus()
+      }
+
+      populateShiftDropdowns()
+
+      // Update the visual status message
+      function updateShiftStatus() {
+        const from = shiftFrom.value
+        const until = shiftUntil.value
+        shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong> - <strong>${until}</strong>. To extend your hours, select below:`
+      }
+
+      // Save to Firebase, but only if valid
+      function saveShiftToFirebase() {
+        const from = shiftFrom.value
+        const until = shiftUntil.value
+
+        if (!isValidShift(from, until)) {
+          alert("Invalid time range. 'Until' must be later than 'From'.")
+          return
+        }
+
+        if (!driverDoor) return
+
+        db.ref("driverShifts/" + driverDoor)
+          .set({
+            from: from,
+            until: until,
+          })
+          .then(() => {
+            updateShiftStatus()
+          })
+      }
+
+      // Prevent invalid time ranges
+      function isValidShift(from, until) {
+        const [fH] = from.split(":").map(Number)
+        const [uH] = until.split(":").map(Number)
+        return fH < uH
+      }
+
+      shiftFrom.addEventListener("change", () => {
+        if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+          alert("Start time must be before end time.")
+          shiftFrom.value = "09:00"
+        }
+        saveShiftToFirebase()
+      })
+
+      shiftUntil.addEventListener("change", () => {
+        if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+          alert("End time must be after start time.")
+          shiftUntil.value = "19:00"
+        }
+        saveShiftToFirebase()
+      })
+
+      // Load saved shift
+      if (driverDoor) {
+        db.ref("driverShifts/" + driverDoor)
+          .once("value")
+          .then((snapshot) => {
+            const data = snapshot.val()
+            if (data) {
+              shiftFrom.value = data.from || "09:00"
+              shiftUntil.value = data.until || "19:00"
+            } else {
+              shiftFrom.value = "09:00"
+              shiftUntil.value = "19:00"
+            }
+            updateShiftStatus()
+          })
+      }
+
+      const finishEarlyBtn = document.getElementById("finishEarlyBtn")
+
+      finishEarlyBtn.addEventListener("click", function () {
+        if (!driverDoor || !driverName) return
+
+        db.ref("bookings")
+          .once("value")
+          .then((snapshot) => {
+            const bookings = snapshot.val() || {}
+            const now = new Date()
+            let conflict = false
+
+            for (const key in bookings) {
+              const b = bookings[key]
+              if (
+                b.claimedBy &&
+                b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
+                b.pickupType === "Scheduled" &&
+                b.time
+              ) {
+                const bookingDate =
+                  b.pickupDate || new Date().toISOString().split("T")[0]
+                const bookingTime = new Date(`${bookingDate}T${b.time}`)
+                if (bookingTime > now) {
+                  conflict = true
+                  break
+                }
+              }
+            }
+
+            if (conflict) {
+              alert(
+                "There is a booking that prevents you from finishing early.",
+              )
+            } else {
+              db.ref("driverShifts/" + driverDoor)
+                .set({
+                  from: "09:00",
+                  until: "19:00",
+                })
+                .then(() => {
+                  shiftFrom.value = "09:00"
+                  shiftUntil.value = "19:00"
+                  alert("Shift reverted to standard hours.")
+                })
+            }
+          })
+      })
+
+      if (driverDoor) {
+        db.ref("driverStatus/" + driverDoor)
+          .once("value")
+          .then((snapshot) => {
+            const status = snapshot.val()
+            if (status === "Available") {
+              document
+                .getElementById("availableBtn")
+                .classList.add("flashing-available")
+              document
+                .getElementById("busyBtn")
+                .classList.remove("flashing-busy")
+            } else if (status === "Busy") {
+              document.getElementById("busyBtn").classList.add("flashing-busy")
+              document
+                .getElementById("availableBtn")
+                .classList.remove("flashing-available")
+            }
+          })
+      }
+
+      if (!driverDoor || !driverName) {
+        greetingEl.innerHTML = "No driver is logged in."
+      } else {
+        db.ref("drivers")
+          .once("value")
+          .then((snapshot) => {
+            const drivers = snapshot.val()
+            for (const key in drivers) {
+              const d = drivers[key]
+              if (
+                d.doorCard === driverDoor &&
+                d.name.toLowerCase() === driverName.toLowerCase()
+              ) {
+                greetingEl.innerHTML = `
               Hi, <strong>${d.name}</strong>. Today you're in a
               <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
               up to <strong>${d.vehicle.seats}</strong> passengers.
               Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.
-            `;
-            break;
-          }
-        }
-      });
-    }
-
-document.getElementById("availableBtn").onclick = () => {
-  if (confirm("You are about to become Available. Proceed?")) {
-    unlockSounds(); // run immediately
-    document.getElementById("availableBtn").classList.add("flashing-available");
-    document.getElementById("busyBtn").classList.remove("flashing-busy");
-    db.ref("driverStatus/" + driverDoor).set("Available");
-
-    const greeting = document.getElementById("driverGreeting");
-    greeting.classList.remove("default", "busy");
-    greeting.classList.add("available");
-  }
-};
-    
-document.getElementById("busyBtn").onclick = () => {
-  if (confirm("You are about to become Busy. Proceed?")) {
-    unlockSounds(); // run immediately
-    document.getElementById("busyBtn").classList.add("flashing-busy");
-    document.getElementById("availableBtn").classList.remove("flashing-available");
-    db.ref("driverStatus/" + driverDoor).set("Busy");
-
-    const greeting = document.getElementById("driverGreeting");
-    greeting.classList.remove("default", "available");
-    greeting.classList.add("busy");
-  }
-};
-    
-document.getElementById("logoffBtn").onclick = () => {
-  if (!driverDoor || !driverName) return;
-
-  if (confirm("You are about to Log Off. Proceed?")) {
-    // Check shift first
-    db.ref("driverShifts/" + driverDoor).once("value").then(shiftSnap => {
-      const shift = shiftSnap.val() || {};
-
-      if (shift.until !== "19:00") {
-        // Check for future bookings during extended shift
-        db.ref("bookings").once("value").then(bookingsSnap => {
-          const bookings = bookingsSnap.val() || {};
-          const now = new Date();
-          let conflict = false;
-
-          for (const key in bookings) {
-            const b = bookings[key];
-            if (
-              b.claimedBy &&
-              b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
-              b.pickupType === "Scheduled" &&
-              b.time
-            ) {
-              const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
-              const bookingTime = new Date(`${bookingDate}T${b.time}`);
-              if (bookingTime > now) {
-                conflict = true;
-                break;
+            `
+                break
               }
             }
-          }
-
-          if (conflict) {
-            alert("You have a booking during your extended shift. Please handle it or press 'Finish Early' first.");
-          } else {
-            proceedLogoff(); // No conflict, allow logoff
-          }
-        });
-      } else {
-        proceedLogoff(); // Not extended, allow logoff
+          })
       }
-    });
-  }
-};
 
-// Clean logoff function
-function proceedLogoff() {
-  db.ref("driverStatus/" + driverDoor).set("Logged Off").then(() => {
-    localStorage.removeItem("driverVerifiedUntil");
-    localStorage.removeItem("driverDoor");
-    localStorage.removeItem("driverName");
-    localStorage.removeItem("vehicle");
-    document.getElementById("availableBtn").classList.remove("pulsing", "flashing-available");
-    document.getElementById("busyBtn").classList.remove("pulsing", "flashing-busy");
-    document.getElementById("driverGreeting").classList.remove("available", "busy");
-    document.getElementById("driverGreeting").classList.add("default");
-    window.location.href = "DriverLogin.html";
-  });
-}
+      document.getElementById("availableBtn").onclick = () => {
+        if (confirm("You are about to become Available. Proceed?")) {
+          unlockSounds() // run immediately
+          document
+            .getElementById("availableBtn")
+            .classList.add("flashing-available")
+          document.getElementById("busyBtn").classList.remove("flashing-busy")
+          db.ref("driverStatus/" + driverDoor).set("Available")
 
-
-    const soundNew = document.getElementById('chimeNew');
-    const soundCancel = document.getElementById('chimeCancel');
-    const soundAmend = document.getElementById('chimeAmend');
-
-    let lastSnapshot = {};
-    let userInteracted = false;
-
-    function unlockSounds() {
-  soundNew.play().then(() => soundNew.pause()).catch(() => {});
-  soundCancel.play().then(() => soundCancel.pause()).catch(() => {});
-  soundAmend.play().then(() => soundAmend.pause()).catch(() => {});
-  userInteracted = true;
-}
-
-    
-    document.addEventListener("click", () => userInteracted = true, { once: true });
-    document.addEventListener("keydown", () => userInteracted = true, { once: true });
-
-    function hashBooking(booking) {
-      return JSON.stringify(booking);
-    }
-
-    let driversCache = {};
-    db.ref("drivers").once("value").then(driverSnap => {
-      driversCache = driverSnap.val() || {};
-    
-    db.ref("bookings").on("value", snapshot => {
-      const bookings = snapshot.val() || {};
-      const currentKeys = Object.keys(bookings);
-      const lastKeys = Object.keys(lastSnapshot);
-      let played = false;
-
-      if (userInteracted) {
-        for (const key of currentKeys) {
-          if (!lastSnapshot[key]) {
-            soundNew.play();
-            played = true;
-            break;
-          } else if (hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])) {
-            soundAmend.play();
-            played = true;
-            break;
-          }
+          const greeting = document.getElementById("driverGreeting")
+          greeting.classList.remove("default", "busy")
+          greeting.classList.add("available")
         }
-        if (!played) {
-          for (const key of lastKeys) {
-            if (!bookings[key]) {
-              soundCancel.play();
-              break;
+      }
+
+      document.getElementById("busyBtn").onclick = () => {
+        if (confirm("You are about to become Busy. Proceed?")) {
+          unlockSounds() // run immediately
+          document.getElementById("busyBtn").classList.add("flashing-busy")
+          document
+            .getElementById("availableBtn")
+            .classList.remove("flashing-available")
+          db.ref("driverStatus/" + driverDoor).set("Busy")
+
+          const greeting = document.getElementById("driverGreeting")
+          greeting.classList.remove("default", "available")
+          greeting.classList.add("busy")
+        }
+      }
+
+      document.getElementById("logoffBtn").onclick = () => {
+        if (!driverDoor || !driverName) return
+
+        if (confirm("You are about to Log Off. Proceed?")) {
+          // Check shift first
+          db.ref("driverShifts/" + driverDoor)
+            .once("value")
+            .then((shiftSnap) => {
+              const shift = shiftSnap.val() || {}
+
+              if (shift.until !== "19:00") {
+                // Check for future bookings during extended shift
+                db.ref("bookings")
+                  .once("value")
+                  .then((bookingsSnap) => {
+                    const bookings = bookingsSnap.val() || {}
+                    const now = new Date()
+                    let conflict = false
+
+                    for (const key in bookings) {
+                      const b = bookings[key]
+                      if (
+                        b.claimedBy &&
+                        b.claimedBy.toLowerCase() ===
+                          driverName.toLowerCase() &&
+                        b.pickupType === "Scheduled" &&
+                        b.time
+                      ) {
+                        const bookingDate =
+                          b.pickupDate || new Date().toISOString().split("T")[0]
+                        const bookingTime = new Date(`${bookingDate}T${b.time}`)
+                        if (bookingTime > now) {
+                          conflict = true
+                          break
+                        }
+                      }
+                    }
+
+                    if (conflict) {
+                      alert(
+                        "You have a booking during your extended shift. Please handle it or press 'Finish Early' first.",
+                      )
+                    } else {
+                      proceedLogoff() // No conflict, allow logoff
+                    }
+                  })
+              } else {
+                proceedLogoff() // Not extended, allow logoff
+              }
+            })
+        }
+      }
+
+      // Clean logoff function
+      function proceedLogoff() {
+        db.ref("driverStatus/" + driverDoor)
+          .set("Logged Off")
+          .then(() => {
+            localStorage.removeItem("driverVerifiedUntil")
+            localStorage.removeItem("driverDoor")
+            localStorage.removeItem("driverName")
+            localStorage.removeItem("vehicle")
+            document
+              .getElementById("availableBtn")
+              .classList.remove("pulsing", "flashing-available")
+            document
+              .getElementById("busyBtn")
+              .classList.remove("pulsing", "flashing-busy")
+            document
+              .getElementById("driverGreeting")
+              .classList.remove("available", "busy")
+            document.getElementById("driverGreeting").classList.add("default")
+            window.location.href = "DriverLogin.html"
+          })
+      }
+
+      const soundNew = document.getElementById("chimeNew")
+      const soundCancel = document.getElementById("chimeCancel")
+      const soundAmend = document.getElementById("chimeAmend")
+
+      let lastSnapshot = {}
+      let userInteracted = false
+
+      function unlockSounds() {
+        soundNew
+          .play()
+          .then(() => soundNew.pause())
+          .catch(() => {})
+        soundCancel
+          .play()
+          .then(() => soundCancel.pause())
+          .catch(() => {})
+        soundAmend
+          .play()
+          .then(() => soundAmend.pause())
+          .catch(() => {})
+        userInteracted = true
+      }
+
+      document.addEventListener("click", () => (userInteracted = true), {
+        once: true,
+      })
+      document.addEventListener("keydown", () => (userInteracted = true), {
+        once: true,
+      })
+
+      function hashBooking(booking) {
+        return JSON.stringify(booking)
+      }
+
+      let driversCache = {}
+      db.ref("drivers")
+        .once("value")
+        .then((driverSnap) => {
+          driversCache = driverSnap.val() || {}
+
+          db.ref("bookings").on("value", (snapshot) => {
+            const bookings = snapshot.val() || {}
+            const currentKeys = Object.keys(bookings)
+            const lastKeys = Object.keys(lastSnapshot)
+            let played = false
+
+            if (userInteracted) {
+              for (const key of currentKeys) {
+                if (!lastSnapshot[key]) {
+                  soundNew.play()
+                  played = true
+                  break
+                } else if (
+                  hashBooking(bookings[key]) !== hashBooking(lastSnapshot[key])
+                ) {
+                  soundAmend.play()
+                  played = true
+                  break
+                }
+              }
+              if (!played) {
+                for (const key of lastKeys) {
+                  if (!bookings[key]) {
+                    soundCancel.play()
+                    break
+                  }
+                }
+              }
             }
-          }
-        }
-      }
 
-      lastSnapshot = bookings;
-      container.innerHTML = "";
+            lastSnapshot = bookings
+            container.innerHTML = ""
 
-      if (!currentKeys.length) {
-        container.innerHTML = "<p>No bookings received yet.</p>";
-        return;
-      }
+            if (!currentKeys.length) {
+              container.innerHTML = "<p>No bookings received yet.</p>"
+              return
+            }
 
-      currentKeys.reverse().forEach(key => {
-        const booking = bookings[key];
-const row = document.createElement('div');
-row.className = booking.claimedBy ? 'booking-row' : '';
+            currentKeys.reverse().forEach((key) => {
+              const booking = bookings[key]
+              const row = document.createElement("div")
+              row.className = booking.claimedBy ? "booking-row" : ""
 
-const card = document.createElement('div');
-card.className = booking.claimedBy ? 'booking booking-half' : 'booking';
-card.innerHTML = `
+              const card = document.createElement("div")
+              card.className = booking.claimedBy
+                ? "booking booking-half"
+                : "booking"
+              card.innerHTML = `
   <p><strong>Name:</strong> ${booking.name}</p>
   <p><strong>Phone:</strong> ${booking.phone}</p>
   <p><strong>Area:</strong> ${booking.area}</p>
-  <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? ' (' + booking.extra + ')' : ''}</p>
+  <p><strong>Pickup:</strong> ${booking.pickup}${booking.extra ? " (" + booking.extra + ")" : ""}</p>
   <p><strong>Drop-off:</strong> ${booking.dropoff}</p>
   <p><strong>Passengers:</strong> ${booking.passengers}</p>
   <p><strong>Luggage:</strong> ${booking.luggage}</p>
   <p><strong>Travelling with Pet:</strong> ${booking.pets}</p>
   <p><strong>Pickup Time:</strong> ${booking.time}</p>
-`;
+`
 
-if (!booking.claimedBy || booking.claimedBy === "unassigned" ||
-    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) {
-  card.onclick = () => {
-    localStorage.setItem("bookingInspectKey", key);
-    window.location.href = "BookingInspect.html";
-  };
-}
+              if (
+                !booking.claimedBy ||
+                booking.claimedBy === "unassigned" ||
+                booking.claimedBy.toLowerCase() === driverName.toLowerCase()
+              ) {
+                card.onclick = () => {
+                  localStorage.setItem("bookingInspectKey", key)
+                  window.location.href = "BookingInspect.html"
+                }
+              }
 
-if (booking.claimedBy === "unassigned") {
-  card.style.borderLeftColor = "#f44336";
-} else if (booking.claimedBy) {
-  card.style.borderLeftColor = "#4CAF50";
-} else {
-  card.style.borderLeftColor = "#ffbf00";
-}
+              if (booking.claimedBy === "unassigned") {
+                card.style.borderLeftColor = "#f44336"
+              } else if (booking.claimedBy) {
+                card.style.borderLeftColor = "#4CAF50"
+              } else {
+                card.style.borderLeftColor = "#ffbf00"
+              }
 
-row.appendChild(card);
-        
-if (booking.claimedBy && booking.claimedBy !== "unassigned") {
-  const claimedBox = document.createElement("div");
-  claimedBox.className = "claimed-info";
-  claimedBox.innerHTML = `
+              row.appendChild(card)
+
+              if (booking.claimedBy && booking.claimedBy !== "unassigned") {
+                const claimedBox = document.createElement("div")
+                claimedBox.className = "claimed-info"
+                claimedBox.innerHTML = `
     <p><strong>Claimed By:</strong> ${booking.claimedBy}</p>
     <p style="margin-top: 15px;">This booking has been accepted and is now being handled by this driver.</p>
-  `;
+  `
 
-  for (const key in driversCache) {
-    const d = driversCache[key];
-    if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
-      claimedBox.insertAdjacentHTML("beforeend", `
+                for (const key in driversCache) {
+                  const d = driversCache[key]
+                  if (
+                    d.name.toLowerCase() === booking.claimedBy.toLowerCase()
+                  ) {
+                    claimedBox.insertAdjacentHTML(
+                      "beforeend",
+                      `
       <p><strong>Phone Number:</strong> ${d.phone}</p>
       <p><strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}</p>
       <p><strong>Registration:</strong> ${d.vehicle.registration}</p>
       <p><strong>Seats:</strong> ${d.vehicle.seats}</p>
-      `);
-      break;
-    }
-  }
-  row.appendChild(claimedBox);
-}
-        container.appendChild(row);
-    });
-  });
-});
-    
-  </script>
-</body>
+      `,
+                    )
+                    break
+                  }
+                }
+                row.appendChild(claimedBox)
+              }
+              container.appendChild(row)
+            })
+          })
+        })
+    </script>
+  </body>
 </html>
