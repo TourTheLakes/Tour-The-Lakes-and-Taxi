@@ -184,6 +184,15 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
       if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
         const phoneLine = document.createElement("p");
         phoneLine.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
+        const vehicleLine = document.createElement("p");
+        vehicleLine.innerHTML = `<strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make} ${d.vehicle.model}`;
+        const regLine = document.createElement("p");
+        regLine.innerHTML = `<strong>Registration:</strong> ${d.vehicle.registration}`;
+        const seatsLine = document.createElement("p");
+        seatsLine.innerHTML = `<strong>Seats:</strong> ${d.vehicle.seats}`; 
+        claimedBox.insertBefore(seatsLine, claimedBox.children[1]);
+        claimedBox.insertBefore(regLine, claimedBox.children[1]);
+        claimedBox.insertBefore(vehicleLine, claimedBox.children[1]);
         claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
         break;
       }
