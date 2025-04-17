@@ -217,6 +217,12 @@
                 const phoneLine = document.createElement("p");
                 phoneLine.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
                 claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
+
+                const summaryLine = document.createElement("p");
+                summaryLine.style.marginTop = "10px";
+                summaryLine.innerHTML = `<strong>${d.name}</strong> is currently in a <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> with the capacity to carry up to <strong>${d.vehicle.seats}</strong> passengers. Vehicle registration <strong>${d.vehicle.registration}</strong>`;
+                   claimedBox.insertBefore(summaryLine, phoneLine.nextSibling);
+                
                 break;
               }
             }
