@@ -177,31 +177,18 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   claimedBox.className = "claimed-info";
   claimedBox.innerHTML = `<p><strong>Claimed By:</strong> ${booking.claimedBy}</p>`;
 
-db.ref("drivers").once("value").then(snapshot => {
-  const drivers = snapshot.val();
-  for (const key in drivers) {
-    const d = drivers[key];
-    if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
-      const phonePara = document.createElement("p");
-      phonePara.innerHTML = <strong>Phone Number:</strong> ${d.phone};
-      claimedBox.insertBefore(phonePara, claimedBox.children[1]);
-
-      const vehiclePara = document.createElement("p");
-      vehiclePara.innerHTML = <strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make};
-      claimedBox.insertBefore(vehiclePara, claimedBox.children[2]);
-
-      const regPara = document.createElement("p");
-      regPara.innerHTML = <strong>Registration:</strong> ${d.vehicle.registration};
-      claimedBox.insertBefore(regPara, claimedBox.children[3]);
-
-      const seatsPara = document.createElement("p");
-      seatsPara.innerHTML = <strong>Seats:</strong> ${d.vehicle.seats};
-      claimedBox.insertBefore(seatsPara, claimedBox.children[4]);
-
-      break;
-    }
-  }
-});
+  db.ref("drivers").once("value").then(driverSnap => {
+    const drivers = driverSnap.val();
+    for (const key in drivers) {
+      const d = drivers[key];
+      if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
+        const phoneLine = document.createElement("p");
+        phoneLine.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
+        claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
+        break;
+      }
+    }
+  });
 
   div.appendChild(claimedBox);
 }
