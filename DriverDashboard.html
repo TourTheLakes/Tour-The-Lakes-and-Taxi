@@ -165,20 +165,25 @@ animation: pulseBusy 3s infinite;
     </div>
   </div>
 
-  <div id="shiftControls" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-  <p style="margin: 0 0 10px 0;">
-    Today's schedule is <strong>09:00</strong> - <strong>19:00</strong>. To extend your hours, select below:
+<div id="shiftControls" style="background: #f9f9f9; padding: 15px;
+  border-radius: 8px; margin-bottom: 20px;">
+  <p id="shiftStatus" style="margin: 0 0 10px 0;">
+    Loading your schedule...
   </p>
+
   <label for="shiftFrom">From:</label>
   <select id="shiftFrom"></select>
 
-  <label for="shiftUntil" style="margin-top: 10px;">Until:</label>
+  <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
   <select id="shiftUntil"></select>
 
-  <button id="finishEarlyBtn" style="margin-top: 15px; background-color: #f44336; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer;">
+  <button id="finishEarlyBtn" style="margin-top: 15px; background-color:
+    #f44336; color: white; border: none; padding: 10px; border-radius: 6px;
+    cursor: pointer;">
     Finish Early
   </button>
 </div>
+  
   <audio id="chimeNew" preload="auto">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.ogg" type="audio/ogg">
     <source src="https://actions.google.com/sounds/v1/alarms/bugle_tune.mp3" type="audio/mpeg">
@@ -212,33 +217,84 @@ animation: pulseBusy 3s infinite;
     // SHIFT CONTROL DROPDOWN POPULATION
 const shiftFrom = document.getElementById("shiftFrom");
 const shiftUntil = document.getElementById("shiftUntil");
+const shiftStatus = document.getElementById("shiftStatus");
 
 function populateShiftDropdowns() {
   for (let h = 0; h <= 23; h++) {
     const label = h.toString().padStart(2, "0") + ":00";
-    const optionFrom = new Option(label, label);
-    const optionUntil = new Option(label, label);
-
-    shiftFrom.appendChild(optionFrom);
-    shiftUntil.appendChild(optionUntil);
+     shiftFrom.appendChild(new Option(label, label));
+     shiftUntil.appendChild(new Option(label, label));
   }
 
   shiftFrom.value = "09:00";
   shiftUntil.value = "19:00";
+  updateShiftStatus();
 }
 
 populateShiftDropdowns();
 
-    if (driverDoor) {
-  db.ref("driverShifts/" + driverDoor).once("value").then(snapshot => {
-    const data = snapshot.val();
-    if (data) {
-      shiftFrom.value = data.from || "09:00";
-      shiftUntil.value = data.until || "19:00";
-    }
-  });
-}
-  
+    function updateShiftStatus() {
+      const from = shiftFrom.value;
+      const until = shiftUntil.value;
+      shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong><strong>${until}</strong>. To extend your hours, select below:`;
+    }
+
+    function saveShiftToFirebase() {
+      const from = shiftFrom.value;
+      const until = shiftUntil.value;
+
+      if (!isValidShift(from, until)) {
+        alert("Invalid time range. 'Until' must be later than 'From'.");
+        return;
+      }
+
+      if (!driverDoor) return;
+
+      db.ref("driverShifts/" + driverDoor).set({
+        from: from,
+        until: until
+      }).then(() => {
+        updateShiftStatus();
+      });
+    }
+
+    function isValidShift(from, until) {
+      const [fH] = from.split(":").map(number);
+      const [uH] = until.split(":").map(number);
+      return fH < uH;
+    }
+
+    shiftFrom.addEventListener("change", () => {
+      if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+        alert("Start time must be before end time.");
+        shiftFrom.value = "09:00";
+      }
+      saveShiftToFirebase();
+    });
+
+    shiftUntil.addEventListener("change", () => {
+      if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+        alert("End time must be after start time.");
+        shiftUntil.value = "19:00";
+      }
+      saveShiftToFirebase();
+    });
+
+ if (driverDoor) {
+   db.ref("driverShifts/" + driverDoor).once("value").then(snapshot => {
+     const data = snapshot.val();
+     if (data) {
+       shiftFrom.value = data.from || "09:00";
+       shiftUntil.value = data.until || "19:00";
+     }
+     updateShiftStatus();
+   });
+ }
+
+
+
+
+    
   function saveShiftToFirebase() {
   const from = shiftFrom.value;
   const until = shiftUntil.value;
