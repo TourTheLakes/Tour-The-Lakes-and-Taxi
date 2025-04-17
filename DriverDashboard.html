@@ -324,7 +324,13 @@ finishEarlyBtn.addEventListener("click", function () {
               up to <strong>${d.vehicle.seats}</strong> passengers.
               Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.<br><br>
-    <em>Today's schedule is <strong>${shiftFrom.value}</strong> - <strong>${shiftUntil.value}</strong>. If you wish to extend or finish early, use the contols below.</em>
+    <em>Today's schedule is <strong>${shiftFrom.value}</strong> - <strong>${shiftUntil.value}</strong>. If you wish to extend or finish early, use the contols below.</em><br><br>
+
+         <label for="shiftFrom">From:</label>
+         <select id="shiftFrom"><select>
+
+         <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
+         <select id="shiftUntil"></select>
             `;
             break;
           }
