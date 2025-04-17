@@ -312,6 +312,13 @@ finishEarlyBtn.addEventListener("click", function () {
 
     if (!driverDoor || !driverName) {
       greetingEl.innerHTML = "No driver is logged in.";
+const shiftFrom = document.getElementById("shiftFrom");
+const shiftUntil = document.getElementById("shiftUntil");
+
+populateShiftDropdowns();
+
+shiftFrom.addEventListener("change", saveShiftToFirebase);
+shiftUntil.addEventListener("change", saveShiftToFirebase);     
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
