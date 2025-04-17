@@ -379,7 +379,6 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
 
 db.ref("drivers").once("value").then(snapshot => {
   const drivers = snapshot.val();
-  console.log(drivers);
   for (const key in drivers) {
     const d = drivers[key];
     if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
