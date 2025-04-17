@@ -161,10 +161,7 @@
 
         const div = document.createElement("div");
         div.className = "booking";
-        
         div.innerHTML = `
-        <div style="display: flex; gap: 20px;">
-            <div style="flex: 1;">
           <p><strong>Name:</strong> ${booking.name}</p>
           <p><strong>Pickup:</strong> ${booking.pickup}</p>
           <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
@@ -173,11 +170,6 @@
             <button onclick="location.href='CustomerAmend.html?id=${id}'">Amend</button>
             <button onclick="cancelBooking('${id}')">Cancel</button>
           </div>
-             </div>
-      <div class="claimed-info" id="claimedBox-${id}" style="flex: 1;">
-        <p><em>Awaiting driver claim...</em></p>
-        </div>
-    </div>
         `;
 
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
