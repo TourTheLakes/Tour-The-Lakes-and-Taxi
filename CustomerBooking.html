@@ -161,7 +161,14 @@
 
         const div = document.createElement("div");
         div.className = "booking";
-        div.innerHTML = `
+
+  const flexWrap = document.createElement("div");
+  flexWrap.style.display = "flex";
+  flexWrap.style.justifyContent = "space-between";
+  flexWrap.style.gap = "20px";
+
+  const left = document.createElement("div");
+        left.innerHTML = `
           <p><strong>Name:</strong> ${booking.name}</p>
           <p><strong>Pickup:</strong> ${booking.pickup}</p>
           <p><strong>Dropoff:</strong> ${booking.dropoff}</p>
@@ -171,6 +178,8 @@
             <button onclick="cancelBooking('${id}')">Cancel</button>
           </div>
         `;
+
+  flexWrap.appendChild(left);
 
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   const claimedBox = document.createElement("div");
@@ -190,7 +199,10 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     }
   });
 
-  div.appendChild(claimedBox);
+  flexWrap.appendChild(claimedBox);
+}
+  div.appendChild(flexWrap);
+  bookingSection.appendChild(div);
 }
         
         bookingSection.appendChild(div);
