@@ -254,6 +254,49 @@ populateShiftDropdowns();
 shiftFrom.addEventListener("change", saveShiftToFirebase);
 shiftUntil.addEventListener("change", saveShiftToFirebase);
 
+ const finishEarlyBtn = document.getElementById("finishEarlyBtn");
+
+finishEarlyBtn.addEventListener("click", function () {
+  if (!driverDoor || !driverName) return;
+
+  db.ref("bookings").once("value").then(snapshot => {
+    const bookings = snapshot.val() || {};
+    const now = new Date();
+    let conflict = false;
+
+    for (const key in bookings) {
+      const b = bookings[key];
+      if (
+        b.claimedBy &&
+        b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
+        b.pickupType === "Scheduled" &&
+        b.time
+      ) {
+        const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
+        const bookingTime = new Date(`${bookingDate}T${b.time}`);
+        if (bookingTime > now) {
+          conflict = true;
+          break;
+        }
+      }
+    }
+
+    if (conflict) {
+      alert("There is a booking that prevents you from finishing early.");
+    } else {
+      db.ref("driverShifts/" + driverDoor).set({
+        from: "09:00",
+        until: "19:00"
+      }).then(() => {
+        shiftFrom.value = "09:00";
+        shiftUntil.value = "19:00";
+        alert("Shift reverted to standard hours.");
+      });
+    }
+  });
+});
+   
+
     if (driverDoor) {
   db.ref("driverStatus/" + driverDoor).once("value").then(snapshot => {
     const status = snapshot.val();
