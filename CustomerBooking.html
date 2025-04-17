@@ -6,110 +6,134 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  <style>
+  
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0d2a45;
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 650px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #0d2a45;
+  }
+
+  .booking {
+    background: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .booking p {
+    margin: 8px 0;
+    font-size: 15px;
+  }
+
+  .flex-wrap {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap; /* Responsive stacking on narrow screens */
+  }
+
+  .left-column {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .claimed-info {
+    min-width: 200px;
+    max-width: 240px;
+    padding: 15px;
+    background: #fff;
+    border-left: 4px solid #0d2a45;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+    color: #333;
+  }
+
+  .actions {
+    margin-top: 15px;
+  }
+
+  .actions button {
+    margin-right: 10px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    background-color: #4CAF50;
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+
+  .actions button:hover {
+    background-color: #3e9141;
+  }
+
+  .actions button:last-child {
+    background-color: #cc0000;
+  }
+
+  .actions button:last-child:hover {
+    background-color: #990000;
+  }
+
+  button.return {
+    margin-top: 25px;
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #666;
+    color: white;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button.return:hover {
+    background-color: #444;
+  }
+
+  @media (max-width: 600px) {
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #0d2a45;
-      margin: 0;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 650px;
-      width: 100%;
-      background: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      box-sizing: border-box;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #0d2a45;
-    }
-
-    .booking {
-      background: #f4f4f4;
       padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #4CAF50;
     }
 
-    .booking p {
-      margin: 8px 0;
-      font-size: 15px;
+    .flex-wrap {
+      flex-direction: column;
     }
 
-    .actions {
-      margin-top: 15px;
-    }
+    .claimed-info {
+      margin-top: 20px;
+    }
+  }
+</style>
 
-    .actions button {
-      margin-right: 10px;
-      padding: 8px 16px;
-      font-size: 14px;
-      cursor: pointer;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      background-color: #4CAF50;
-      color: white;
-      transition: background-color 0.2s ease;
-    }
-
-    .actions button:hover {
-      background-color: #3e9141;
-    }
-
-    .actions button:last-child {
-      background-color: #cc0000;
-    }
-
-    .actions button:last-child:hover {
-      background-color: #990000;
-    }
-
-    button.return {
-      margin-top: 25px;
-      padding: 12px 20px;
-      font-size: 16px;
-      background-color: #666;
-      color: white;
-      width: 100%;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    button.return:hover {
-      background-color: #444;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 20px;
-      }
-    }
-
-.claimed-info {
-  margin-top: 15px;
-  padding: 15px;
-  background: #fff;
-  border-left: 4px solid #0d2a45;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  font-size: 14px;
-  color: #333;
-}
-  </style>
 </head>
+  
 <body>
   <div class="container">
     <h1>Your Booking</h1>
@@ -162,12 +186,11 @@
         const div = document.createElement("div");
         div.className = "booking";
 
-  const flexWrap = document.createElement("div");
-  flexWrap.style.display = "flex";
-  flexWrap.style.justifyContent = "space-between";
-  flexWrap.style.gap = "20px";
+        const flexWrap = document.createElement("div");
+        flexWrap.className = "flex-wrap";
 
-  const left = document.createElement("div");
+        const left = document.createElement("div");
+        left.className = "left-column";
         left.innerHTML = `
           <p><strong>Name:</strong> ${booking.name}</p>
           <p><strong>Pickup:</strong> ${booking.pickup}</p>
@@ -179,31 +202,31 @@
           </div>
         `;
 
-  flexWrap.appendChild(left);
+        flexWrap.appendChild(left);
 
-if (booking.claimedBy && booking.claimedBy !== "unassigned") {
-  const claimedBox = document.createElement("div");
-  claimedBox.className = "claimed-info";
-  claimedBox.innerHTML = `<p><strong>Claimed By:</strong> ${booking.claimedBy}</p>`;
+        if (booking.claimedBy && booking.claimedBy !== "unassigned") {
+          const claimedBox = document.createElement("div");
+          claimedBox.className = "claimed-info";
+          claimedBox.innerHTML = <p><strong>Claimed By:</strong> ${booking.claimedBy}</p>;
 
-  db.ref("drivers").once("value").then(driverSnap => {
-    const drivers = driverSnap.val();
-    for (const key in drivers) {
-      const d = drivers[key];
-      if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
-        const phoneLine = document.createElement("p");
-        phoneLine.innerHTML = `<strong>Phone Number:</strong> ${d.phone}`;
-        claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
-        break;
-      }
-    }
-  });
+          db.ref("drivers").once("value").then(driverSnap => {
+            const drivers = driverSnap.val();
+            for (const key in drivers) {
+              const d = drivers[key];
+              if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
+                const phoneLine = document.createElement("p");
+                phoneLine.innerHTML = <strong>Phone Number:</strong> ${d.phone};
+                claimedBox.insertBefore(phoneLine, claimedBox.children[1]);
+                break;
+              }
+            }
+          });
 
-  flexWrap.appendChild(claimedBox);
-}
-  div.appendChild(flexWrap);
-  bookingSection.appendChild(div);
-}
+          flexWrap.appendChild(claimedBox);
+        }
+
+        div.appendChild(flexWrap);
+        bookingSection.appendChild(div);
       });
     });
 
@@ -218,4 +241,5 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     }
   </script>
 </body>
+
 </html>
