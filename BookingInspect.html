@@ -142,10 +142,32 @@ if (isClaimed && !isClaimedByCurrentDriver) {
     }
 
 document.getElementById("acceptBtn").onclick = () => {
-  db.ref("bookings/" + bookingKey + "/claimedBy").set(driverName).then(() => {
-    window.location.href = "DriverDashboard.html";
-  });
+  db.ref("drivers").once("value").then(driverSnap => {
+    const drivers = driverSnap.val();
+    for (const key in drivers) {
+      const d = drivers[key];
+      if (d.name.toLowerCase() === driverName.toLowerCase()) {
+        const seats = parseInt(d.vehicle.seats);
+        db.ref("bookings/" + bookingKey).once("value").then(snapshot => {
+          const booking = snapshot.val();
+          const passengers = parseInt(booking.passengers);
+
+          if (passengers > seats) {
+            alert(`You can't accept this booking. Your vehicle only has ${seats} seats, but this booking is for ${passengers} passengers.`);
+            return;
+          }
+
+          // proceed with claim
+          db.ref("bookings/" + bookingKey + "/claimedBy").set(driverName).then(() => {
+            window.location.href = "DriverDashboard.html";
+          });
+        });
+        break;
+      }
+    }
+  });
 };
+
 
 document.getElementById("unassignBtn").onclick = () => {
   db.ref("bookings/" + bookingKey + "/claimedBy").set("unassigned").then(() => {
