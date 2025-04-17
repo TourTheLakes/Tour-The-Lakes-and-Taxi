@@ -122,48 +122,62 @@
 
         pickupDate.addEventListener("change", populateTimes);
 
-        function populateTimes() {
-          pickupTime.innerHTML = '<option value="">Select a time...</option>';
+function populateTimes() {
+  pickupTime.innerHTML = '<option value="">Select a time...</option>';
 
-          const selectedDate = new Date(pickupDate.value);
-          const currentDate = new Date();
-          const isToday = pickupDate.value === today;
+  const selectedDate = new Date(pickupDate.value);
+  const currentDate = new Date();
+  const isToday = pickupDate.value === today;
 
-          let startTime = new Date(selectedDate);
+  let startTime = new Date(selectedDate);
+  let endTime = new Date(selectedDate);
 
-          if (isToday) {
-            startTime.setHours(currentDate.getHours(), currentDate.getMinutes() + 30, 0, 0);
-            const minutes = startTime.getMinutes();
-            if (minutes % 15 !== 0) {
-              startTime.setMinutes(minutes + (15 - (minutes % 15)));
-            }
-          } else {
-            startTime.setHours(0, 0, 0, 0);
-          }
+  // Default shift range
+  const shiftStartHour = 9;
+  const shiftEndHour = 19;
 
-          const endTime = new Date(selectedDate);
-          endTime.setHours(23, 59, 0, 0);
+  if (isToday) {
+    // Minimum time is now + 30 minutes, but not before shiftStart
+    const minTime = new Date(currentDate.getTime() + 30 * 60000);
+    const shiftStartTime = new Date();
+    shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
+    startTime = new Date(Math.max(minTime, shiftStartTime));
+  } else {
+    startTime.setHours(shiftStartHour, 0, 0, 0);
+  }
 
-          while (startTime <= endTime) {
-            const h = startTime.getHours().toString().padStart(2, '0');
-            const m = startTime.getMinutes().toString().padStart(2, '0');
-            const option = document.createElement("option");
-            option.value = h + ":" + m;
-            option.textContent = h + ":" + m;
-            pickupTime.appendChild(option);
-            startTime.setMinutes(startTime.getMinutes() + 15);
-          }
-        }
+  endTime.setHours(shiftEndHour, 0, 0, 0);
+
+  while (startTime <= endTime) {
+    const h = startTime.getHours().toString().padStart(2, '0');
+    const m = startTime.getMinutes().toString().padStart(2, '0');
+    const option = document.createElement("option");
+    option.value = `${h}:${m}`;
+    option.textContent = `${h}:${m}`;
+    pickupTime.appendChild(option);
+    startTime.setMinutes(startTime.getMinutes() + 15);
+  }
+}
+
 
         pickupDate.value = today;
         populateTimes();
 
-        asapCheckbox.addEventListener("change", function () {
-          const disabled = asapCheckbox.checked;
-          pickupDate.disabled = disabled;
-          pickupTime.disabled = disabled;
-          asapMessage.style.display = disabled ? "block" : "none";
-        });
+asapCheckbox.addEventListener("change", function () {
+  const now = new Date();
+  const hour = now.getHours();
+
+  if (hour < 9 || hour >= 19) {
+    alert("ASAP bookings are only available between 09:00 and 19:00.");
+    asapCheckbox.checked = false;
+    return;
+  }
+
+  const disabled = asapCheckbox.checked;
+  pickupDate.disabled = disabled;
+  pickupTime.disabled = disabled;
+  asapMessage.style.display = disabled ? "block" : "none";
+});
 
         document.getElementById("continueBtn").addEventListener("click", function () {
           if (asapCheckbox.checked) {
