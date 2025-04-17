@@ -286,8 +286,6 @@ document.getElementById("logoffBtn").onclick = () => {
   userInteracted = true;
 }
 
-    let userInteracted = false;
-    let lastSnapshot = {};
     
     document.addEventListener("click", () => userInteracted = true, { once: true });
     document.addEventListener("keydown", () => userInteracted = true, { once: true });
@@ -396,8 +394,9 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   row.appendChild(claimedBox);
 }
         container.appendChild(row);
-      });
     });
+  });
+});
     
   </script>
 </body>
