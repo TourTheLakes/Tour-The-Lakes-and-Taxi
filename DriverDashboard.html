@@ -239,6 +239,7 @@ populateShiftDropdowns();
     
 shiftFrom.addEventListener("change", saveShiftToFirebase);
 shiftUntil.addEventListener("change", saveShiftToFirebase);
+document.getElementById("extendShiftBtn").addEventListener("click", saveShiftToFirebase);
 
  const finishEarlyBtn = document.getElementById("finishEarlyBtn");
 
@@ -319,11 +320,17 @@ shiftUntil.addEventListener("change", saveShiftToFirebase);
               <strong>${d.vehicle.registration}</strong>.<br><br>
     <em>Today's schedule is <strong>${shiftFrom.value}</strong> - <strong>${shiftUntil.value}</strong>. If you wish to extend or finish early, use the contols below.</em><br><br>
 
-         <label for="shiftFrom">From:</label>
-         <select id="shiftFrom"><select>
+<div style="margin-top: 15px;">
+  <label for="shiftFrom">From:</label>
+  <select id="shiftFrom"></select>
 
-         <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
-         <select id="shiftUntil"></select>
+  <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
+  <select id="shiftUntil"></select>
+
+  <button id="extendShiftBtn" style="margin-left: 10px; background-color: #4CAF50; color: white; padding: 5px 12px; border: none; border-radius: 4px;">Extend</button>
+
+  <button id="finishEarlyBtn" style="margin-left: 10px; background-color: #f44336; color: white; padding: 5px 12px; border: none; border-radius: 4px;">Finish Early</button>
+</div>
             `;
             break;
           }
