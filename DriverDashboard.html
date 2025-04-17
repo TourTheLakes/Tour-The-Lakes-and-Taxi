@@ -236,7 +236,7 @@ populateShiftDropdowns();
     function updateShiftStatus() {
       const from = shiftFrom.value;
       const until = shiftUntil.value;
-      shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong><strong>${until}</strong>. To extend your hours, select below:`;
+      shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong> until <strong>${until}</strong>. To extend your hours, select below:`;
     }
 
     function saveShiftToFirebase() {
