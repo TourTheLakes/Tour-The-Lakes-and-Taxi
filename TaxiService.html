@@ -91,6 +91,8 @@
     }
   </style>
 </head>
+
+  
 <body>
   <div class="container">
     <h1>Hey, let's get you moving!</h1><label for="pickup">Pickup Address:</label>
@@ -100,8 +102,6 @@
 <label for="dropoff">Drop-off Address:</label>
 <input type="text" id="dropoff" placeholder="Start typing...">
 <div id="mapDropoff"></div>
-
-<p id="estimateMsg">Estimating your fare...</p>
 
 <div id="customNoteArea" style="display:none;">
   <label>Additional info for your driver:</label>
@@ -122,6 +122,7 @@
 
   <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
   <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+  <p id="estimateMsg">Estimating your fare...</p>
 
   <label for="passengers">How many people are travelling?</label>
   <select id="passengers" onchange="updateLuggageOptions()">
@@ -162,66 +163,6 @@
 </div>
  </div> 
 
-  function estimateJourney() {
-  const pickup = localStorage.getItem('pickupCoords');
-  const dropoff = localStorage.getItem('dropoffCoords');
-
-  if (!pickup || !dropoff) {
-    document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
-    return;
-  }
-
-  const origin = JSON.parse(pickup);
-  const destination = JSON.parse(dropoff);
-
-  const service = new google.maps.DirectionsService();
-  service.route(
-    {
-      origin,
-      destination,
-      travelMode: 'DRIVING'
-    },
-    (result, status) => {
-      if (status === 'OK' && result.routes.length > 0) {
-        const leg = result.routes[0].legs[0];
-        const distanceMeters = leg.distance.value;
-        const durationMinutes = leg.duration.value / 60;
-
-        const now = new Date();
-        const hour = now.getHours();
-        const isNight = (hour >= 23 || hour < 7);
-
-        // Fare logic
-        let fare = 0;
-        if (distanceMeters <= 1609) {
-          fare = isNight ? 6.30 : 4.20;
-        } else {
-          const extraDist = distanceMeters - 1609;
-          const extraUnits = Math.ceil(extraDist / 161);
-          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
-        }
-
-        const waitRate = isNight ? 0.60 : 0.30;
-        const waitCharge = Math.ceil(durationMinutes) * waitRate;
-        fare += waitCharge;
-
-        document.getElementById('estimateMsg').innerHTML = `
-          Estimated journey: <strong>${leg.distance.text}</strong>, 
-          <strong>${leg.duration.text}</strong><br>
-          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
-        `;
-      } else {
-        document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.';
-      }
-    }
-  );
-}
-
-
-  
-  <!-- Firebase and Google Maps scripts go here --> 
-
-<!-- Firebase Setup -->
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script>
@@ -238,7 +179,7 @@
   const db = firebase.database();
 </script>
 
-<!-- Google Maps with Places -->
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
 <script>
   let mapPickup, mapDropoff, markerPickup, markerDropoff;
@@ -303,11 +244,6 @@
     document.getElementById("customNoteArea").style.display = "block";
   }
 </script>
-
-  
-  <!-- Add your firebase config and init script below this line --> 
-  <!-- Add Google Maps API with Places library enabled --> 
-  
   
   <script>
     // Basic location access setup
@@ -363,6 +299,61 @@
       localStorage.setItem('luggage', document.getElementById('luggage').value);
       window.location.href = 'TimeAndDate.html';
     }
+
+      function estimateJourney() {
+  const pickup = localStorage.getItem('pickupCoords');
+  const dropoff = localStorage.getItem('dropoffCoords');
+
+  if (!pickup || !dropoff) {
+    document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
+    return;
+  }
+
+  const origin = JSON.parse(pickup);
+  const destination = JSON.parse(dropoff);
+
+  const service = new google.maps.DirectionsService();
+  service.route(
+    {
+      origin,
+      destination,
+      travelMode: 'DRIVING'
+    },
+    (result, status) => {
+      if (status === 'OK' && result.routes.length > 0) {
+        const leg = result.routes[0].legs[0];
+        const distanceMeters = leg.distance.value;
+        const durationMinutes = leg.duration.value / 60;
+
+        const now = new Date();
+        const hour = now.getHours();
+        const isNight = (hour >= 23 || hour < 7);
+
+        // Fare logic
+        let fare = 0;
+        if (distanceMeters <= 1609) {
+          fare = isNight ? 6.30 : 4.20;
+        } else {
+          const extraDist = distanceMeters - 1609;
+          const extraUnits = Math.ceil(extraDist / 161);
+          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
+        }
+
+        const waitRate = isNight ? 0.60 : 0.30;
+        const waitCharge = Math.ceil(durationMinutes) * waitRate;
+        fare += waitCharge;
+
+        document.getElementById('estimateMsg').innerHTML = `
+          Estimated journey: <strong>${leg.distance.text}</strong>, 
+          <strong>${leg.duration.text}</strong><br>
+          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `;
+      } else {
+        document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.';
+      }
+    }
+  );
+}
 
     
   </script>
