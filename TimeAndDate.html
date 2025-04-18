@@ -180,7 +180,6 @@ const [shiftEndHour, shiftEndMin] = globalLatest.split(":").map(Number);
   }
 }
 
-// Step 1 continued: fetch driver shifts from Firebase
 db.ref("driverStatus").once("value").then(statusSnap => {
   const statusData = statusSnap.val() || {};
   const availableDrivers = Object.keys(statusData).filter(d => statusData[d] === "Available");
@@ -199,11 +198,15 @@ db.ref("driverStatus").once("value").then(statusSnap => {
     if (fromTimes.length > 0) {
       globalEarliest = fromTimes.sort()[0];
       globalLatest = untilTimes.sort().reverse()[0];
+
+      console.log("Earliest:", globalEarliest);
+      console.log("latest:", globalLatest);
     }
-setTimeout(() => {
     pickupDate.value = today;
     populateTimes();
-}, 50);
+} else {
+    alert("No available drivers found for today.");
+  }
   });
 });
 
