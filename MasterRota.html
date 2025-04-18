@@ -61,6 +61,21 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     }
+    .assignedContainer {
+      margin-top: 10px;
+      font-size: 13px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .assignedEntry {
+      margin: 5px 0;
+    }
+    .deleteBtn {
+      margin-left: 10px;
+      background: #f44336;
+    }
   </style>
 </head>
 <body>
@@ -84,10 +99,11 @@
         <th>From 3</th>
         <th>Until 3</th>
         <th>Confirm</th>
+        <th>Assigned Days</th>
       </tr>
     </thead>
     <tbody id="rotaBody">
-      <tr><td colspan="9">Loading drivers...</td></tr>
+      <tr><td colspan="10">Loading drivers...</td></tr>
     </tbody>
   </table>  <script>
     const firebaseConfig = {
@@ -135,6 +151,7 @@
             <td><input type="time" class="from3"></td>
             <td><input type="time" class="until3"></td>
             <td><button class="saveBtn">Save</button></td>
+            <td><div class="assignedContainer" id="assigned-${d.doorCard}">Loading...</div></td>
           `;
 
           const dateInput = row.querySelector(".dateInput");
@@ -159,6 +176,7 @@
 
             db.ref(`driverCustomAvailability/${d.doorCard}/${date}`).set(shifts).then(() => {
               alert(`Shift saved for ${d.name} on ${date}`);
+              loadAssignments(d.doorCard);
             }).catch(err => {
               console.error("Save error:", err);
               alert("Failed to save shift.");
@@ -166,7 +184,40 @@
           };
 
           rotaBody.appendChild(row);
+          loadAssignments(d.doorCard);
         }
+      });
+    }
+
+    function loadAssignments(doorCard) {
+      const container = document.getElementById(`assigned-${doorCard}`);
+      db.ref(`driverCustomAvailability/${doorCard}`).once("value").then(snapshot => {
+        const data = snapshot.val();
+        if (!data) {
+          container.innerHTML = "No assigned shifts.";
+          return;
+        }
+
+        container.innerHTML = "";
+        Object.keys(data).forEach(date => {
+          const entry = document.createElement("div");
+          entry.className = "assignedEntry";
+
+          const ranges = data[date].map(r => `${r.from}-${r.until}`).join(", ");
+          entry.innerHTML = `${date}: ${ranges} <button class='deleteBtn' onclick='deleteAssignment("${doorCard}", "${date}")'>Delete</button>`;
+
+          container.appendChild(entry);
+        });
+      });
+    }
+
+    function deleteAssignment(doorCard, date) {
+      if (!confirm(`Delete assigned shift for ${date}?`)) return;
+      db.ref(`driverCustomAvailability/${doorCard}/${date}`).remove().then(() => {
+        loadAssignments(doorCard);
+      }).catch(err => {
+        console.error("Delete error:", err);
+        alert("Failed to delete shift.");
       });
     }
   </script></body>
