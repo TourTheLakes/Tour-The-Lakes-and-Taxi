@@ -89,6 +89,9 @@
   </style>
 </head>
 <body>
+
+
+  
   <div class="container">
     <h1>Choose Pickup Time</h1>
 
@@ -113,7 +116,91 @@
 
     <button id="continueBtn">Continue</button>
 
+    <!-- Firebase Setup -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
     <script>
+async function populateTimes() {
+  pickupTime.innerHTML = '<option value="">Select a time...</option>';
+  const selectedDate = new Date(pickupDate.value);
+  const currentDate = new Date();
+  const todayStr = currentDate.toISOString().split("T")[0];
+  const isToday = pickupDate.value === todayStr;
+
+  // Get available drivers
+  const [shiftsSnap, statusSnap] = await Promise.all([
+    db.ref("driverShifts").once("value"),
+    db.ref("driverStatus").once("value")
+  ]);
+
+  const shifts = shiftsSnap.val() || {};
+  const statuses = statusSnap.val() || {};
+
+  const availableDrivers = [];
+
+  for (const doorCard in statuses) {
+    if (statuses[doorCard] !== "Available") continue;
+    const shift = shifts[doorCard];
+    if (!shift) continue;
+
+    let [fromHour] = shift.from.split(":").map(Number);
+    let [untilHour] = shift.until.split(":").map(Number);
+
+    if (isToday) {
+      const now = new Date();
+      const nowHour = now.getHours();
+      if (nowHour < fromHour || nowHour >= untilHour) continue;
+    }
+
+    availableDrivers.push({ doorCard, fromHour, untilHour });
+  }
+
+  if (availableDrivers.length === 0) {
+    alert("No drivers are available for the selected date. Please choose a different date.");
+    return;
+  }
+
+  // Default logic below remains untouched
+  let startTime = new Date(selectedDate);
+  let endTime = new Date(selectedDate);
+  const minTime = new Date(currentDate.getTime() + 30 * 60000);
+  const shiftStartHour = 9;
+  const shiftEndHour = 19;
+
+  const shiftStartTime = new Date(startTime);
+  shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
+
+  if (isToday) {
+    startTime = new Date(Math.max(minTime, shiftStartTime));
+  } else {
+    startTime = shiftStartTime;
+  }
+
+  endTime.setHours(shiftEndHour, 0, 0, 0);
+
+  while (startTime <= endTime) {
+    const h = startTime.getHours().toString().padStart(2, '0');
+    const m = startTime.getMinutes().toString().padStart(2, '0');
+    pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
+    startTime.setMinutes(startTime.getMinutes() + 15);
+  }
+}
+
+      
       document.addEventListener("DOMContentLoaded", function () {
         const asapCheckbox = document.getElementById("asapCheckbox");
         const pickupDate = document.getElementById("pickupDate");
