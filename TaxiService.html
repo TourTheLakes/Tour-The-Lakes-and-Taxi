@@ -355,67 +355,68 @@
     }
 
   function estimateJourney() {
-    const pickup = localStorage.getItem('pickupCoords');
-    const dropoff = localStorage.getItem('dropoffCoords');
+  const pickup = localStorage.getItem('pickupCoords');
+  const dropoff = localStorage.getItem('dropoffCoords');
 
-    if (!pickup || !dropoff) {
-      document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
-      return;
-    }
+  if (!pickup || !dropoff) {
+    document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
+    return;
+  }
 
-    const origin = JSON.parse(pickup);
-    const destination = JSON.parse(dropoff);
+  const origin = JSON.parse(pickup);
+  const destination = JSON.parse(dropoff);
 
-    if (!origin || !destination || !origin.lat || !destination.lat) {
-      document.getElementById('estimateMsg').innerText = 'Incomplete coordinates. Please reselect pickup and drop-off.';
-      return;
-    }
+  if (!origin || !destination || !origin.lat || !destination.lat) {
+    document.getElementById('estimateMsg').innerText = 'Incomplete coordinates. Please reselect pickup and drop-off.';
+    return;
+  }
 
-    const service = new google.maps.DirectionsService();
-    service.route(
-      {
-        origin,
-        destination,
-        travelMode: 'DRIVING'
-      },
-      (result, status) => {
-        if (status === 'OK' && result.routes.length > 0) {
-          const leg = result.routes[0].legs[0];
-          const distanceMeters = leg.distance.value;
-          const durationMinutes = Math.ceil(leg.duration.value / 60); // round up just in case
+  const service = new google.maps.DirectionsService();
+  service.route(
+    {
+      origin,
+      destination,
+      travelMode: 'DRIVING'
+    },
+    (result, status) => {
+      if (status === 'OK' && result.routes.length > 0) {
+        const leg = result.routes[0].legs[0];
+        const distanceMeters = leg.distance.value;
+        const durationMinutes = leg.duration.value / 60;
 
-          // Fare logic
-          const now = new Date();
-          const hour = now.getHours();
-          const isNight = hour >= 23 || hour < 7;
+        const now = new Date();
+        const hour = now.getHours();
+        const isNight = (hour >= 23 || hour < 7);
 
-          const baseFare = isNight ? 6.30 : 4.20;
-          const stepFare = isNight ? 0.40 : 0.30;
-          let fare = baseFare;
-
-          if (distanceMeters > 1609) {
-            const extraDist = distanceMeters - 1609;
-            const extraUnits = Math.ceil(extraDist / 161); // per 1/10 mile
-            fare += extraUnits * stepFare;
-          }
-
-          // We’re skipping wait time here — handled separately if needed
-
-          document.getElementById('estimateMsg').innerHTML = `
-            Estimated journey: <strong>${leg.distance.text}</strong>,
-            <strong>${leg.duration.text}</strong><br>
-            Estimated fare: <strong>£${fare.toFixed(2)}</strong>
-          `;
-        } else if (status === 'ZERO_RESULTS') {
-          document.getElementById('estimateMsg').innerText = 'No route available. Please adjust addresses.';
+        // Fare logic
+        let fare = 0;
+        if (distanceMeters <= 1609) {
+          fare = isNight ? 6.30 : 4.20;
         } else {
-          document.getElementById('estimateMsg').innerText = `Could not estimate journey (${status}).`;
-          console.error('Route error:', status);
+          const extraDist = distanceMeters - 1609;
+          const extraUnits = Math.ceil(extraDist / 161);
+          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
         }
-      }
-    );
-  }
-</script>
+
+        const waitRate = isNight ? 0.60 : 0.30;
+        const waitCharge = Math.ceil(durationMinutes) * waitRate;
+        fare += waitCharge;
+
+        document.getElementById('estimateMsg').innerHTML = `
+          Estimated journey: <strong>${leg.distance.text}</strong>,
+          <strong>${leg.duration.text}</strong><br>
+          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `;
+      } else if (status === 'ZERO_RESULTS') {
+        document.getElementById('estimateMsg').innerText = 'No route available. Please adjust addresses.';
+      } else {
+        document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.';
+        console.error('Route error:', status);
+      }
+    }
+  );
+}    
+  </script>
 
 
 </body>
