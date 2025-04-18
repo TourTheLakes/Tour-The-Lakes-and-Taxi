@@ -111,50 +111,57 @@
     <button id="continueBtn">Continue</button>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const asapCheckbox = document.getElementById("asapCheckbox");
-        const pickupDate = document.getElementById("pickupDate");
-        const pickupTime = document.getElementById("pickupTime");
-        const asapMessage = document.getElementById("asapMessage");
+document.addEventListener("DOMContentLoaded", function () {
+  const asapCheckbox = document.getElementById("asapCheckbox");
+  const pickupDate = document.getElementById("pickupDate");
+  const pickupTime = document.getElementById("pickupTime");
+  const asapMessage = document.getElementById("asapMessage");
 
-        const today = new Date().toISOString().split("T")[0];
-        pickupDate.setAttribute("min", today);
+  const today = new Date().toISOString().split("T")[0];
 
-        pickupDate.addEventListener("change", populateTimes);
-
-function populateTimes() {
-  pickupTime.innerHTML = '<option value="">Select a time...</option>';
-
-  const selectedDate = new Date(pickupDate.value);
-  const currentDate = new Date();
-  const isToday = pickupDate.value === today;
-
-  let startTime = new Date(selectedDate);
-  let endTime = new Date(selectedDate);
-
-  // Fetch driver shift from Firebase later here
-  const shiftStartHour = 9;
-  const shiftEndHour = 19;
-
-  const shiftStartTime = new Date(startTime);
-  shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
-
-  if (isToday) {
-    const minTime = new Date(currentDate.getTime() + 30 * 60000);
-    startTime = new Date(Math.max(minTime, shiftStartTime));
-  } else {
-    startTime = shiftStartTime;
+  function initDateField() {
+    pickupDate.setAttribute("min", today);
+    pickupDate.value = today;
+    populateTimes();
   }
 
-  endTime.setHours(shiftEndHour, 0, 0, 0);
+  pickupDate.addEventListener("change", populateTimes);
 
-  while (startTime <= endTime) {
-    const h = startTime.getHours().toString().padStart(2, '0');
-    const m = startTime.getMinutes().toString().padStart(2, '0');
-    pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
-    startTime.setMinutes(startTime.getMinutes() + 15);
-  }
-}
+  function populateTimes() {
+    pickupTime.innerHTML = '<option value="">Select a time...</option>';
+
+    const selectedDate = new Date(pickupDate.value);
+    const currentDate = new Date();
+    const isToday = pickupDate.value === today;
+
+    let startTime = new Date(selectedDate);
+    let endTime = new Date(selectedDate);
+
+    const shiftStartHour = 9;
+    const shiftEndHour = 19;
+
+    const shiftStartTime = new Date(startTime);
+    shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
+
+    if (isToday) {
+      const minTime = new Date(currentDate.getTime() + 30 * 60000);
+      startTime = new Date(Math.max(minTime, shiftStartTime));
+    } else {
+      startTime = shiftStartTime;
+    }
+
+    endTime.setHours(shiftEndHour, 0, 0, 0);
+
+    while (startTime <= endTime) {
+      const h = startTime.getHours().toString().padStart(2, '0');
+      const m = startTime.getMinutes().toString().padStart(2, '0');
+      pickupTime.innerHTML += <option value="`${h}:${m}">${h}:${m}`</option>;
+      startTime.setMinutes(startTime.getMinutes() + 15);
+    }
+  }
+
+  initDateField();
+
 
 
 
