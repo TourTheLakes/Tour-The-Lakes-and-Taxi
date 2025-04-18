@@ -163,18 +163,20 @@ function populateTimes() {
 
 asapCheckbox.addEventListener("change", function () {
   const now = new Date();
-  const hour = now.getHours();
+  const currentHour = now.getHours();
+  const shiftStart = 9;
+  const shiftEnd = 19;
 
-  if (hour < 9 || hour >= 19) {
-    alert("ASAP bookings are only available between 09:00 and 19:00.");
-    asapCheckbox.checked = false;
+  if (currentHour < shiftStart || currentHour >= shiftEnd) {
+    alert(`ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.`);
+    this.checked = false;
     return;
   }
 
-  const disabled = asapCheckbox.checked;
-  pickupDate.disabled = disabled;
-  pickupTime.disabled = disabled;
-  asapMessage.style.display = disabled ? "block" : "none";
+  const isChecked = this.checked;
+  pickupDate.disabled = isChecked;
+  pickupTime.disabled = isChecked;
+  asapMessage.style.display = isChecked ? "block" : "none";
 });
 
         document.getElementById("continueBtn").addEventListener("click", function () {
