@@ -251,21 +251,27 @@ populateShiftDropdowns();
       return (uH > fH) || (uH === fH && uM > fM);
     }
 
-    shiftFrom.addEventListener("change", () => {
-      if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
-        alert("Start time must be before end time.");
-        shiftFrom.value = "09:00";
-      }
-      saveShiftToFirebase();
-    });
+shiftFrom.addEventListener("change", () => {
+  if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+    alert("Start time must be before end time.");
+    shiftFrom.value = "09:00";
+    if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+      shiftUntil.value = "19:00";
+    }
+  }
+  saveShiftToFirebase();
+});
 
-    shiftUntil.addEventListener("change", () => {
-      if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
-        alert("End time must be after start time.");
-        shiftUntil.value = "19:00";
-      }
-      saveShiftToFirebase();
-    });
+shiftUntil.addEventListener("change", () => {
+  if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+    alert("End time must be after start time.");
+    shiftUntil.value = "19:00";
+    if (!isValidShift(shiftFrom.value, shiftUntil.value)) {
+      shiftFrom.value = "09:00";
+    }
+  }
+  saveShiftToFirebase();
+});
 
  if (driverDoor) {
    db.ref("driverShifts/" + driverDoor).once("value").then(snapshot => {
