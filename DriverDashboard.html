@@ -163,18 +163,22 @@ animation: pulseBusy 3s infinite;
   
   <div class="container">
     <h1>Driver Dashboard</h1>
-    <div id="driverGreeting" class="greeting default">Loading driver info...</div>
-<div id="shiftControls" style="background: #f9f9f9; padding: 15px;
-  border-radius: 8px; margin-bottom: 20px;">
-  <p id="shiftStatus" style="margin: 0 0 10px 0;">
-    Loading your schedule...
-  </p>
+    
+<div id="driverGreeting" class="greeting default">
+  <div id="driverGreetingText">Loading driver info...</div>
 
-  <label for="shiftFrom">From:</label>
-  <select id="shiftFrom"></select>
+  <div id="shiftControls" style="background: #f9f9f9; padding: 15px;
+    border-radius: 8px; margin-top: 20px;">
+    <p id="shiftStatus" style="margin: 0 0 10px 0;">
+      Loading your schedule...
+    </p>
 
-  <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
-  <select id="shiftUntil"></select>
+    <label for="shiftFrom">From:</label>
+    <select id="shiftFrom"></select>
+
+    <label for="shiftUntil" style="margin-left: 10px;">Until:</label>
+    <select id="shiftUntil"></select>
+  </div>
 </div>
     
     <div class="status-buttons">
@@ -372,14 +376,14 @@ finishEarlyBtn.addEventListener("click", function () {
 }
 
     if (!driverDoor || !driverName) {
-      greetingEl.innerHTML = "No driver is logged in.";
+      document.getElementById("driverGreetingText").innerHTML = "No driver is logged in.";
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
-            greetingEl.innerHTML = `
+            document.getElementById("driverGreetingText").innerHTML = `
               Hi, <strong>${d.name}</strong>. Today you're in a
               <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> that seats
               up to <strong>${d.vehicle.seats}</strong> passengers.
