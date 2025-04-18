@@ -586,7 +586,8 @@ card.innerHTML = `
 `;
 
 if (!booking.claimedBy || booking.claimedBy === "unassigned" ||
-    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) {
+    (typeof booking.claimedBy === "string" &&
+    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) ) {
   card.onclick = () => {
     localStorage.setItem("bookingInspectKey", key);
     window.location.href = "BookingInspect.html";
