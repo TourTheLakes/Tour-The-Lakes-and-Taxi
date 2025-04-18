@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Choose Time and Date</title>
@@ -12,246 +11,242 @@
       padding: 40px;
       display: flex;
       justify-content: center;
-    }
+    }.container {
+  max-width: 600px;
+  width: 100%;
+  background: #fff;
+  padding: 30px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-    .container {
-      max-width: 600px;
-      width: 100%;
-      background: #fff;
-      padding: 30px;
-      box-sizing: border-box;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #0d2a45;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #0d2a45;
-    }
+label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #333;
+}
 
-    label {
-      display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #333;
-    }
+input[type="date"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
 
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 10px;
+}
 
-    input[type="checkbox"] {
-      transform: scale(1.2);
-      margin-right: 10px;
-    }
+button {
+  margin-top: 25px;
+  padding: 12px 20px;
+  width: 100%;
+  background-color: #0d2a45;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
 
-    button {
-      margin-top: 25px;
-      padding: 12px 20px;
-      width: 100%;
-      background-color: #0d2a45;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
+button:hover {
+  background-color: #1e3c5d;
+}
 
-    button:hover {
-      background-color: #1e3c5d;
-    }
+p {
+  font-size: 14px;
+  margin: 10px 0;
+  color: #555;
+}
 
-    p {
-      font-size: 14px;
-      margin: 10px 0;
-      color: #555;
-    }
+@media screen and (max-width: 480px) {
+  body {
+    padding: 20px;
+  }
+  .container {
+    padding: 20px;
+  }
+}
 
-    @media screen and (max-width: 480px) {
-      body {
-        padding: 20px;
-      }
-      .container {
-        padding: 20px;
-      }
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Choose Pickup Time</h1>
+    <h1>Choose Pickup Time</h1><label>
+  <input type="checkbox" id="asapCheckbox">
+  ASAP Pickup
+</label>
 
-    <label>
-      <input type="checkbox" id="asapCheckbox">
-      ASAP Pickup
-    </label>
+<p id="asapMessage" style="display: none;">
+  Average wait time is 15 minutes.
+</p>
 
-    <p id="asapMessage" style="display: none;">
-      Average wait time is 15 minutes.
-    </p>
+<div id="scheduleFields">
+  <label for="pickupDate">Pickup Date:</label>
+  <input type="date" id="pickupDate">
 
-    <div id="scheduleFields">
-      <label for="pickupDate">Pickup Date:</label>
-      <input type="date" id="pickupDate">
+  <label for="pickupTime">Pickup Time:</label>
+  <select id="pickupTime">
+    <option value="">Select a time...</option>
+  </select>
+</div>
 
-      <label for="pickupTime">Pickup Time:</label>
-      <select id="pickupTime">
-        <option value="">Select a time...</option>
-      </select>
-    </div>
+<button id="continueBtn">Continue</button>
 
-    <button id="continueBtn">Continue</button>
+<!-- Firebase Setup -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
 
-    <!-- Firebase Setup -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-    <script>
-      const firebaseConfig = {
-        apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-        authDomain: "tourthelakes-1e165.firebaseapp.com",
-        databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-        projectId: "tourthelakes-1e165",
-        storageBucket: "tourthelakes-1e165.appspot.com",
-        messagingSenderId: "470758171431",
-        appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-    </script>
+<script>
+  async function populateTimes() {
+    pickupTime.innerHTML = '<option value="">Select a time...</option>';
+    const selectedDate = new Date(pickupDate.value);
+    const dateStr = pickupDate.value;
+    const currentDate = new Date();
+    const todayStr = currentDate.toISOString().split("T")[0];
+    const isToday = pickupDate.value === todayStr;
 
-    <script>
-      async function populateTimes() {
-        pickupTime.innerHTML = '<option value="">Select a time...</option>';
-        const selectedDate = new Date(pickupDate.value);
-        const currentDate = new Date();
-        const todayStr = currentDate.toISOString().split("T")[0];
-        const isToday = pickupDate.value === todayStr;
+    // Check custom availability from Master Rota
+    const customSnap = await db.ref("driverCustomAvailability").once("value");
+    const customData = customSnap.val() || {};
 
-        // Get available drivers
-        const [shiftsSnap, statusSnap] = await Promise.all([
-          db.ref("driverShifts").once("value"),
-          db.ref("driverStatus").once("value")
-        ]);
+    let availableDrivers = [];
 
-        const shifts = shiftsSnap.val() || {};
-        const statuses = statusSnap.val() || {};
-        const availableDrivers = [];
-
-        for (const doorCard in statuses) {
-          if (statuses[doorCard] !== "Available") continue;
-          const shift = shifts[doorCard];
-          if (!shift) continue;
-
-          let [fromHour] = shift.from.split(":").map(Number);
-          let [untilHour] = shift.until.split(":").map(Number);
-
-          if (isToday) {
-            const now = new Date();
-            const nowHour = now.getHours();
-            if (nowHour < fromHour || nowHour >= untilHour) continue;
-          }
-
-          availableDrivers.push({ doorCard, fromHour, untilHour });
+    for (const doorCard in customData) {
+      if (customData[doorCard][dateStr]) {
+        const shift = customData[doorCard][dateStr];
+        if (shift.from && shift.until) {
+          availableDrivers.push({
+            doorCard,
+            fromHour: parseInt(shift.from.split(":")[0]),
+            untilHour: parseInt(shift.until.split(":")[0])
+          });
         }
+      }
+    }
 
-        if (availableDrivers.length === 0) {
-          alert("No drivers are available for the selected date. Please choose a different date.");
+    if (availableDrivers.length === 0) {
+      alert("No drivers are available for the selected date. Please choose another.");
+      return;
+    }
+
+    let startTime = new Date(selectedDate);
+    let endTime = new Date(selectedDate);
+    const minTime = new Date(currentDate.getTime() + 30 * 60000);
+
+    let earliest = 24;
+    let latest = 0;
+
+    availableDrivers.forEach(driver => {
+      if (driver.fromHour < earliest) earliest = driver.fromHour;
+      if (driver.untilHour > latest) latest = driver.untilHour;
+    });
+
+    const shiftStartTime = new Date(startTime);
+    shiftStartTime.setHours(earliest, 0, 0, 0);
+
+    if (isToday) {
+      startTime = new Date(Math.max(minTime, shiftStartTime));
+    } else {
+      startTime = shiftStartTime;
+    }
+
+    endTime.setHours(latest, 0, 0, 0);
+
+    while (startTime <= endTime) {
+      const h = startTime.getHours().toString().padStart(2, '0');
+      const m = startTime.getMinutes().toString().padStart(2, '0');
+      pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
+      startTime.setMinutes(startTime.getMinutes() + 15);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const asapCheckbox = document.getElementById("asapCheckbox");
+    const pickupDate = document.getElementById("pickupDate");
+    const pickupTime = document.getElementById("pickupTime");
+    const asapMessage = document.getElementById("asapMessage");
+
+    const today = new Date().toISOString().split("T")[0];
+    pickupDate.setAttribute("min", today);
+
+    pickupDate.addEventListener("change", populateTimes);
+    pickupDate.value = today;
+    populateTimes();
+
+    asapCheckbox.addEventListener("change", function () {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const shiftStart = 9;
+      const shiftEnd = 19;
+
+      if (currentHour < shiftStart || currentHour >= shiftEnd) {
+        alert(`ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.`);
+        this.checked = false;
+        return;
+      }
+
+      const isChecked = this.checked;
+      pickupDate.disabled = isChecked;
+      pickupTime.disabled = isChecked;
+      asapMessage.style.display = isChecked ? "block" : "none";
+    });
+
+    document.getElementById("continueBtn").addEventListener("click", function () {
+      const isASAP = asapCheckbox.checked;
+
+      if (isASAP) {
+        localStorage.setItem("pickupType", "ASAP");
+        localStorage.removeItem("pickupDate");
+        localStorage.removeItem("pickupTime");
+      } else {
+        const date = pickupDate.value;
+        const time = pickupTime.value;
+
+        if (!date || !time) {
+          alert("Please select both a date and time.");
           return;
         }
 
-        // Default static window
-        let startTime = new Date(selectedDate);
-        let endTime = new Date(selectedDate);
-        const minTime = new Date(currentDate.getTime() + 30 * 60000);
-        const shiftStartHour = 9;
-        const shiftEndHour = 19;
-
-        const shiftStartTime = new Date(startTime);
-        shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
-
-        if (isToday) {
-          startTime = new Date(Math.max(minTime, shiftStartTime));
-        } else {
-          startTime = shiftStartTime;
-        }
-
-        endTime.setHours(shiftEndHour, 0, 0, 0);
-
-        while (startTime <= endTime) {
-          const h = startTime.getHours().toString().padStart(2, '0');
-          const m = startTime.getMinutes().toString().padStart(2, '0');
-          pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
-          startTime.setMinutes(startTime.getMinutes() + 15);
-        }
+        localStorage.setItem("pickupType", "Scheduled");
+        localStorage.setItem("pickupDate", date);
+        localStorage.setItem("pickupTime", time);
       }
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const asapCheckbox = document.getElementById("asapCheckbox");
-        const pickupDate = document.getElementById("pickupDate");
-        const pickupTime = document.getElementById("pickupTime");
-        const asapMessage = document.getElementById("asapMessage");
+      location.href = "VerifyPhone.html";
+    });
+  });
+</script>
 
-        const today = new Date().toISOString().split("T")[0];
-        pickupDate.setAttribute("min", today);
-
-        pickupDate.addEventListener("change", populateTimes);
-        pickupDate.value = today;
-        populateTimes();
-
-        asapCheckbox.addEventListener("change", function () {
-          const now = new Date();
-          const currentHour = now.getHours();
-          const shiftStart = 9;
-          const shiftEnd = 19;
-
-          if (currentHour < shiftStart || currentHour >= shiftEnd) {
-            alert(`ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.`);
-            this.checked = false;
-            return;
-          }
-
-          const isChecked = this.checked;
-          pickupDate.disabled = isChecked;
-          pickupTime.disabled = isChecked;
-          asapMessage.style.display = isChecked ? "block" : "none";
-        });
-
-        document.getElementById("continueBtn").addEventListener("click", function () {
-          const isASAP = asapCheckbox.checked;
-
-          if (isASAP) {
-            localStorage.setItem("pickupType", "ASAP");
-            localStorage.removeItem("pickupDate");
-            localStorage.removeItem("pickupTime");
-          } else {
-            const date = pickupDate.value;
-            const time = pickupTime.value;
-
-            if (!date || !time) {
-              alert("Please select both a date and time.");
-              return;
-            }
-
-            localStorage.setItem("pickupType", "Scheduled");
-            localStorage.setItem("pickupDate", date);
-            localStorage.setItem("pickupTime", time);
-          }
-
-          location.href = "VerifyPhone.html";
-        });
-      });
-    </script>
   </div>
 </body>
 </html>
