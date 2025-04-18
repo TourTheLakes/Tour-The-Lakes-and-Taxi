@@ -388,19 +388,17 @@
         const hour = now.getHours();
         const isNight = (hour >= 23 || hour < 7);
 
-        // Fare logic
-        let fare = 0;
-        if (distanceMeters <= 1609) {
-          fare = isNight ? 6.30 : 4.20;
-        } else {
+ // Fare logic (cleaned)
+        const baseFare = isNight ? 6.30 : 4.20;
+        const stepFare = isNight ? 0.40 : 0.30;
+        let fare = baseFare;
+
+        if (distanceMeters > 1609) {
           const extraDist = distanceMeters - 1609;
           const extraUnits = Math.ceil(extraDist / 161);
-          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
+          fare += extraUnits * stepFare;
         }
 
-        const waitRate = isNight ? 0.60 : 0.30;
-        const waitCharge = Math.ceil(durationMinutes) * waitRate;
-        fare += waitCharge;
 
         document.getElementById('estimateMsg').innerHTML = `
           Estimated journey: <strong>${leg.distance.text}</strong>,
