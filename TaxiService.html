@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -202,7 +203,6 @@
     markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
     markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
 
-    // Allow marker setting on click
     mapPickup.addListener("click", (e) => {
       markerPickup.setPosition(e.latLng);
       localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
@@ -214,8 +214,7 @@
       localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
       showCustomNote();
     });
-
-    // Autocomplete for addresses
+    
     const pickupInput = document.getElementById("pickup");
     const dropoffInput = document.getElementById("dropoff");
     const pickupAuto = new google.maps.places.Autocomplete(pickupInput);
@@ -246,7 +245,6 @@
 </script>
   
   <script>
-    // Basic location access setup
     window.onload = function () {
       if (!localStorage.getItem("locationAllowed")) {
         navigator.geolocation.getCurrentPosition(
@@ -271,6 +269,7 @@
       document.getElementById('dropoffDisplay').innerText = dropoff;
 
       document.getElementById('step2').style.display = 'block';
+      estimateJourney();
     }
 
     function updateLuggageOptions() {
