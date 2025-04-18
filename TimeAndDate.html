@@ -179,27 +179,30 @@ asapCheckbox.addEventListener("change", function () {
   asapMessage.style.display = isChecked ? "block" : "none";
 });
 
-        document.getElementById("continueBtn").addEventListener("click", function () {
-          if (asapCheckbox.checked) {
-            localStorage.setItem("pickupType", "ASAP");
-            localStorage.removeItem("pickupDate");
-            localStorage.removeItem("pickupTime");
-          } else {
-            const date = pickupDate.value;
-            const time = pickupTime.value;
+document.getElementById("continueBtn").addEventListener("click", function () {
+  const isASAP = asapCheckbox.checked;
 
-            if (!date || !time) {
-              alert("Please select both a date and time.");
-              return;
-            }
+  if (isASAP) {
+    localStorage.setItem("pickupType", "ASAP");
+    localStorage.removeItem("pickupDate");
+    localStorage.removeItem("pickupTime");
+  } else {
+    const date = pickupDate.value;
+    const time = pickupTime.value;
 
-            localStorage.setItem("pickupType", "Scheduled");
-            localStorage.setItem("pickupDate", date);
-            localStorage.setItem("pickupTime", time);
-          }
+    if (!date || !time) {
+      alert("Please select both a date and time.");
+      return;
+    }
 
-          window.location.href = "VerifyPhone.html";
-        });
+    localStorage.setItem("pickupType", "Scheduled");
+    localStorage.setItem("pickupDate", date);
+    localStorage.setItem("pickupTime", time);
+  }
+
+  location.href = "VerifyPhone.html";
+});
+
       });
     </script>
   </div>
