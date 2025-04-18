@@ -381,7 +381,32 @@
     (result, status) => {
       if (status === 'OK' && result.routes.length > 0) {
         const leg = result.routes[0].legs[0];
-        ...
+        const distanceMeters = leg.distance.value;
+        const durationMinutes = leg.duration.value / 60;
+
+        const now = new Date();
+        const hour = now.getHours();
+        const isNight = (hour >= 23 || hour < 7);
+
+        // Fare logic
+        let fare = 0;
+        if (distanceMeters <= 1609) {
+          fare = isNight ? 6.30 : 4.20;
+        } else {
+          const extraDist = distanceMeters - 1609;
+          const extraUnits = Math.ceil(extraDist / 161);
+          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
+        }
+
+        const waitRate = isNight ? 0.60 : 0.30;
+        const waitCharge = Math.ceil(durationMinutes) * waitRate;
+        fare += waitCharge;
+
+        document.getElementById('estimateMsg').innerHTML = `
+          Estimated journey: <strong>${leg.distance.text}</strong>,
+          <strong>${leg.duration.text}</strong><br>
+          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `;
       } else if (status === 'ZERO_RESULTS') {
         document.getElementById('estimateMsg').innerText = 'No route available. Please adjust addresses.';
       } else {
@@ -391,6 +416,7 @@
     }
   );
 }
+
 
   
 
