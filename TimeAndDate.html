@@ -182,14 +182,14 @@ const [shiftEndHour, shiftEndMin] = globalLatest.split(":").map(Number);
 
 db.ref("driverStatus").once("value").then(statusSnap => {
   const statusData = statusSnap.val() || {};
-  const availableDrivers = Object.keys(statusData).filter(d => statusData[d] === "Available");
+  const availableDrivers = Object.keys(statusData).filter(d => statusData[d] === "Available").map(String);
 
   db.ref("driverShifts").once("value").then(shiftSnap => {
     const shiftData = shiftSnap.val() || {};
     let fromTimes = [], untilTimes = [];
 
     for (const door in shiftData) {
-      if (availableDrivers.includes(door)) {
+      if (availableDrivers.includes(door.toString())) {
         fromTimes.push(shiftData[door].from || "09:00");
         untilTimes.push(shiftData[door].until || "19:00");
       }
