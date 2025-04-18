@@ -217,8 +217,8 @@ animation: pulseBusy 3s infinite;
 
     const greetingEl = document.getElementById('driverGreeting');
     const container = document.getElementById('bookingsContainer');
-    const driverDoor = localStorage.getItem("driverDoor");
-    const driverName = localStorage.getItem("driverName");
+    const driverDoor = localStorage.getItem("driverDoor") || "";
+    const driverName = localStorage.getItem("driverName") || "";
 
     // SHIFT CONTROL DROPDOWN POPULATION
 const shiftFrom = document.getElementById("shiftFrom");
@@ -265,9 +265,9 @@ populateShiftDropdowns();
     }
 
     function isValidShift(from, until) {
-      const [fH] = from.split(":").map(Number);
-      const [uH] = until.split(":").map(Number);
-      return fH < uH;
+      const [fH, fM] = from.split(":").map(Number);
+      const [uH, uM] = until.split(":").map(Number);
+      return (uH > fH) || (uH === fH && uM > fM);
     }
 
     shiftFrom.addEventListener("change", () => {
@@ -296,21 +296,6 @@ populateShiftDropdowns();
      updateShiftStatus();
    });
  }
-    
-  function saveShiftToFirebase() {
-  const from = shiftFrom.value;
-  const until = shiftUntil.value;
-
-  if (!driverDoor) return;
-
-  db.ref("driverShifts/" + driverDoor).set({
-    from: from,
-    until: until
-  });
-}
-    
-shiftFrom.addEventListener("change", saveShiftToFirebase);
-shiftUntil.addEventListener("change", saveShiftToFirebase);
 
  const finishEarlyBtn = document.getElementById("finishEarlyBtn");
 
@@ -327,11 +312,14 @@ finishEarlyBtn.addEventListener("click", function () {
       if (
         b.claimedBy &&
         b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
-        b.pickupType === "Scheduled" &&
-        b.time
+        b.pickupType === "Scheduled"
       ) {
-        const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
-        const bookingTime = new Date(`${bookingDate}T${b.time}`);
+        if (!b.time || !/^\d{2}:\d{2}$/.test(b.time) || !b.pickupDate) {
+      continue;
+        }
+        const bookingTime = new Date(`${b.pickupDate}T${b.time}`);
+        if (isNaN(bookingTime)) continue;
+        
         if (bookingTime > now) {
           conflict = true;
           break;
