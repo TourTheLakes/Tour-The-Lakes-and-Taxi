@@ -168,8 +168,6 @@ const [shiftEndHour, shiftEndMin] = globalLatest.split(":").map(Number);
   endTime.setHours(shiftEndHour, shiftEndMin, 0, 0);
 
 
-  console.log("Start:", startTime.toTimeString());
-  console.log("End:", endTime.toTimeString());
 
   while (startTime <= endTime) {
     const h = startTime.getHours().toString().padStart(2, '0');
@@ -202,9 +200,10 @@ db.ref("driverStatus").once("value").then(statusSnap => {
       globalEarliest = fromTimes.sort()[0];
       globalLatest = untilTimes.sort().reverse()[0];
     }
-
+setTimeout(() => {
     pickupDate.value = today;
     populateTimes();
+}, 50);
   });
 });
 
