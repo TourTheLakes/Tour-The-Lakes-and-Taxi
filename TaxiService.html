@@ -233,11 +233,15 @@
     mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
       center: defaultLatLng,
       zoom: 13,
+      disableDefaultUI: true,
+      gestureHandling: "cooperative"
     });
 
     mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), {
       center: defaultLatLng,
       zoom: 13,
+      disableDefaultUI: true,
+      gestureHandling: "cooperative"
     });
 
     markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
