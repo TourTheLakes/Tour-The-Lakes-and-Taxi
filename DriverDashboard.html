@@ -244,28 +244,7 @@ populateShiftDropdowns();
       const until = shiftUntil.value;
       shiftStatus.innerHTML = `Today's schedule is <strong>${from}</strong> until <strong>${until}</strong>. To extend your hours, select below:`;
     }
-
-    function saveShiftToFirebase() {
-      const from = shiftFrom.value;
-      const until = shiftUntil.value;
-
-      if (!isValidShift(from, until)) {
-        alert("Invalid time range. 'Until' must be later than 'From'.");
-        return;
-      }
-
-      if (!driverDoor) return;
-
-      db.ref("driverShifts/" + driverDoor).set({
-        from: from,
-        until: until
-      }).then(() => {
-        updateShiftStatus();
-      }).catch((error) => {
-        alert("Failed to update shift: " + error.message);
-      });
-    }
-
+    
     function isValidShift(from, until) {
       const [fH, fM] = from.split(":").map(Number);
       const [uH, uM] = until.split(":").map(Number);
