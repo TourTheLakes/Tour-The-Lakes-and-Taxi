@@ -235,7 +235,6 @@
       zoom: 13,
     });
 
-    // Initialize Drop-off map
     mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), {
       center: defaultLatLng,
       zoom: 13,
@@ -258,8 +257,12 @@
     
     const pickupInput = document.getElementById("pickup");
     const dropoffInput = document.getElementById("dropoff");
-    const pickupAuto = new google.maps.places.Autocomplete(pickupInput);
-    const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput);
+    const pickupAuto = new google.maps.places.Autocomplete(pickupInput, {
+    componentRestrictions: { country: 'gb' }
+     });
+    const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput, {
+    componentRestrictions: { country: 'gb' }
+    });
 
     pickupAuto.addListener("place_changed", () => {
       const place = pickupAuto.getPlace();
