@@ -409,7 +409,7 @@
         } else if (status === 'ZERO_RESULTS') {
           document.getElementById('estimateMsg').innerText = 'No route available. Please adjust addresses.';
         } else {
-          document.getElementById('estimateMsg').innerText = Could not estimate journey (${status}).;
+          document.getElementById('estimateMsg').innerText = `Could not estimate journey (${status}).`;
           console.error('Route error:', status);
         }
       }
