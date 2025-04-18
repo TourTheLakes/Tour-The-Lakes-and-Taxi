@@ -85,14 +85,14 @@
   </style>
 </head>
 <body>
-  <div class="container magic-flash">
+  <div class="container">
     <div id="step1" class="step active">
       <h2>Step 1: Pickup & Drop-off</h2>
       <button onclick="getLocation()">Use My Location</button>
       <label>Pickup Address:</label>
-      <input id="pickup" type="text" placeholder="Enter pickup address or drop a pin...">
+      <input id="pickup" type="text" placeholder="Enter pickup address or drop a pin..." oninput="estimateFare()">
       <label>Drop-off Address:</label>
-      <input id="dropoff" type="text" placeholder="Enter destination...">
+      <input id="dropoff" type="text" placeholder="Enter destination..." oninput="estimatedFare()">
       <div id="map"></div>
       <label>Additional Notes:</label>
       <textarea id="extra" placeholder="Gate codes, landmarks, etc..."></textarea>
@@ -142,6 +142,8 @@
         if (status === 'OK' && res[0]) {
           document.getElementById('pickup').value = res[0].formatted_address;
           estimateFare();
+        } else {
+          alert('Unable to retrieve address from location.');
         }
       });
     }
@@ -159,6 +161,10 @@
       }, (res, status) => {
         if (status === 'OK') {
           const el = res.rows[0].elements[0];
+          if (!el.distance || !el.distance.value) {
+            document.getElementById('estimateBox').innerText = 'Could not estimate fare.';
+            return;
+          }
           const miles = el.distance.value / 1609.34;
           const base = 4.20;
           const rate = 0.30;
@@ -179,7 +185,11 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      if (typeof google !== 'undefiend' && google.maps) {
       initMap();
+      } else {
+        alert('Google Maps failed to load.');
+      }
     });
   </script></body>
 </html>
