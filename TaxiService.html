@@ -144,27 +144,30 @@
   <input type="text" id="pickup" placeholder="Start typing...">
   <div id="mapPickup"></div>
 
-  <label for="dropoff">Drop-off Address:</label>
-  <input type="text" id="dropoff" placeholder="Start typing...">
-  <div id="mapDropoff"></div>
+<label for="dropoff">Drop-off Address:</label>
+<input type="text" id="dropoff" placeholder="Start typing...">
+<div id="mapDropoff"></div>
 
-  <div id="customNoteArea" style="display:none;">
-    <label>Additional info for your driver:</label>
-    <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
-    <div class="disclaimer">
-      Since this is a custom address selection, it's difficult to estimate your journey time. However, our prices are as follows:<br>
-      <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
-      <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
-      <strong>Waiting Time:</strong> 30–50p per minute depending on time of day.
-    </div>
+<div id="customNoteArea" style="display:none;">
+  <label>Additional info for your driver:</label>
+  <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+
+  <div class="disclaimer">
+    Since this is a custom address selection, it's difficult to estimate your journey time. However, our prices are as follows:<br>
+    <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
+    <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
+    <strong>Waiting Time:</strong> 30–50p per minute depending on time of day.
+  </div>
+
+  <div class="button-row">
+    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+    <button onclick="goToNextStep()">Next</button>
   </div>
 </div>
 
 
-<div class="button-row">
-  <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
-  <button onclick="goToNextStep()">Next</button>
-</div>
+
+
 
 <div id="step2" style="display:none; margin-top:30px;">
   <h2>Journey Details</h2>
