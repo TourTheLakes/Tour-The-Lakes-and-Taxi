@@ -167,6 +167,10 @@ const [shiftEndHour, shiftEndMin] = globalLatest.split(":").map(Number);
 
   endTime.setHours(shiftEndHour, shiftEndMin, 0, 0);
 
+
+  console.log("Start:", startTime.toTimeString());
+  console.log("End:", endTime.toTimeString());
+
   while (startTime <= endTime) {
     const h = startTime.getHours().toString().padStart(2, '0');
     const m = startTime.getMinutes().toString().padStart(2, '0');
