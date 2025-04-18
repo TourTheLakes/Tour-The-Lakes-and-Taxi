@@ -586,17 +586,7 @@ card.innerHTML = `
 `;
 
 if (!booking.claimedBy || booking.claimedBy === "unassigned" ||
-    (typeof booking.claimedBy === "string" &&
-    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) ) {
-  card.onclick = () => {
-    localStorage.setItem("bookingInspectKey", key);
-    window.location.href = "BookingInspect.html";
-  };
-}
-
-if (!booking.claimedBy || booking.claimedBy === "unassigned" ||
-    (typeof booking.claimedBy === "string" &&
-    booking.claimedBy.toLowerCase() === driverName.toLowerCase())) {
+    booking.claimedBy.toLowerCase() === driverName.toLowerCase()) {
   card.onclick = () => {
     localStorage.setItem("bookingInspectKey", key);
     window.location.href = "BookingInspect.html";
@@ -612,7 +602,7 @@ if (booking.claimedBy === "unassigned") {
 }
 
 row.appendChild(card);
-
+        
 if (booking.claimedBy && booking.claimedBy !== "unassigned") {
   const claimedBox = document.createElement("div");
   claimedBox.className = "claimed-info";
@@ -621,33 +611,24 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     <p style="margin-top: 15px;">This booking has been accepted and is now being handled by this driver.</p>
   `;
 
-  let foundMatch = false;
   for (const key in driversCache) {
     const d = driversCache[key];
     if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
       claimedBox.insertAdjacentHTML("beforeend", `
-        <p><strong>Phone Number:</strong> ${d.phone}</p>
-        <p><strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}</p>
-        <p><strong>Registration:</strong> ${d.vehicle.registration}</p>
-        <p><strong>Seats:</strong> ${d.vehicle.seats}</p>
+      <p><strong>Phone Number:</strong> ${d.phone}</p>
+      <p><strong>Vehicle:</strong> ${d.vehicle.color} ${d.vehicle.make}</p>
+      <p><strong>Registration:</strong> ${d.vehicle.registration}</p>
+      <p><strong>Seats:</strong> ${d.vehicle.seats}</p>
       `);
-      foundMatch = true;
       break;
     }
   }
-
-  if (!foundMatch) {
-    claimedBox.insertAdjacentHTML("beforeend", `
-      <p style="color: #f44336;"><em>Warning: Driver profile not found for this claim.</em></p>
-    `);
-  }
-
   row.appendChild(claimedBox);
 }
-
-container.appendChild(row);
-      });
+        container.appendChild(row);
     });
+  });
+});
     
   </script>
 </body>
