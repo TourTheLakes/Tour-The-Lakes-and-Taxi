@@ -11,93 +11,78 @@
       padding: 40px;
       display: flex;
       justify-content: center;
-    }.container {
-  max-width: 600px;
-  width: 100%;
-  background: #fff;
-  padding: 30px;
-  box-sizing: border-box;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #0d2a45;
-}
-
-label {
-  display: block;
-  margin-top: 15px;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #333;
-}
-
-input[type="date"],
-select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-input[type="checkbox"] {
-  transform: scale(1.2);
-  margin-right: 10px;
-}
-
-button {
-  margin-top: 25px;
-  padding: 12px 20px;
-  width: 100%;
-  background-color: #0d2a45;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-button:hover {
-  background-color: #1e3c5d;
-}
-
-p {
-  font-size: 14px;
-  margin: 10px 0;
-  color: #555;
-}
-
-@media screen and (max-width: 480px) {
-  body {
-    padding: 20px;
-  }
-  .container {
-    padding: 20px;
-  }
-}
-
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: #fff;
+      padding: 30px;
+      box-sizing: border-box;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #0d2a45;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #333;
+    }
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 10px;
+    }
+    button {
+      margin-top: 25px;
+      padding: 12px 20px;
+      width: 100%;
+      background-color: #0d2a45;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #1e3c5d;
+    }
+    p {
+      font-size: 14px;
+      margin: 10px 0;
+      color: #555;
+    }
+    @media screen and (max-width: 480px) {
+      body {
+        padding: 20px;
+      }
+      .container {
+        padding: 20px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Choose Pickup Time</h1><label>
-  <input type="checkbox" id="asapCheckbox">
-  ASAP Pickup
-</label>
-
-<p id="asapMessage" style="display: none;">
-  Average wait time is 15 minutes.
-</p>
-
-<div id="scheduleFields">
+    <h1>Choose Pickup Time</h1>
+    <label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
+    <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p><div id="scheduleFields">
   <label for="pickupDate">Pickup Date:</label>
   <input type="date" id="pickupDate">
 
@@ -124,70 +109,52 @@ p {
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
-</script>
 
-<script>
   async function populateTimes() {
     pickupTime.innerHTML = '<option value="">Select a time...</option>';
-    const selectedDate = new Date(pickupDate.value);
-    const dateStr = pickupDate.value;
+    const selectedDate = pickupDate.value;
     const currentDate = new Date();
     const todayStr = currentDate.toISOString().split("T")[0];
-    const isToday = pickupDate.value === todayStr;
+    const isToday = selectedDate === todayStr;
 
-    // Check custom availability from Master Rota
-    const customSnap = await db.ref("driverCustomAvailability").once("value");
-    const customData = customSnap.val() || {};
+    const [customSnap, statusSnap] = await Promise.all([
+      db.ref("driverCustomAvailability").once("value"),
+      db.ref("driverStatus").once("value")
+    ]);
 
-    let availableDrivers = [];
+    const availability = customSnap.val() || {};
+    const statuses = statusSnap.val() || {};
+    const slotSet = new Set();
 
-    for (const doorCard in customData) {
-      if (customData[doorCard][dateStr]) {
-        const shift = customData[doorCard][dateStr];
-        if (shift.from && shift.until) {
-          availableDrivers.push({
-            doorCard,
-            fromHour: parseInt(shift.from.split(":")[0]),
-            untilHour: parseInt(shift.until.split(":")[0])
-          });
+    for (const doorCard in availability) {
+      if (statuses[doorCard] !== "Available") continue;
+      const driverDay = availability[doorCard][selectedDate];
+      if (!Array.isArray(driverDay)) continue;
+
+      driverDay.forEach(range => {
+        const [fromH, fromM] = range.from.split(":").map(Number);
+        const [untilH, untilM] = range.until.split(":").map(Number);
+        let t = new Date(selectedDate + 'T' + range.from);
+        const end = new Date(selectedDate + 'T' + range.until);
+
+        while (t <= end) {
+          const h = t.getHours().toString().padStart(2, '0');
+          const m = t.getMinutes().toString().padStart(2, '0');
+          slotSet.add(`${h}:${m}`);
+          t.setMinutes(t.getMinutes() + 15);
         }
-      }
+      });
     }
 
-    if (availableDrivers.length === 0) {
-      alert("No drivers are available for the selected date. Please choose another.");
+    const sortedSlots = Array.from(slotSet).sort();
+    if (sortedSlots.length === 0) {
+      alert("No available drivers for that date.");
       return;
     }
 
-    let startTime = new Date(selectedDate);
-    let endTime = new Date(selectedDate);
-    const minTime = new Date(currentDate.getTime() + 30 * 60000);
-
-    let earliest = 24;
-    let latest = 0;
-
-    availableDrivers.forEach(driver => {
-      if (driver.fromHour < earliest) earliest = driver.fromHour;
-      if (driver.untilHour > latest) latest = driver.untilHour;
+    sortedSlots.forEach(time => {
+      pickupTime.innerHTML += `<option value="${time}">${time}</option>`;
     });
-
-    const shiftStartTime = new Date(startTime);
-    shiftStartTime.setHours(earliest, 0, 0, 0);
-
-    if (isToday) {
-      startTime = new Date(Math.max(minTime, shiftStartTime));
-    } else {
-      startTime = shiftStartTime;
-    }
-
-    endTime.setHours(latest, 0, 0, 0);
-
-    while (startTime <= endTime) {
-      const h = startTime.getHours().toString().padStart(2, '0');
-      const m = startTime.getMinutes().toString().padStart(2, '0');
-      pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
-      startTime.setMinutes(startTime.getMinutes() + 15);
-    }
   }
 
   document.addEventListener("DOMContentLoaded", function () {
