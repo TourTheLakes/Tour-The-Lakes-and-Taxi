@@ -213,16 +213,15 @@ db.ref("driverStatus").once("value").then(statusSnap => {
 
 asapCheckbox.addEventListener("change", function () {
   const now = new Date();
-  const hour = now.getHours();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
   
-const nowMinutes = new Date().getHours() * 60 + new Date().getMinutes();
 const [earliestHour, earliestMin] = globalEarliest.split(":").map(Number);
 const [latestHour, latestMin] = globalLatest.split(":").map(Number);
-const earliestMinutes = earliestHour * 60 + earliestMin;
-const latestMinutes = latestHour * 60 + latestMin;
+  const earliestMinutes = earliestHour * 60 + earliestMin;
+  const latestMinutes = latestHour * 60 + latestMin;
 
-if (nowMinutes < earliestMinutes || nowMinutes >= latestMinutes) {
-  alert(`ASAP bookings are only available between ${globalEarliest} and ${globalLatest}.`);
+if (nowMinutes < earliestMinutes || nowMinutes >= (latestMinutes - 15)) {
+  alert(`ASAP bookings are only available between ${globalEarliest} and ${globalLatest}, with the last ASAP request accepted 15 minutes before shift end.`);
   asapCheckbox.checked = false;
   return;
 }
