@@ -102,7 +102,84 @@
         <button onclick="nextStep(1)">Next</button>
       </div>
     </div>
-    <!-- Remaining Steps Unchanged -->
-  </div>
-</body>
+    <!-- The rest of your booking steps go here -->
+  </div>  <!-- Firebase + Maps API -->  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let map, marker;
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 54.38, lng: -2.92 }, zoom: 12
+      });
+      marker = new google.maps.Marker({ map, draggable: true });
+      map.addListener("click", e => {
+        marker.setPosition(e.latLng);
+        getAddressFromLatLng(e.latLng);
+      });
+    }
+
+    function getLocation() {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        map.setCenter(loc); marker.setPosition(loc);
+        getAddressFromLatLng(loc);
+      }, () => alert("Location denied."));
+    }
+
+    function getAddressFromLatLng(latlng) {
+      const geo = new google.maps.Geocoder();
+      geo.geocode({ location: latlng }, (res, status) => {
+        if (status === 'OK' && res[0]) {
+          document.getElementById('pickup').value = res[0].formatted_address;
+          estimateFare();
+        }
+      });
+    }
+
+    function estimateFare() {
+      const origin = document.getElementById('pickup').value;
+      const dest = document.getElementById('dropoff').value;
+      if (!origin || !dest) return;
+
+      const service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [dest],
+        travelMode: 'DRIVING'
+      }, (res, status) => {
+        if (status === 'OK') {
+          const el = res.rows[0].elements[0];
+          const miles = el.distance.value / 1609.34;
+          const base = 4.20;
+          const rate = 0.30;
+          const estimate = (base + Math.max(0, miles - 1) * rate * 10).toFixed(2);
+          document.getElementById('estimateBox').innerText = `Estimated Fare: £${estimate}`;
+        }
+      });
+    }
+
+    function nextStep(n) {
+      document.getElementById('step' + n).classList.remove('active');
+      document.getElementById('step' + (n + 1)).classList.add('active');
+    }
+
+    function prevStep(n) {
+      document.getElementById('step' + n).classList.remove('active');
+      document.getElementById('step' + (n - 1)).classList.add('active');
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initMap();
+    });
+  </script></body>
 </html>
