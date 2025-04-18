@@ -610,7 +610,7 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
     <p><strong>Claimed By:</strong> ${booking.claimedBy}</p>
     <p style="margin-top: 15px;">This booking has been accepted and is now being handled by this driver.</p>
   `;
-
+  let foundMatch = false;
   for (const key in driversCache) {
     const d = driversCache[key];
     if (d.name.toLowerCase() === booking.claimedBy.toLowerCase()) {
@@ -620,8 +620,14 @@ if (booking.claimedBy && booking.claimedBy !== "unassigned") {
       <p><strong>Registration:</strong> ${d.vehicle.registration}</p>
       <p><strong>Seats:</strong> ${d.vehicle.seats}</p>
       `);
+      foundMatch = true;
       break;
     }
+  }
+  if (!foundMatch) {
+    claimedBox.insertAdjacentHTML("beforeend", `
+    <p style="color: #f44336;"><em>Warning: Driver profile not found for this claim.</em></p>
+    `);
   }
   row.appendChild(claimedBox);
 }
