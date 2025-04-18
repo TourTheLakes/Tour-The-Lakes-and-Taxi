@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>Choose Time and Date</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -117,123 +119,108 @@
         const pickupTime = document.getElementById("pickupTime");
         const asapMessage = document.getElementById("asapMessage");
 
-// Step 1: Firebase + shift availability setup
-const firebaseConfig = {
-  apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-  authDomain: "tourthelakes-1e165.firebaseapp.com",
-  databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-  projectId: "tourthelakes-1e165",
-  storageBucket: "tourthelakes-1e165.appspot.com",
-  messagingSenderId: "470758171431",
-  appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// These will be updated based on real driver shifts
-let globalEarliest = "09:00";
-let globalLatest = "19:00";
-        
-
         const today = new Date().toISOString().split("T")[0];
         pickupDate.setAttribute("min", today);
 
+        const firebaseConfig = {
+          apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+          authDomain: "tourthelakes-1e165.firebaseapp.com",
+          databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+          projectId: "tourthelakes-1e165",
+          storageBucket: "tourthelakes-1e165.appspot.com",
+          messagingSenderId: "470758171431",
+          appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let globalEarliest = "09:00";
+        let globalLatest = "19:00";
+
+        function populateTimes() {
+          pickupTime.innerHTML = '<option value="">Select a time...</option>';
+
+          const selectedDate = new Date(pickupDate.value);
+          const currentDate = new Date();
+          const isToday = pickupDate.value === today;
+
+          let startTime = new Date(selectedDate);
+          let endTime = new Date(selectedDate);
+
+          const [startHour, startMin] = globalEarliest.split(":").map(Number);
+          const [endHour, endMin] = globalLatest.split(":").map(Number);
+
+          if (isToday) {
+            const minTime = new Date(currentDate.getTime() + 30 * 60000);
+            const shiftStart = new Date();
+            shiftStart.setHours(startHour, startMin, 0, 0);
+            startTime = new Date(Math.max(minTime, shiftStart));
+          } else {
+            startTime.setHours(startHour, startMin, 0, 0);
+          }
+
+          endTime.setHours(endHour, endMin, 0, 0);
+
+          while (startTime <= endTime) {
+            const h = startTime.getHours().toString().padStart(2, '0');
+            const m = startTime.getMinutes().toString().padStart(2, '0');
+            const option = document.createElement("option");
+            option.value = ${h}:${m};
+            option.textContent = ${h}:${m};
+            pickupTime.appendChild(option);
+            startTime.setMinutes(startTime.getMinutes() + 15);
+          }
+        }
+
+        db.ref("driverStatus").once("value").then(statusSnap => {
+          const statusData = statusSnap.val() || {};
+          const availableDrivers = Object.keys(statusData)
+            .filter(d => statusData[d] === "Available")
+            .map(String);
+
+          db.ref("driverShifts").once("value").then(shiftSnap => {
+            const shiftData = shiftSnap.val() || {};
+            const fromTimes = [];
+            const untilTimes = [];
+
+            for (const door in shiftData) {
+              if (availableDrivers.includes(door.toString())) {
+                fromTimes.push(shiftData[door].from || "09:00");
+                untilTimes.push(shiftData[door].until || "19:00");
+              }
+            }
+
+            if (fromTimes.length > 0) {
+              globalEarliest = fromTimes.sort()[0];
+              globalLatest = untilTimes.sort().reverse()[0];
+            }
+
+            pickupDate.value = today;
+            populateTimes();
+          });
+        });
+
         pickupDate.addEventListener("change", populateTimes);
 
-function populateTimes() {
-  pickupTime.innerHTML = '<option value="">Select a time...</option>';
+        asapCheckbox.addEventListener("change", function () {
+          const now = new Date();
+          const nowMinutes = now.getHours() * 60 + now.getMinutes();
+          const [startH, startM] = globalEarliest.split(":").map(Number);
+          const [endH, endM] = globalLatest.split(":").map(Number);
+          const earliest = startH * 60 + startM;
+          const latest = endH * 60 + endM;
 
-  const selectedDate = new Date(pickupDate.value);
-  const currentDate = new Date();
-  const isToday = pickupDate.value === today;
+          if (nowMinutes < earliest || nowMinutes >= latest - 15) {
+            alert(ASAP only allowed between ${globalEarliest} and ${globalLatest});
+            asapCheckbox.checked = false;
+            return;
+          }
 
-  let startTime = new Date(selectedDate);
-  let endTime = new Date(selectedDate);
-
-  // Default shift range
-  
-const [shiftStartHour, shiftStartMin] = globalEarliest.split(":").map(Number);
-const [shiftEndHour, shiftEndMin] = globalLatest.split(":").map(Number);
-
-  if (isToday) {
-    // Minimum time is now + 30 minutes, but not before shiftStart
-    const minTime = new Date(currentDate.getTime() + 30 * 60000);
-    const shiftStartTime = new Date();
-    shiftStartTime.setHours(shiftStartHour, 0, 0, 0);
-    startTime = new Date(Math.max(minTime, shiftStartTime));
-  } else {
-    startTime.setHours(shiftStartHour, shiftStartMin, 0, 0);
-  }
-
-  endTime.setHours(shiftEndHour, shiftEndMin, 0, 0);
-
-
-
-  while (startTime <= endTime) {
-    const h = startTime.getHours().toString().padStart(2, '0');
-    const m = startTime.getMinutes().toString().padStart(2, '0');
-    const option = document.createElement("option");
-    option.value = `${h}:${m}`;
-    option.textContent = `${h}:${m}`;
-    pickupTime.appendChild(option);
-    startTime.setMinutes(startTime.getMinutes() + 15);
-  }
-}
-
-db.ref("driverStatus").once("value").then(statusSnap => {
-  const statusData = statusSnap.val() || {};
-  const availableDrivers = Object.keys(statusData).filter(d => statusData[d] === "Available").map(String);
-
-  db.ref("driverShifts").once("value").then(shiftSnap => {
-    const shiftData = shiftSnap.val() || {};
-    let fromTimes = [], untilTimes = [];
-
-    for (const door in shiftData) {
-      if (availableDrivers.includes(door.toString())) {
-        fromTimes.push(shiftData[door].from || "09:00");
-        untilTimes.push(shiftData[door].until || "19:00");
-      }
-    }
-
-    if (fromTimes.length > 0) {
-      globalEarliest = fromTimes.sort()[0];
-      globalLatest = untilTimes.sort().reverse()[0];
-
-      console.log("Earliest:", globalEarliest);
-      console.log("latest:", globalLatest);
-      console.log("Settings pickupDate to today and populating times...");
-    
-  pickupDate.value = today;
-  populateTimes();
-
-      console.log("Populating time dropdown with range:", globalEarliest, "to", globalLatest);
-} else {
-    alert("No available drivers found for today.");
-  }
-  });
-});
-
-
-asapCheckbox.addEventListener("change", function () {
-  const now = new Date();
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  
-const [earliestHour, earliestMin] = globalEarliest.split(":").map(Number);
-const [latestHour, latestMin] = globalLatest.split(":").map(Number);
-  const earliestMinutes = earliestHour * 60 + earliestMin;
-  const latestMinutes = latestHour * 60 + latestMin;
-
-if (nowMinutes < earliestMinutes || nowMinutes >= (latestMinutes - 15)) {
-  alert(`ASAP bookings are only available between ${globalEarliest} and ${globalLatest}, with the last ASAP request accepted 15 minutes before shift end.`);
-  asapCheckbox.checked = false;
-  return;
-}
-
-  const disabled = asapCheckbox.checked;
-  pickupDate.disabled = disabled;
-  pickupTime.disabled = disabled;
-  asapMessage.style.display = disabled ? "block" : "none";
-});
+          const disabled = asapCheckbox.checked;
+          pickupDate.disabled = disabled;
+          pickupTime.disabled = disabled;
+          asapMessage.style.display = disabled ? "block" : "none";
+        });
 
         document.getElementById("continueBtn").addEventListener("click", function () {
           if (asapCheckbox.checked) {
