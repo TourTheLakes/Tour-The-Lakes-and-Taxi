@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Form</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eef3f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 30px;
+    }
+    .container {
+      background: #fff;
+      width: 100%;
+      max-width: 700px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      animation: dropin 0.8s ease;
+    }
+    h2 { color: #0d2a45; text-align: center; animation: fadeIn 1s ease-in; }
+    label { font-weight: 600; margin-top: 15px; display: block; }
+    input, select, textarea {
+      width: 100%; padding: 10px; margin: 8px 0;
+      border: 1px solid #ccc; border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #0d2a45;
+      box-shadow: 0 0 5px rgba(13,42,69,0.2);
+    }
+    button {
+      background: #0d2a45;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    button:hover { background: #133b64; }
+    .step { display: none; animation: fade 0.5s ease; }
+    .step.active { display: block; }
+    #map { height: 300px; margin: 10px 0; border-radius: 6px; }
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes dropin {
+      0% { transform: translateY(-40px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    .nav-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
+    .warning { background: #fff3cd; padding: 10px; border-left: 4px solid #ffa500; border-radius: 4px; }
+    .disclaimer {
+      background: #f8f8f8;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid #cc0000;
+      font-size: 14px;
+      border-radius: 4px;
+      color: #333;
+    }
+    .magic-flash {
+      animation: flashFade 1.5s ease-in-out;
+    }
+    @keyframes flashFade {
+      0% { background-color: #dff0d8; }
+      50% { background-color: #a5d6a7; }
+      100% { background-color: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container magic-flash">
+    <div id="step1" class="step active">
+      <h2>Step 1: Pickup & Drop-off</h2>
+      <button onclick="getLocation()">Use My Location</button>
+      <label>Pickup Address:</label>
+      <input id="pickup" type="text" placeholder="Enter pickup address or drop a pin...">
+      <label>Drop-off Address:</label>
+      <input id="dropoff" type="text" placeholder="Enter destination...">
+      <div id="map"></div>
+      <label>Additional Notes:</label>
+      <textarea id="extra" placeholder="Gate codes, landmarks, etc..."></textarea>
+      <p id="estimateBox"></p>
+      <div class="nav-buttons">
+        <span></span>
+        <button onclick="nextStep(1)">Next</button>
+      </div>
+    </div>
+    <!-- Remaining Steps Unchanged -->
+  </div>
+</body>
+</html>
