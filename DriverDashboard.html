@@ -296,10 +296,6 @@ populateShiftDropdowns();
      updateShiftStatus();
    });
  }
-
-
-
-
     
   function saveShiftToFirebase() {
   const from = shiftFrom.value;
@@ -392,6 +388,15 @@ finishEarlyBtn.addEventListener("click", function () {
         }
       });
     }
+
+    const extendShiftBtn = document.getElementById("extendShiftBtn");
+    extendShiftBtn.addEventListener("click", function () {
+      if (!driverDoor) return;
+      if (confirm("Apply new extended shift hours?")) {
+        saveShiftToFirebase();
+        alert("Your extended shift has been saved. Customers can now book you for these hours.");
+      }
+    });
 
 document.getElementById("availableBtn").onclick = () => {
   if (confirm("You are about to become Available. Proceed?")) {
