@@ -261,6 +261,8 @@ populateShiftDropdowns();
         until: until
       }).then(() => {
         updateShiftStatus();
+      }).catch((error) => {
+        alert("Failed to update shift: " + errer.message);
       });
     }
 
@@ -371,6 +373,9 @@ finishEarlyBtn.addEventListener("click", function () {
               Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.
             `;
+          } else {
+            document.getElementById("driverGreetingText").innerHTML = "Driver info incomplete. Please check your profile.";
+          }
             break;
           }
         }
@@ -381,8 +386,9 @@ finishEarlyBtn.addEventListener("click", function () {
     extendShiftBtn.addEventListener("click", function () {
       if (!driverDoor) return;
       if (confirm("Apply new extended shift hours?")) {
-        saveShiftToFirebase();
+        saveShiftToFirebase().then(() => {
         alert("Your extended shift has been saved. Customers can now book you for these hours.");
+        });
       }
     });
 
@@ -433,7 +439,7 @@ document.getElementById("logoffBtn").onclick = () => {
               b.claimedBy &&
               b.claimedBy.toLowerCase() === driverName.toLowerCase() &&
               b.pickupType === "Scheduled" &&
-              b.time
+              b.time && /^\d{2}:\d{2}$/.test(b.time) && b.pickupDate
             ) {
               const bookingDate = b.pickupDate || new Date().toISOString().split("T")[0];
               const bookingTime = new Date(`${bookingDate}T${b.time}`);
