@@ -229,7 +229,6 @@
   function initMap() {
     const defaultLatLng = { lat: 54.3686, lng: -2.9067 }; // Windermere-ish fallback
 
-    // Initialize Pickup map
     mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
       center: defaultLatLng,
       zoom: 13,
@@ -308,13 +307,21 @@
     function goToNextStep() {
       const pickup = document.getElementById('pickup').value;
       const dropoff = document.getElementById('dropoff').value;
+      const pickupCoords = localStorage.getItem('pickupCoords');
+      const dropoffCoords = localStorage.getItem('dropoffCoords');
+
       if (!pickup || !dropoff) return alert('Please fill in both address fields.');
+      if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
 
       localStorage.setItem('pickup', pickup);
       localStorage.setItem('dropoff', dropoff);
 
       document.getElementById('pickupDisplay').innerText = pickup;
       document.getElementById('dropoffDisplay').innerText = dropoff;
+
+      document.getElementById('pickupDisplay').innerText = pickup;
+      document.getElementById('dropoffDisplay').innerText = dropoff;
+
 
       document.getElementById('step2').style.display = 'block';
       estimateJourney();
