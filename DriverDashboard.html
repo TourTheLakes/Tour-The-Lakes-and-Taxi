@@ -363,6 +363,8 @@ finishEarlyBtn.addEventListener("click", function () {
     } else {
       db.ref("drivers").once("value").then(snapshot => {
         const drivers = snapshot.val();
+        let matched = false;
+        
         for (const key in drivers) {
           const d = drivers[key];
           if (d.doorCard === driverDoor && d.name.toLowerCase() === driverName.toLowerCase()) {
