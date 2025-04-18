@@ -43,26 +43,53 @@
     button:hover {
       background: #1c3e63;
     }
+    #authOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+    #authBox {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
   </style>
 </head>
 <body>
-  <h1>Master Rota</h1>
+  <div id="authOverlay">
+    <div id="authBox">
+      <h2>Enter Admin Password</h2>
+      <input type="password" id="adminPass" placeholder="Password" />
+      <button onclick="verifyPassword()">Enter</button>
+    </div>
+  </div>  <h1>Master Rota</h1>
   <p style="text-align:center;"><a href="TimeAndDate.html">Go to Booking Calendar</a></p>
   <table id="rotaTable">
     <thead>
       <tr>
         <th>Driver Name</th>
         <th>Date</th>
-        <th>From</th>
-        <th>Until</th>
+        <th>From 1</th>
+        <th>Until 1</th>
+        <th>From 2</th>
+        <th>Until 2</th>
+        <th>From 3</th>
+        <th>Until 3</th>
         <th>Confirm</th>
       </tr>
     </thead>
     <tbody id="rotaBody">
-      <tr><td colspan="5">Loading drivers...</td></tr>
+      <tr><td colspan="9">Loading drivers...</td></tr>
     </tbody>
   </table>  <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
       authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -75,52 +102,72 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const rotaBody = document.getElementById("rotaBody");
+    function verifyPassword() {
+      const input = document.getElementById("adminPass").value;
+      db.ref("masterRotaPassword").once("value").then(snapshot => {
+        const correct = snapshot.val();
+        if (input === correct) {
+          document.getElementById("authOverlay").style.display = "none";
+          loadDrivers();
+        } else {
+          alert("Incorrect password");
+        }
+      });
+    }
 
-    db.ref("drivers").once("value").then(snapshot => {
-      const drivers = snapshot.val();
-      rotaBody.innerHTML = "";
+    function loadDrivers() {
+      const rotaBody = document.getElementById("rotaBody");
+      db.ref("drivers").once("value").then(snapshot => {
+        const drivers = snapshot.val();
+        rotaBody.innerHTML = "";
 
-      for (const key in drivers) {
-        const d = drivers[key];
-        const row = document.createElement("tr");
+        for (const key in drivers) {
+          const d = drivers[key];
+          const row = document.createElement("tr");
 
-        row.innerHTML = `
-          <td><strong>${d.name}</strong></td>
-          <td><input type="date" class="dateInput"></td>
-          <td><input type="time" class="fromInput"></td>
-          <td><input type="time" class="untilInput"></td>
-          <td><button class="saveBtn">Save</button></td>
-        `;
+          row.innerHTML = `
+            <td><strong>${d.name}</strong></td>
+            <td><input type="date" class="dateInput"></td>
+            <td><input type="time" class="from1"></td>
+            <td><input type="time" class="until1"></td>
+            <td><input type="time" class="from2"></td>
+            <td><input type="time" class="until2"></td>
+            <td><input type="time" class="from3"></td>
+            <td><input type="time" class="until3"></td>
+            <td><button class="saveBtn">Save</button></td>
+          `;
 
-        const saveBtn = row.querySelector(".saveBtn");
-        const dateInput = row.querySelector(".dateInput");
-        const fromInput = row.querySelector(".fromInput");
-        const untilInput = row.querySelector(".untilInput");
+          const dateInput = row.querySelector(".dateInput");
+          const from1 = row.querySelector(".from1");
+          const until1 = row.querySelector(".until1");
+          const from2 = row.querySelector(".from2");
+          const until2 = row.querySelector(".until2");
+          const from3 = row.querySelector(".from3");
+          const until3 = row.querySelector(".until3");
+          const saveBtn = row.querySelector(".saveBtn");
 
-        saveBtn.onclick = () => {
-          const date = dateInput.value;
-          const from = fromInput.value;
-          const until = untilInput.value;
+          saveBtn.onclick = () => {
+            const date = dateInput.value;
+            if (!date) return alert("Please select a date.");
 
-          if (!date || !from || !until) {
-            alert("Please fill all fields before saving.");
-            return;
-          }
+            const shifts = [];
+            if (from1.value && until1.value) shifts.push({ from: from1.value, until: until1.value });
+            if (from2.value && until2.value) shifts.push({ from: from2.value, until: until2.value });
+            if (from3.value && until3.value) shifts.push({ from: from3.value, until: until3.value });
 
-          db.ref(`driverCustomAvailability/${d.doorCard}/${date}`).set({
-            from: from,
-            until: until
-          }).then(() => {
-            alert(`Saved shift for ${d.name} on ${date}`);
-          }).catch(err => {
-            console.error("Error saving shift:", err);
-            alert("Failed to save shift.");
-          });
-        };
+            if (shifts.length === 0) return alert("Please enter at least one valid time range.");
 
-        rotaBody.appendChild(row);
-      }
-    });
+            db.ref(`driverCustomAvailability/${d.doorCard}/${date}`).set(shifts).then(() => {
+              alert(`Shift saved for ${d.name} on ${date}`);
+            }).catch(err => {
+              console.error("Save error:", err);
+              alert("Failed to save shift.");
+            });
+          };
+
+          rotaBody.appendChild(row);
+        }
+      });
+    }
   </script></body>
 </html>
