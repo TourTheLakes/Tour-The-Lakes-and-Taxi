@@ -201,9 +201,12 @@ db.ref("driverStatus").once("value").then(statusSnap => {
 
       console.log("Earliest:", globalEarliest);
       console.log("latest:", globalLatest);
+      console.log("Settings pickupDate to today and populating times...");
     
   pickupDate.value = today;
-  pickupDate.dispatchEvent(new Event("change"));
+  populateTimes();
+
+      console.log("Populating time dropdown with range:", globalEarliest, "to", globalLatest);
 } else {
     alert("No available drivers found for today.");
   }
