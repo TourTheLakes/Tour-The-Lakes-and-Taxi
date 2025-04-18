@@ -262,7 +262,7 @@ populateShiftDropdowns();
       }).then(() => {
         updateShiftStatus();
       }).catch((error) => {
-        alert("Failed to update shift: " + errer.message);
+        alert("Failed to update shift: " + error.message);
       });
     }
 
@@ -373,14 +373,16 @@ finishEarlyBtn.addEventListener("click", function () {
               Your door card number is <strong>${d.doorCard}</strong> and the vehicle registration is
               <strong>${d.vehicle.registration}</strong>.
             `;
-          } else {
-            document.getElementById("driverGreetingText").innerHTML = "Driver info incomplete. Please check your profile.";
-          }
+            matched = true;
             break;
           }
         }
+        if (!matched) {
+          document.getElementById("driverGreetingText").innerHTML = "Driver info incomplete. Please check your profile.";
+        }
       });
     }
+
 
     const extendShiftBtn = document.getElementById("extendShiftBtn");
     extendShiftBtn.addEventListener("click", function () {
