@@ -104,7 +104,7 @@
 
     function verifyPassword() {
       const input = document.getElementById("adminPass").value;
-      db.ref("masterRotaPassword").once("value").then(snapshot => {
+      db.ref("masterRotaPassword/password").once("value").then(snapshot => {
         const correct = snapshot.val();
         if (input === correct) {
           document.getElementById("authOverlay").style.display = "none";
