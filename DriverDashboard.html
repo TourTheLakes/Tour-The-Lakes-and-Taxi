@@ -265,8 +265,8 @@ populateShiftDropdowns();
     }
 
     function isValidShift(from, until) {
-      const [fH] = from.split(":").map(number);
-      const [uH] = until.split(":").map(number);
+      const [fH] = from.split(":").map(Number);
+      const [uH] = until.split(":").map(Number);
       return fH < uH;
     }
 
