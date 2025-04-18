@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-  <title>Taxi Service</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taxi Service</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -13,7 +12,6 @@
       display: flex;
       justify-content: center;
     }
-
     .container {
       max-width: 600px;
       width: 100%;
@@ -23,24 +21,17 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
-
     h1, h2 {
       text-align: center;
-      margin-bottom: 20px;
       color: #0d2a45;
     }
-
     label {
       display: block;
       margin-top: 15px;
-      margin-bottom: 5px;
       font-weight: 600;
       color: #333;
     }
-
-    input[type="text"],
-    input[type="date"],
-    select {
+    input[type="text"], select {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -49,11 +40,19 @@
       font-size: 14px;
       box-sizing: border-box;
     }
-
-    button {
-      margin-top: 20px;
-      padding: 12px 20px;
+    textarea {
       width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 10px;
+      padding: 12px 20px;
+      width: 48%;
       background-color: #0d2a45;
       color: #fff;
       border: none;
@@ -61,18 +60,11 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
     }
-
-    button:hover {
-      background-color: #1e3c5d;
+    .button-row {
+      display: flex;
+      justify-content: space-between;
     }
-
-    p {
-      margin-bottom: 10px;
-      color: #444;
-    }
-
     .warning {
       background-color: #fff3cd;
       border-left: 4px solid #ffa500;
@@ -82,7 +74,6 @@
       border-radius: 4px;
       color: #333;
     }
-
     .disclaimer {
       background: #f8f8f8;
       padding: 15px;
@@ -92,185 +83,290 @@
       border-radius: 4px;
       color: #333;
     }
-
-    @media screen and (max-width: 480px) {
-      body {
-        padding: 20px;
-      }
+    #mapPickup, #mapDropoff {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 10px;
+      border-radius: 6px;
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <h1>Hey, let's get you moving!</h1><label for="pickup">Pickup Address:</label>
+<input type="text" id="pickup" placeholder="Start typing...">
+<div id="mapPickup"></div>
 
-    <!-- STEP 1: Pickup and Drop-off Form -->
-    <div id="step1">
-      <h2>Hey, let's get you moving:</h2>
+<label for="dropoff">Drop-off Address:</label>
+<input type="text" id="dropoff" placeholder="Start typing...">
+<div id="mapDropoff"></div>
 
-      <form id="bookingForm">
-        <label for="area">Please select the most local area to your pickup address:</label>
-        <select id="area" name="area" required>
-          <option value="">--Select Area--</option>
-          <option>Windermere</option>
-          <option>Troutbeck</option>
-          <option>Ambleside</option>
-          <option>Hawkshead</option>
-          <option>Coniston</option>
-          <option>Grasmere</option>
-          <option>Kendal</option>
-          <option value="other">Another area</option>
-        </select>
+<p id="estimateMsg">Estimating your fare...</p>
 
-        <div id="otherAreaBox" style="display: none;">
-          <label for="otherArea">Please specify your area:</label>
-          <input type="text" id="otherArea" name="otherArea">
-        </div>
-
-        <label for="pickup">Full address of your pickup:</label>
-        <input type="text" id="pickup" name="pickup" required>
-
-        <label for="extra">Additional info (optional):</label>
-        <input type="text" id="extra" name="extra">
-
-        <label for="dropoff">Where are you travelling to?</label>
-        <input type="text" id="dropoff" name="dropoff" required>
-
-        <button type="button" onclick="goToStep2()">Next</button>
-      </form>
-    </div>
-
-    <!-- STEP 2: Confirmation and Passenger Info -->
-    <div id="step2" style="display:none;">
-      <h2>Your pickup address and drop off address shown:</h2>
-      <p><strong>Pickup:</strong> <span id="showPickup"></span></p>
-      <p><strong>Drop-off:</strong> <span id="showDropoff"></span></p>
-
-      <label for="passengers">How many people are travelling?</label>
-      <select id="passengers" name="passengers" required>
-        <option value="">--Select--</option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-        <option>6</option>
-      </select>
-      <p style="margin-top: -5px;">It's important for the drivers to know, so we send the correct vehicle.</p>
-
-      <label for="luggage">Luggage:</label>
-      <select id="luggage" name="luggage" required>
-        <option value="">-- Select Luggage Size --</option>
-        <option value="none">No luggage – just me and a smile</option>
-        <option value="small">Small – a backpack or small carry-on</option>
-        <option value="medium">Medium – a couple of suitcases</option>
-        <option value="large">Large – multiple bags or oversized items</option>
-      </select>
-
-      <div class="warning" id="luggageWarning" style="display: none;">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
-
-      <div class="disclaimer">
-        <strong>Important Notice Regarding Pets</strong><br>
-        We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
-        As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
-        <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
-      </div>
-
-      <label style="margin-top: 15px;">
-        <input type="checkbox" id="noPets" required>
-        I acknowledge I am not travelling with a pet.
-      </label>
-
-      <button onclick="goToTimeAndDate()">Next</button>
-    </div>
-
-    <script>
-      const areaSelect = document.getElementById('area');
-      const otherAreaBox = document.getElementById('otherAreaBox');
-      const otherAreaInput = document.getElementById('otherArea');
-
-      const passengers = document.getElementById('passengers');
-      const luggage = document.getElementById('luggage');
-
-      const luggageWarning = document.getElementById("luggageWarning");
-
-      areaSelect.addEventListener('change', function () {
-        if (this.value === 'other') {
-          otherAreaBox.style.display = 'block';
-          otherAreaInput.required = true;
-        } else {
-          otherAreaBox.style.display = 'none';
-          otherAreaInput.required = false;
-        }
-      });
-
-      passengers.addEventListener('change', function () {
-        const count = parseInt(passengers.value);
-        const mediumOption = luggage.querySelector('option[value="medium"]');
-        const largeOption = luggage.querySelector('option[value="large"]');
-
-        if (count > 4) {
-          mediumOption.disabled = true;
-          largeOption.disabled = true;
-          if (luggage.value === 'medium' || luggage.value === 'large') {
-            luggage.value = '';
-          }
-          luggageWarning.style.display = 'block';
-        } else {
-          mediumOption.disabled = false;
-          largeOption.disabled = false;
-          luggageWarning.style.display = 'none';
-        }
-      });
-
-      function goToStep2() {
-        let area = areaSelect.value;
-        const pickup = document.getElementById('pickup').value;
-        const extra = document.getElementById('extra').value;
-        const dropoff = document.getElementById('dropoff').value;
-
-        if (area === 'other') {
-          area = otherAreaInput.value.trim();
-          if (!area) {
-            alert("Please enter your area.");
-            return;
-          }
-        }
-
-        if (!area || !pickup || !dropoff) {
-          alert("Please fill out all mandatory fields.");
-          return;
-        }
-
-        localStorage.setItem("area", area);
-        localStorage.setItem("pickup", pickup);
-        localStorage.setItem("extra", extra);
-        localStorage.setItem("dropoff", dropoff);
-
-        document.getElementById('showPickup').textContent = pickup + (extra ? ' (' + extra + ')' : '');
-        document.getElementById('showDropoff').textContent = dropoff;
-
-        document.getElementById('step1').style.display = "none";
-        document.getElementById('step2').style.display = "block";
-      }
-
-      function goToTimeAndDate() {
-        const passengers = document.getElementById('passengers').value;
-        const luggage = document.getElementById('luggage').value;
-        const noPets = document.getElementById('noPets').checked;
-
-        if (!passengers || !luggage || !noPets) {
-          alert("Please select passengers, luggage, and confirm no pets.");
-          return;
-        }
-
-        localStorage.setItem("passengers", passengers);
-        localStorage.setItem("luggage", luggage);
-        localStorage.setItem("noPets", noPets);
-
-        window.location.href = "TimeAndDate.html";
-      }
-    </script>
-
+<div id="customNoteArea" style="display:none;">
+  <label>Additional info for your driver:</label>
+  <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+  <div class="disclaimer">
+    Since this is a custom address selection, it's difficult to estimate your journey time. However, our prices are as follows:<br>
+    <strong>Normal Fare:</strong> £4.20 per mile (07:00 - 23:00), then £6.30 night rate, waiting time: 30-70p/min.
   </div>
+</div>
+
+<div class="button-row">
+  <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+  <button onclick="goToNextStep()">Next</button>
+</div>
+
+<div id="step2" style="display:none; margin-top:30px;">
+  <h2>Journey Details</h2>
+
+  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+
+  <label for="passengers">How many people are travelling?</label>
+  <select id="passengers" onchange="updateLuggageOptions()">
+    <option value="">Select</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+  </select>
+  <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+
+  <label for="luggage">Luggage:</label>
+  <select id="luggage">
+    <option>No luggage</option>
+    <option class="luggageOption">Small - a backpack or a small carry-on</option>
+    <option class="luggageOption">Medium - a couple of suitcases</option>
+    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
+  </select>
+
+  <div id="capacityWarning" class="warning" style="display:none;">
+    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
+  </div>
+
+  <div class="disclaimer">
+    <strong>Important Notice Regarding Pets</strong><br>
+    We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
+    We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+    <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
+  </div>
+  <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
+
+  <div class="button-row">
+    <button onclick="location.reload()">Return</button>
+    <button onclick="submitDetails()">Next</button>
+  </div>
+</div>
+ </div> 
+
+  function estimateJourney() {
+  const pickup = localStorage.getItem('pickupCoords');
+  const dropoff = localStorage.getItem('dropoffCoords');
+
+  if (!pickup || !dropoff) {
+    document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
+    return;
+  }
+
+  const origin = JSON.parse(pickup);
+  const destination = JSON.parse(dropoff);
+
+  const service = new google.maps.DirectionsService();
+  service.route(
+    {
+      origin,
+      destination,
+      travelMode: 'DRIVING'
+    },
+    (result, status) => {
+      if (status === 'OK' && result.routes.length > 0) {
+        const leg = result.routes[0].legs[0];
+        const distanceMeters = leg.distance.value;
+        const durationMinutes = leg.duration.value / 60;
+
+        const now = new Date();
+        const hour = now.getHours();
+        const isNight = (hour >= 23 || hour < 7);
+
+        // Fare logic
+        let fare = 0;
+        if (distanceMeters <= 1609) {
+          fare = isNight ? 6.30 : 4.20;
+        } else {
+          const extraDist = distanceMeters - 1609;
+          const extraUnits = Math.ceil(extraDist / 161);
+          fare = (isNight ? 6.30 : 4.20) + extraUnits * (isNight ? 0.60 : 0.30);
+        }
+
+        const waitRate = isNight ? 0.60 : 0.30;
+        const waitCharge = Math.ceil(durationMinutes) * waitRate;
+        fare += waitCharge;
+
+        document.getElementById('estimateMsg').innerHTML = `
+          Estimated journey: <strong>${leg.distance.text}</strong>, 
+          <strong>${leg.duration.text}</strong><br>
+          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `;
+      } else {
+        document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.';
+      }
+    }
+  );
+}
+
+
+  
+  <!-- Firebase and Google Maps scripts go here --> 
+
+<!-- Firebase Setup -->
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+
+<!-- Google Maps with Places -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
+<script>
+  let mapPickup, mapDropoff, markerPickup, markerDropoff;
+
+  function initMap() {
+    const defaultLatLng = { lat: 54.3686, lng: -2.9067 }; // Windermere-ish fallback
+
+    // Initialize Pickup map
+    mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
+      center: defaultLatLng,
+      zoom: 13,
+    });
+
+    // Initialize Drop-off map
+    mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), {
+      center: defaultLatLng,
+      zoom: 13,
+    });
+
+    markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
+    markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
+
+    // Allow marker setting on click
+    mapPickup.addListener("click", (e) => {
+      markerPickup.setPosition(e.latLng);
+      localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
+      showCustomNote();
+    });
+
+    mapDropoff.addListener("click", (e) => {
+      markerDropoff.setPosition(e.latLng);
+      localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
+      showCustomNote();
+    });
+
+    // Autocomplete for addresses
+    const pickupInput = document.getElementById("pickup");
+    const dropoffInput = document.getElementById("dropoff");
+    const pickupAuto = new google.maps.places.Autocomplete(pickupInput);
+    const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput);
+
+    pickupAuto.addListener("place_changed", () => {
+      const place = pickupAuto.getPlace();
+      if (place.geometry) {
+        mapPickup.setCenter(place.geometry.location);
+        markerPickup.setPosition(place.geometry.location);
+        localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
+      }
+    });
+
+    dropoffAuto.addListener("place_changed", () => {
+      const place = dropoffAuto.getPlace();
+      if (place.geometry) {
+        mapDropoff.setCenter(place.geometry.location);
+        markerDropoff.setPosition(place.geometry.location);
+        localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
+      }
+    });
+  }
+
+  function showCustomNote() {
+    document.getElementById("customNoteArea").style.display = "block";
+  }
+</script>
+
+  
+  <!-- Add your firebase config and init script below this line --> 
+  <!-- Add Google Maps API with Places library enabled --> 
+  
+  
+  <script>
+    // Basic location access setup
+    window.onload = function () {
+      if (!localStorage.getItem("locationAllowed")) {
+        navigator.geolocation.getCurrentPosition(
+          () => localStorage.setItem("locationAllowed", true),
+          () => {
+            alert("To use our services, you must enable location access. Please try again.");
+            location.reload();
+          }
+        );
+      }
+    };
+
+    function goToNextStep() {
+      const pickup = document.getElementById('pickup').value;
+      const dropoff = document.getElementById('dropoff').value;
+      if (!pickup || !dropoff) return alert('Please fill in both address fields.');
+
+      localStorage.setItem('pickup', pickup);
+      localStorage.setItem('dropoff', dropoff);
+
+      document.getElementById('pickupDisplay').innerText = pickup;
+      document.getElementById('dropoffDisplay').innerText = dropoff;
+
+      document.getElementById('step2').style.display = 'block';
+    }
+
+    function updateLuggageOptions() {
+      const passengerCount = parseInt(document.getElementById('passengers').value);
+      const luggageOptions = document.querySelectorAll('.luggageOption');
+      const warning = document.getElementById('capacityWarning');
+      if (passengerCount > 4) {
+        warning.style.display = 'block';
+        luggageOptions.forEach(option => option.style.display = 'none');
+      } else {
+        warning.style.display = 'none';
+        luggageOptions.forEach(option => option.style.display = 'block');
+      }
+    }
+
+    function submitDetails() {
+      if (!document.getElementById('passengerConfirm').checked) {
+        alert('Please confirm passenger count.');
+        return;
+      }
+      if (!document.getElementById('petConfirm').checked) {
+        alert('You must confirm you are not travelling with a pet.');
+        return;
+      }
+      localStorage.setItem('passengers', document.getElementById('passengers').value);
+      localStorage.setItem('luggage', document.getElementById('luggage').value);
+      window.location.href = 'TimeAndDate.html';
+    }
+
+    
+  </script>
+
+
 </body>
 </html>
