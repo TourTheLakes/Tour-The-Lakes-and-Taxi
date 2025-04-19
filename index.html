@@ -5,79 +5,99 @@
   <title>MainLanding</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #0d2a45; /* Inspired dark blue */
-      margin: 0;
-      padding: 40px;
+      background: linear-gradient(135deg, #1d1f21, #2e3a48);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       color: #fff;
+      padding: 20px;
     }
 
     .container {
-      background-color: #ffffff;
-      color: #000;
-      max-width: 600px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 40px 30px;
+      max-width: 480px;
       width: 100%;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
       text-align: center;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     h1 {
+      font-size: 32px;
+      font-weight: bold;
       margin-bottom: 10px;
-      font-weight: 600;
+      letter-spacing: 1px;
     }
 
     p {
-      margin-bottom: 30px;
       font-size: 16px;
+      margin-bottom: 30px;
+      color: #ccc;
     }
 
     button {
-      background-color: #0d2a45;
+      background: #004f7c;
       color: #fff;
       border: none;
-      padding: 12px 20px;
+      padding: 14px 24px;
       font-size: 16px;
-      border-radius: 8px;
-      margin: 10px;
+      border-radius: 10px;
+      margin: 12px 6px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     button:hover {
-      background-color: #1e3c5d;
+      background: #0070aa;
+      transform: scale(1.05);
     }
 
     .returning {
-      margin-bottom: 40px;
+      margin-bottom: 35px;
     }
 
     .returning p {
       font-size: 14px;
-      color: #555;
+      color: #aaa;
+      margin-top: 10px;
     }
 
     @media screen and (max-width: 480px) {
-      body {
-        padding: 20px;
+      .container {
+        padding: 30px 20px;
       }
 
       button {
         width: 100%;
         margin: 10px 0;
       }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      p {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    
+
     <!-- RETURNING CUSTOMER SECTION -->
     <div class="returning">
       <button onclick="location.href='ReturningCustomer.html'">RETURNING CUSTOMER</button>
@@ -91,6 +111,8 @@
       <button onclick="location.href='LakesTours.html'">LAKES TOURS</button>
       <button onclick="location.href='TaxiService.html'">TAXI SERVICE</button>
     </div>
+
   </div>
 </body>
 </html>
+
