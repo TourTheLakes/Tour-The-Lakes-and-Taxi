@@ -404,7 +404,7 @@
       while (startTime <= endTime) {
         const h = String(startTime.getHours()).padStart(2, '0');
         const m = String(startTime.getMinutes()).padStart(2, '0');
-        pickupTime.innerHTML += <option value="${h}:${m}">${h}:${m}</option>;
+        pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
         startTime.setMinutes(startTime.getMinutes() + 15);
       }
     }
