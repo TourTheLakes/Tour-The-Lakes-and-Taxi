@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"><!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Amend Booking</title>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -26,35 +24,36 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
-      margin-bottom: 25px;
       color: #0d2a45;
+      margin-bottom: 25px;
     }
     label {
       display: block;
-      margin-top: 15px;
-      margin-bottom: 5px;
+      margin-top: 25px;
+      margin-bottom: 8px;
       font-weight: 600;
       color: #333;
     }
-    input, select {
+    input[type="text"], select, textarea {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
+      padding: 12px;
+      margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
       box-sizing: border-box;
     }
-    input[type="checkbox"] {
-      transform: scale(1.2);
-      margin-right: 10px;
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 10px;
     }
     button {
-      margin-top: 25px;
+      margin-top: 15px;
       padding: 12px 20px;
-      width: 100%;
+      width: 48%;
       background-color: #0d2a45;
       color: #fff;
       border: none;
@@ -62,40 +61,62 @@
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
     }
-    button:hover {
-      background-color: #1e3c5d;
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 4%;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
     .warning {
       background-color: #fff3cd;
       border-left: 4px solid #ffa500;
-      padding: 10px;
+      padding: 12px;
       font-size: 14px;
-      margin-top: 10px;
-      display: none;
+      margin-top: 15px;
       border-radius: 4px;
       color: #333;
     }
     .disclaimer {
       background: #f8f8f8;
       padding: 15px;
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 14px;
       border-radius: 4px;
       color: #333;
     }
-    p {
-      font-size: 14px;
-      margin: 10px 0;
-      color: #555;
+    #mapPickup, #mapDropoff {
+      width: 100%;
+      height: 220px;
+      margin-top: -5px;
+      margin-bottom: 25px;
+      border-radius: 6px;
     }
-    @media screen and (max-width: 480px) {
-      body {
-        padding: 20px;
-      }
+    #customNoteArea {
+      margin-top: 5px;
+    }
+    #petConfirm {
+      margin-top: 15px;
+      margin-bottom: 25px;
+      display: inline-block;
+    }
+    .disabledOption {
+      color: #aaa !important;
+      background-color: #f2f2f2 !important;
+      cursor: not-allowed;
+    }
+    @media (max-width: 480px) {
       .container {
-        padding: 20px;
+        padding: 25px 20px;
+      }
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+      .button-row {
+        flex-direction: column;
+        gap: 10px;
       }
     }
   </style>
@@ -103,32 +124,36 @@
 <body>
 <div class="container">
   <h1>Amend Your Booking</h1>
-  <form id="amendForm">
-    <label for="area">Local Area:</label>
-    <select id="area">
-      <option value="">--Select Area--</option>
-      <option>Windermere</option>
-      <option>Troutbeck</option>
-      <option>Ambleside</option>
-      <option>Hawkshead</option>
-      <option>Coniston</option>
-      <option>Grasmere</option>
-      <option>Kendal</option>
-      <option value="other">Another area</option>
-    </select>
-    <div id="otherAreaBox" style="display: none;">
-      <label for="otherArea">Specify Area:</label>
-      <input type="text" id="otherArea">
-    </div>
+  <div id="step1">
     <label for="pickup">Pickup Address:</label>
-    <input type="text" id="pickup" required>
-    <label for="extra">Additional Info:</label>
-    <input type="text" id="extra">
-    <label for="dropoff">Drop-off Location:</label>
-    <input type="text" id="dropoff" required>
-    <label for="passengers">Number of Passengers:</label>
-    <select id="passengers">
-      <option value="">--Select--</option>
+    <input type="text" id="pickup" placeholder="Start typing...">
+    <div id="mapPickup"></div>
+    <label for="dropoff">Drop-off Address:</label>
+    <input type="text" id="dropoff" placeholder="Start typing...">
+    <div id="mapDropoff"></div>
+    <div id="customNoteArea">
+      <label>Additional info for your driver:</label>
+      <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+      <div class="disclaimer">
+        Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br>1 April 2024:<br>
+        <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
+        <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
+        <strong>Bank Holidays:</strong> £8.40 for the first mile (00:00 - 00:00), then £0.60 per 1/10 mile after that.<br>
+        <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+      </div>
+    </div>
+    <div class="button-row">
+      <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+      <button onclick="goToNextStep()">Next</button>
+    </div>
+  </div>  <div id="step2" style="display:none; margin-top:30px;">
+    <h2>Journey Details</h2>
+    <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+    <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+    <p id="estimateMsg">Estimating your fare...</p>
+    <label for="passengers">How many people are travelling?</label>
+    <select id="passengers" onchange="updateLuggageOptions()">
+      <option value="">Select</option>
       <option>1</option>
       <option>2</option>
       <option>3</option>
@@ -136,199 +161,183 @@
       <option>5</option>
       <option>6</option>
     </select>
-    <label for="luggage">Luggage Size:</label>
+    <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+    <label for="luggage">Luggage:</label>
     <select id="luggage">
-      <option value="">-- Select Luggage Size --</option>
-      <option value="none">No luggage – just me and a smile</option>
-      <option value="small">Small – a backpack or small carry-on</option>
-      <option value="medium">Medium – a couple of suitcases</option>
-      <option value="large">Large – multiple bags or oversized items</option>
+      <option>No luggage</option>
+      <option class="luggageOption">Small - a backpack or a small carry-on</option>
+      <option class="luggageOption">Medium - a couple of suitcases</option>
+      <option class="luggageOption">Large - multiple bags and/or oversized items</option>
     </select>
-    <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
+    <div id="capacityWarning" class="warning" style="display:none;">
+      Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
+    </div>
     <div class="disclaimer">
       <strong>Important Notice Regarding Pets</strong><br>
-      We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
-      As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
-      <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
+      We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
+      We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+      <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
     </div>
-    <label style="margin-top: 15px;"><input type="checkbox" id="noPets" required> I acknowledge I am not travelling with a pet.</label><label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
-<p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
-<div id="scheduleFields">
-  <label for="pickupDate">Pickup Date:</label>
-  <input type="date" id="pickupDate">
-  <label for="pickupTime">Pickup Time:</label>
-  <select id="pickupTime"><option value="">Select a time...</option></select>
+    <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
+    <div class="button-row">
+      <button onclick="location.reload()">Return</button>
+      <button onclick="goToTimeStep()">Next</button>
+    </div>
+  </div>  <div id="step3" style="display:none; margin-top:30px;">
+    <h2>Choose Pickup Time</h2>
+    <label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
+    <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
+    <div id="scheduleFields">
+      <label for="pickupDate">Pickup Date:</label>
+      <input type="date" id="pickupDate">
+      <label for="pickupTime">Pickup Time:</label>
+      <select id="pickupTime">
+        <option value="">Select a time...</option>
+      </select>
+    </div>
+    <button onclick="submitAmendment()">Update Booking</button>
+  </div>
 </div>
-
-<button type="submit">Update Booking</button>
-
-  </form>
-</div><script>
-  const phone = localStorage.getItem("returningPhoneNumber");
-  const verifiedTime = parseInt(localStorage.getItem("verifiedTime") || 0);
-  const now = Date.now();
-  const maxAge = 15 * 60 * 1000;
-  if (!phone || !verifiedTime || now - verifiedTime > maxAge) {
-    localStorage.removeItem("returningPhoneNumber");
-    localStorage.removeItem("verifiedTime");
-    window.location.href = "ReturningCustomer.html";
-  }
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-    authDomain: "tourthelakes-1e165.firebaseapp.com",
-    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-    projectId: "tourthelakes-1e165",
-    storageBucket: "tourthelakes-1e165.appspot.com",
-    messagingSenderId: "470758171431",
-    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-
-  const id = new URLSearchParams(location.search).get("id");
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+  authDomain: "tourthelakes-1e165.firebaseapp.com",
+  databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+  projectId: "tourthelakes-1e165",
+  storageBucket: "tourthelakes-1e165.appspot.com",
+  messagingSenderId: "470758171431",
+  appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+  const id = new URLSearchParams(location.search).get("id"); 
   if (!id) window.location.href = "ReturningCustomer.html";
 
-  const form = document.getElementById("amendForm");
-  const areaSelect = document.getElementById("area");
-  const luggage = document.getElementById("luggage");
-  const passengers = document.getElementById("passengers");
-  const pickupDate = document.getElementById("pickupDate");
-  const pickupTime = document.getElementById("pickupTime");
-  const asapCheckbox = document.getElementById("asapCheckbox");
-  const asapMessage = document.getElementById("asapMessage");
+let mapPickup, mapDropoff, markerPickup, markerDropoff; 
+  function initMap() { const defaultLatLng = { lat: 54.3686, lng: -2.9067 }; 
+                      mapPickup = new google.maps.Map(document.getElementById("mapPickup"), { center: defaultLatLng, zoom: 13, disableDefaultUI: true, gestureHandling: "cooperative" }); 
+                      mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), { center: defaultLatLng, zoom: 13, disableDefaultUI: true, gestureHandling: "cooperative" });
+                      markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true }); 
+                      markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
 
-  const luggageWarning = document.getElementById("luggageWarning");
-  const otherAreaBox = document.getElementById("otherAreaBox");
-  const otherAreaInput = document.getElementById("otherArea");
+mapPickup.addListener("click", (e) => { markerPickup.setPosition(e.latLng); 
+                      localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON())); }); 
+                      mapDropoff.addListener("click", (e) => { markerDropoff.setPosition(e.latLng); 
+                      localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON())); });
 
-  db.ref("bookings/" + id).once("value", snap => {
-    const data = snap.val();
-    if (!data) return;
-    areaSelect.value = ["Windermere", "Troutbeck", "Ambleside", "Hawkshead", "Coniston", "Grasmere", "Kendal"].includes(data.area) ? data.area : "other";
-    if (areaSelect.value === "other") {
-      otherAreaBox.style.display = "block";
-      otherAreaInput.value = data.area;
-    }
-    document.getElementById("pickup").value = data.pickup;
-    document.getElementById("extra").value = data.extra || "";
-    document.getElementById("dropoff").value = data.dropoff;
-    document.getElementById("passengers").value = data.passengers;
-    document.getElementById("luggage").value = data.luggage;
-    document.getElementById("noPets").checked = data.pets === "No";
-    if (data.pickupType === "ASAP") {
-      asapCheckbox.checked = true;
-      pickupDate.disabled = true;
-      pickupTime.disabled = true;
-      asapMessage.style.display = "block";
-    } else {
-      pickupDate.value = data.pickupDate || "";
-      pickupTime.innerHTML = `<option value="${data.pickupTime}">${data.pickupTime}</option>`;
-    }
-    checkLuggageLimit();
-  });
+const pickupInput = document.getElementById("pickup"); 
+                      const dropoffInput = document.getElementById("dropoff"); 
+                      const pickupAuto = new google.maps.places.Autocomplete(pickupInput, { componentRestrictions: { country: 'gb' } }); 
+                      const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput, { componentRestrictions: { country: 'gb' } }); 
+                      pickupAuto.addListener("place_changed", () => { const place = pickupAuto.getPlace(); 
+            if (place.geometry) { mapPickup.setCenter(place.geometry.location); 
+            markerPickup.setPosition(place.geometry.location); 
+            localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
+                                } }); dropoffAuto.addListener("place_changed", () => { const place = dropoffAuto.getPlace(); 
+            if (place.geometry) { mapDropoff.setCenter(place.geometry.location); 
+            markerDropoff.setPosition(place.geometry.location); 
+            localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON())); } }); }
 
-  passengers.addEventListener("change", checkLuggageLimit);
-  areaSelect.addEventListener("change", () => {
-    otherAreaBox.style.display = areaSelect.value === "other" ? "block" : "none";
-  });
-  asapCheckbox.addEventListener("change", () => {
-    const now = new Date();
-    const hour = now.getHours();
-    if (hour < 9 || hour >= 19) {
-      alert("ASAP bookings are only available between 09:00 and 19:00.");
-      asapCheckbox.checked = false;
-      return;
-    }
-    pickupDate.disabled = asapCheckbox.checked;
-    pickupTime.disabled = asapCheckbox.checked;
-    asapMessage.style.display = asapCheckbox.checked ? "block" : "none";
-  });
+function goToNextStep() { 
+  const pickup = document.getElementById('pickup').value; 
+  const dropoff = document.getElementById('dropoff').value; 
+  const pickupCoords = localStorage.getItem('pickupCoords'); 
+  const dropoffCoords = localStorage.getItem('dropoffCoords'); 
+  if (!pickup || !dropoff) return alert('Please fill in both address fields.'); 
+  if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.'); 
+  localStorage.setItem('pickup', pickup); 
+  localStorage.setItem('dropoff', dropoff); 
+  document.getElementById('pickupDisplay').innerText = pickup; document.getElementById('dropoffDisplay').innerText = dropoff; 
+  document.getElementById('step1').style.display = 'none'; 
+  document.getElementById('step2').style.display = 'block'; 
+  estimateJourney(); }
 
-  pickupDate.setAttribute("min", new Date().toISOString().split("T")[0]);
-  pickupDate.addEventListener("change", populateTimes);
+function updateLuggageOptions() { 
+  const passengerValue = document.getElementById('passengers').value; 
+  const passengerCount = parseInt(passengerValue); 
+  const warning = document.getElementById('capacityWarning'); 
+  const luggageSelect = document.getElementById('luggage'); 
+  const options = luggageSelect.options; 
+  for (let i = 0; i < options.length; i++) { options[i].disabled = false; options[i].classList.remove('disabledOption'); } 
+       if (!isNaN(passengerCount) && passengerCount >= 5) { warning.style.display = 'block'; 
+       if (options[2]) { options[2].disabled = true; options[2].classList.add('disabledOption'); } 
+       if (options[3]) { options[3].disabled = true; options[3].classList.add('disabledOption'); } 
+       if (luggageSelect.selectedIndex === 2 || luggageSelect.selectedIndex === 3) { luggageSelect.selectedIndex = 1; } } 
+       else { warning.style.display = 'none'; } }
 
-  function checkLuggageLimit() {
-    const count = parseInt(passengers.value);
-    const medium = luggage.querySelector('[value="medium"]');
-    const large = luggage.querySelector('[value="large"]');
-    if (count > 4) {
-      medium.disabled = true;
-      large.disabled = true;
-      if (["medium", "large"].includes(luggage.value)) luggage.value = "";
-      luggageWarning.style.display = "block";
-    } else {
-      medium.disabled = false;
-      large.disabled = false;
-      luggageWarning.style.display = "none";
-    }
-  }
+function goToTimeStep() { 
+  if (!document.getElementById('passengerConfirm').checked) { 
+    alert('Please confirm passenger count.'); return; } 
+  if (!document.getElementById('petConfirm').checked) { 
+    alert('You must confirm you are not travelling with a pet.'); return; } 
+  localStorage.setItem('passengers', document.getElementById('passengers').value); 
+  localStorage.setItem('luggage', document.getElementById('luggage').value); 
+  document.getElementById('step2').style.display = 'none'; 
+  document.getElementById('step3').style.display = 'block'; }
 
-  function populateTimes() {
-    pickupTime.innerHTML = '<option value="">Select a time...</option>';
-    const selectedDate = new Date(pickupDate.value);
-    const currentDate = new Date();
-    const todayStr = currentDate.toISOString().split("T")[0];
-    const isToday = pickupDate.value === todayStr;
+function submitAmendment() { 
+  const isASAP = document.getElementById('asapCheckbox').checked; 
+  const pickupDate = document.getElementById('pickupDate').value; 
+  const pickupTime = document.getElementById('pickupTime').value; 
+  if (!isASAP && (!pickupDate || !pickupTime)) { alert("Please select both a date and time, or choose ASAP."); return; } 
+  const data = { pickup: 
+    localStorage.getItem("pickup"), dropoff: 
+    localStorage.getItem("dropoff"), passengers: 
+    localStorage.getItem("passengers"), luggage: 
+    localStorage.getItem("luggage"), pets: "No", 
+                pickupType: isASAP ? "ASAP" : "Scheduled", 
+                pickupDate: isASAP ? null : pickupDate, 
+                pickupTime: isASAP ? null : pickupTime }; 
+  db.ref("bookings/" + id).update(data).then(() => { alert("Booking updated successfully."); 
+                window.location.href = "CustomerBooking.html"; }); }
 
-    db.ref("driverShifts").once("value").then(shiftsSnap => {
-      db.ref("driverStatus").once("value").then(statusSnap => {
-        const shifts = shiftsSnap.val() || {};
-        const statuses = statusSnap.val() || {};
-        const available = Object.keys(statuses).filter(dc => {
-          const s = shifts[dc];
-          if (!s || statuses[dc] !== "Available") return false;
-          const fromHour = parseInt(s.from);
-          const untilHour = parseInt(s.until);
-          const nowHour = new Date().getHours();
-          return !isToday || (nowHour >= fromHour && nowHour < untilHour);
-        });
-        if (!available.length) return alert("No drivers available on selected date.");
-        let startTime = new Date(selectedDate);
-        const shiftStart = 9, shiftEnd = 19;
-        startTime.setHours(shiftStart, 0, 0, 0);
-        let minTime = new Date(currentDate.getTime() + 30 * 60000);
-        if (isToday) startTime = new Date(Math.max(startTime, minTime));
-        const endTime = new Date(selectedDate);
-        endTime.setHours(shiftEnd, 0, 0, 0);
-        while (startTime <= endTime) {
-          const h = String(startTime.getHours()).padStart(2, '0');
-          const m = String(startTime.getMinutes()).padStart(2, '0');
-          pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
-          startTime.setMinutes(startTime.getMinutes() + 15);
-        }
-      });
-    });
-  }
+document.getElementById("asapCheckbox").addEventListener("change", function () { 
+  const now = new Date(); 
+  const currentHour = now.getHours(); 
+  if (currentHour < 9 || currentHour >= 19) { alert("ASAP bookings are only available between 09:00 and 19:00."); this.checked = false; return; } 
+  const isChecked = this.checked; document.getElementById("pickupDate").disabled = isChecked; document.getElementById("pickupTime").disabled = isChecked; 
+  document.getElementById("asapMessage").style.display = isChecked ? "block" : "none"; });
 
-  form.onsubmit = e => {
-    e.preventDefault();
-    const data = {
-      area: areaSelect.value === "other" ? otherAreaInput.value.trim() : areaSelect.value,
-      pickup: document.getElementById("pickup").value.trim(),
-      extra: document.getElementById("extra").value.trim(),
-      dropoff: document.getElementById("dropoff").value.trim(),
-      passengers: passengers.value,
-      luggage: luggage.value,
-      pets: document.getElementById("noPets").checked ? "No" : "Yes or not confirmed",
-      pickupType: asapCheckbox.checked ? "ASAP" : "Scheduled",
-      pickupDate: asapCheckbox.checked ? null : pickupDate.value,
-      pickupTime: asapCheckbox.checked ? null : pickupTime.value
-    };
-    if (!data.area || !data.pickup || !data.dropoff || !data.passengers || !data.luggage || data.pets === "Yes or not confirmed") {
-      alert("Please complete all required fields and confirm no pets.");
-      return;
-    }
-    if (!asapCheckbox.checked && (!pickupDate.value || !pickupTime.value)) {
-      alert("Please select pickup date and time or choose ASAP.");
-      return;
-    }
-    db.ref("bookings/" + id).update(data).then(() => {
-      alert("Booking updated successfully.");
-      window.location.href = "CustomerBooking.html";
-    });
-  };
-</script>
+document.getElementById("pickupDate").addEventListener("change", populateTimes); 
+  function populateTimes() { 
+    const pickupDate = document.getElementById("pickupDate").value; 
+    const pickupTime = document.getElementById("pickupTime"); pickupTime.innerHTML = '<option value="">Select a time...</option>'; 
+    const selectedDate = new Date(pickupDate); 
+    const now = new Date(); let startTime = new Date(selectedDate); 
+    const shiftStart = 9, shiftEnd = 19; startTime.setHours(shiftStart, 0, 0, 0); let minTime = new Date(now.getTime() + 30 * 60000); 
+    const isToday = pickupDate === now.toISOString().split("T")[0]; if (isToday) startTime = new Date(Math.max(startTime, minTime)); 
+    const endTime = new Date(selectedDate); endTime.setHours(shiftEnd, 0, 0, 0); while (startTime <= endTime) { 
+      const h = String(startTime.getHours()).padStart(2, '0'); 
+      const m = String(startTime.getMinutes()).padStart(2, '0'); 
+      pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`; 
+      startTime.setMinutes(startTime.getMinutes() + 15); } }
+
+function estimateJourney() { 
+  const pickup = localStorage.getItem('pickupCoords'); 
+  const dropoff = localStorage.getItem('dropoffCoords'); 
+  if (!pickup || !dropoff) { document.getElementById('estimateMsg').innerText = 'Waiting for location input...'; return; } 
+  const origin = JSON.parse(pickup); 
+  const destination = JSON.parse(dropoff); 
+  if (!origin || !destination || !origin.lat || !destination.lat) { document.getElementById('estimateMsg').innerText = 'Incomplete coordinates. Please reselect pickup and drop-off.'; return; } 
+  const service = new google.maps.DirectionsService(); 
+  service.route({ origin, destination, travelMode: 'DRIVING' }, (result, status) => { 
+    if (status === 'OK' && result.routes.length > 0) { 
+      const leg = result.routes[0].legs[0]; 
+      const distanceMeters = leg.distance.value; 
+      const now = new Date(); 
+      const hour = now.getHours(); 
+      const isNight = (hour >= 23 || hour < 7); 
+      const baseFare = isNight ? 6.30 : 4.20;
+      const stepFare = isNight ? 0.40 : 0.30; 
+      let fare = baseFare; if (distanceMeters > 1609) { 
+        const extraDist = distanceMeters - 1609; 
+        const extraUnits = Math.ceil(extraDist / 161); fare += extraUnits * stepFare; } 
+      document.getElementById('estimateMsg').innerHTML = `
+      Estimated journey: <strong>${leg.distance.text}</strong>, 
+      <strong>${leg.duration.text}</strong><br> 
+        Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `; } else { 
+      document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.'; } }); } </script>
 
 </body>
 </html>
