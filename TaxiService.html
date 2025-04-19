@@ -207,7 +207,7 @@
   <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
 
   <div class="button-row">
-    <button onclick="location.reload()">Return</button>
+    <button onclick="returnToStep1()">Return</button>
     <button onclick="submitDetails()">Next</button>
   </div>
 </div>
@@ -312,28 +312,34 @@
       }
     };
 
-    function goToNextStep() {
-      const pickup = document.getElementById('pickup').value;
-      const dropoff = document.getElementById('dropoff').value;
-      const pickupCoords = localStorage.getItem('pickupCoords');
-      const dropoffCoords = localStorage.getItem('dropoffCoords');
+function goToNextStep() {
+  const pickup = document.getElementById('pickup').value;
+  const dropoff = document.getElementById('dropoff').value;
+  const pickupCoords = sessionStorage.getItem('pickupCoords');
+  const dropoffCoords = sessionStorage.getItem('dropoffCoords');
 
-      if (!pickup || !dropoff) return alert('Please fill in both address fields.');
-      if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
+  if (!pickup || !dropoff) return alert('Please fill in both address fields.');
+  if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
 
-      sessionStorage.setItem('pickup', pickup);
-      sessionStorage.setItem('dropoff', dropoff);
+  sessionStorage.setItem('pickup', pickup);
+  sessionStorage.setItem('dropoff', dropoff);
 
-      document.getElementById('pickupDisplay').innerText = pickup;
-      document.getElementById('dropoffDisplay').innerText = dropoff;
+  document.getElementById('pickupDisplay').innerText = pickup;
+  document.getElementById('dropoffDisplay').innerText = dropoff;
 
-      document.getElementById('pickupDisplay').innerText = pickup;
-      document.getElementById('dropoffDisplay').innerText = dropoff;
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  estimateJourney();
+}
 
-      document.getElementById('step1').style.display = 'none';
-      document.getElementById('step2').style.display = 'block';
-      estimateJourney();
-    }
+// NEW: helper function to go back without losing data
+function returnToStep1() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step1').style.display = 'block';
+
+  document.getElementById('pickup').value = sessionStorage.getItem('pickup') || '';
+  document.getElementById('dropoff').value = sessionStorage.getItem('dropoff') || '';
+}
 
     function updateLuggageOptions() {
       const passengerCount = parseInt(document.getElementById('passengers').value);
