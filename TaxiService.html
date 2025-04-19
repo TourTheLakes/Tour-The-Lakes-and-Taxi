@@ -138,74 +138,84 @@
   </style>
 </head>
 <body>
-  <div class="container" id="step1">
-    <h1>Let's Get You Moving</h1>
+  <div class="container">
+    <h1>Hey, let's get you moving!</h1>
+    
+<div id="step1">
+  <label for="pickup">Pickup Address:</label>
+  <input type="text" id="pickup" placeholder="Start typing...">
+  <div id="mapPickup"></div>
 
-    <label for="pickup">Pickup Address:</label>
-    <input type="text" id="pickup" placeholder="Start typing...">
-    <div class="map" id="mapPickup"></div>
+  <label for="dropoff">Drop-off Address:</label>
+  <input type="text" id="dropoff" placeholder="Start typing...">
+  <div id="mapDropoff"></div>
 
-    <label for="dropoff">Drop-off Address:</label>
-    <input type="text" id="dropoff" placeholder="Start typing...">
-    <div class="map" id="mapDropoff"></div>
-
-<div id="customNoteArea">
-  <label for="customNote">Additional info for your driver:</label>
-  <textarea id="customNote" placeholder="Nearest landmark, gate code..."></textarea>
-
-
+  <div id="customNoteArea">
+    <label>Additional info for your driver:</label>
+    <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
     <div class="disclaimer">
-      <strong>Fares:</strong><br>
-      Standard: £4.20 (first mile) + £0.30 per 1/10 mile<br>
-      Night: £6.30 (23:00-07:00) + £0.40 per 1/10 mile<br>
-      Bank Holidays: £8.40 + £0.60 per 1/10 mile<br>
-      Waiting time: from 30p per min
-    </div>
-
-    <div class="button-row">
-      <button onclick="location.href='https://tourthelakes.com'">Return Home</button>
-      <button onclick="goToNextStep()">Next</button>
+      Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
+      <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
+      <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
+      <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
+      <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
     </div>
   </div>
 
-  <div class="container" id="step2" style="display: none;">
-    <h2>Journey Details</h2>
-
-    <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
-    <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
-    <p id="estimateMsg">Estimating your fare...</p>
-
-    <label for="passengers">How many people?</label>
-    <select id="passengers" onchange="updateLuggageOptions()">
-      <option value="">Select</option>
-      <option>1</option><option>2</option><option>3</option>
-      <option>4</option><option>5</option><option>6</option>
-    </select>
-    <input type="checkbox" id="passengerConfirm"> Confirmed
-
-    <label for="luggage">Luggage:</label>
-    <select id="luggage">
-      <option>No luggage</option>
-      <option class="luggageOption">Small - backpack or carry-on</option>
-      <option class="luggageOption">Medium - a couple of suitcases</option>
-      <option class="luggageOption">Large - multiple or oversized bags</option>
-    </select>
-
-    <div id="capacityWarning" class="warning" style="display:none;">
-      Limited space in rear. Large luggage not recommended with 5+ passengers.
-    </div>
-
-    <div class="disclaimer">
-      <strong>Pets Policy:</strong><br>
-      No pets allowed due to previous incidents. Non-disclosure may result in refusal.
-    </div>
-    <input type="checkbox" id="petConfirm"> I confirm no pets are travelling.
-
-    <div class="button-row">
-      <button onclick="location.reload()">Return</button>
-      <button onclick="submitDetails()">Next</button>
-    </div>
+  <!-- Moved this block INSIDE #step1 -->
+  <div class="button-row">
+    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+    <button onclick="goToNextStep()">Next</button>
   </div>
+</div> <!-- closes step1 properly here -->
+
+
+<div id="step2" style="display:none; margin-top:30px;">
+  <h2>Journey Details</h2>
+
+  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+  <p id="estimateMsg">Estimating your fare...</p>
+
+  <label for="passengers">How many people are travelling?</label>
+  <select id="passengers" onchange="updateLuggageOptions()">
+    <option value="">Select</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+  </select>
+  <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+
+  <label for="luggage">Luggage:</label>
+  <select id="luggage">
+    <option>No luggage</option>
+    <option class="luggageOption">Small - a backpack or a small carry-on</option>
+    <option class="luggageOption">Medium - a couple of suitcases</option>
+    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
+  </select>
+
+  <div id="capacityWarning" class="warning" style="display:none;">
+    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
+  </div>
+
+  <div class="disclaimer">
+    <strong>Important Notice Regarding Pets</strong><br>
+    We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
+    We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+    <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
+  </div>
+  <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
+
+  <div class="button-row">
+    <button onclick="location.reload()">Return</button>
+    <button onclick="submitDetails()">Next</button>
+  </div>
+</div>
+ </div> 
+
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script>
@@ -363,25 +373,20 @@ function updateLuggageOptions() {
   }
 }
 
-function submitDetails() {
-  if (!document.getElementById('passengerConfirm').checked) {
-    alert('Please confirm passenger count.');
-    return;
-  }
-  if (!document.getElementById('petConfirm').checked) {
-    alert('You must confirm you are not travelling with a pet.');
-    return;
-  }
 
-  localStorage.setItem('passengers', document.getElementById('passengers').value);
-  localStorage.setItem('luggage', document.getElementById('luggage').value);
-  
-  const note = document.getElementById('customNote').value.trim();
-  localStorage.setItem('extra', note || "N/A");
-
-  window.location.href = 'TimeAndDate.html';
-}
-
+    function submitDetails() {
+      if (!document.getElementById('passengerConfirm').checked) {
+        alert('Please confirm passenger count.');
+        return;
+      }
+      if (!document.getElementById('petConfirm').checked) {
+        alert('You must confirm you are not travelling with a pet.');
+        return;
+      }
+      localStorage.setItem('passengers', document.getElementById('passengers').value);
+      localStorage.setItem('luggage', document.getElementById('luggage').value);
+      window.location.href = 'TimeAndDate.html';
+    }
 
   function estimateJourney() {
   const pickup = localStorage.getItem('pickupCoords');
@@ -444,5 +449,7 @@ function submitDetails() {
   );
 }    
   </script>
+
+
 </body>
 </html>
