@@ -251,20 +251,23 @@
       gestureHandling: "cooperative"
     });
 
-    markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
-    markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
+pickupAuto.addListener("place_changed", () => {
+  const place = pickupAuto.getPlace();
+  if (place.geometry) {
+    mapPickup.setCenter(place.geometry.location);
+    markerPickup.setPosition(place.geometry.location);
+    sessionStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
+  }
+});
 
-    mapPickup.addListener("click", (e) => {
-      markerPickup.setPosition(e.latLng);
-      localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
-      showCustomNote();
-    });
-
-    mapDropoff.addListener("click", (e) => {
-      markerDropoff.setPosition(e.latLng);
-      localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
-      showCustomNote();
-    });
+dropoffAuto.addListener("place_changed", () => {
+  const place = dropoffAuto.getPlace();
+  if (place.geometry) {
+    mapDropoff.setCenter(place.geometry.location);
+    markerDropoff.setPosition(place.geometry.location);
+    sessionStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
+  }
+});
     
     const pickupInput = document.getElementById("pickup");
     const dropoffInput = document.getElementById("dropoff");
@@ -275,24 +278,23 @@
     componentRestrictions: { country: 'gb' }
     });
 
-    pickupAuto.addListener("place_changed", () => {
-      const place = pickupAuto.getPlace();
-      if (place.geometry) {
-        mapPickup.setCenter(place.geometry.location);
-        markerPickup.setPosition(place.geometry.location);
-        localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
-      }
-    });
-
-    dropoffAuto.addListener("place_changed", () => {
-      const place = dropoffAuto.getPlace();
-      if (place.geometry) {
-        mapDropoff.setCenter(place.geometry.location);
-        markerDropoff.setPosition(place.geometry.location);
-        localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
-      }
-    });
+pickupAuto.addListener("place_changed", () => {
+  const place = pickupAuto.getPlace();
+  if (place.geometry) {
+    mapPickup.setCenter(place.geometry.location);
+    markerPickup.setPosition(place.geometry.location);
+    sessionStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
   }
+});
+
+dropoffAuto.addListener("place_changed", () => {
+  const place = dropoffAuto.getPlace();
+  if (place.geometry) {
+    mapDropoff.setCenter(place.geometry.location);
+    markerDropoff.setPosition(place.geometry.location);
+    sessionStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
+  }
+});
 
   function showCustomNote() {
     document.getElementById("customNoteArea").style.display = "block";
