@@ -379,20 +379,25 @@ function updateLuggageOptions() {
   }
 }
 
+function submitDetails() {
+  if (!document.getElementById('passengerConfirm').checked) {
+    alert('Please confirm passenger count.');
+    return;
+  }
+  if (!document.getElementById('petConfirm').checked) {
+    alert('You must confirm you are not travelling with a pet.');
+    return;
+  }
 
-    function submitDetails() {
-      if (!document.getElementById('passengerConfirm').checked) {
-        alert('Please confirm passenger count.');
-        return;
-      }
-      if (!document.getElementById('petConfirm').checked) {
-        alert('You must confirm you are not travelling with a pet.');
-        return;
-      }
-      localStorage.setItem('passengers', document.getElementById('passengers').value);
-      localStorage.setItem('luggage', document.getElementById('luggage').value);
-      window.location.href = 'TimeAndDate.html';
-    }
+  localStorage.setItem('passengers', document.getElementById('passengers').value);
+  localStorage.setItem('luggage', document.getElementById('luggage').value);
+  
+  const note = document.getElementById('customNote').value.trim();
+  localStorage.setItem('extra', note || "N/A");
+
+  window.location.href = 'TimeAndDate.html';
+}
+
 
   function estimateJourney() {
   const pickup = localStorage.getItem('pickupCoords');
