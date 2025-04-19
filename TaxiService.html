@@ -335,18 +335,27 @@
       estimateJourney();
     }
 
-    function updateLuggageOptions() {
-      const passengerCount = parseInt(document.getElementById('passengers').value);
-      const luggageOptions = document.querySelectorAll('.luggageOption');
-      const warning = document.getElementById('capacityWarning');
-      if (passengerCount > 4) {
-        warning.style.display = 'block';
-        luggageOptions.forEach(option => option.style.display = 'none');
-      } else {
-        warning.style.display = 'none';
-        luggageOptions.forEach(option => option.style.display = 'block');
-      }
-    }
+function updateLuggageOptions() {
+  const passengerValue = document.getElementById('passengers').value;
+  const passengerCount = parseInt(passengerValue);
+  const luggageOptions = document.querySelectorAll('.luggageOption');
+  const warning = document.getElementById('capacityWarning');
+
+  if (isNaN(passengerCount)) {
+    warning.style.display = 'none';
+    luggageOptions.forEach(option => option.style.display = 'block');
+    return;
+  }
+
+  if (passengerCount > 4) {
+    warning.style.display = 'block';
+    luggageOptions.forEach(option => option.style.display = 'none');
+  } else {
+    warning.style.display = 'none';
+    luggageOptions.forEach(option => option.style.display = 'block');
+  }
+}
+
 
     function submitDetails() {
       if (!document.getElementById('passengerConfirm').checked) {
