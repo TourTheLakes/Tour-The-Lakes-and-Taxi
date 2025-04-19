@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-dark: #0e0f10;
+      --card-light: #1c1e21;
+      --text-light: #f1f1f1;
+      --text-mid: #aaaaaa;
+      --text-soft: #888888;
+      --button-bg: #f1f1f1;
+      --button-hover: #e0e0e0;
+      --button-text: #111111;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -13,73 +24,79 @@
       font-family: 'Quicksand', sans-serif;
     }
 
-    body {
-      background: #0e0f10;
-      color: #f1f1f1;
+    html, body {
+      background: var(--bg-dark);
+      color: var(--text-light);
+      height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
       padding: 20px;
     }
 
     .container {
-      background: #1c1e21; /* Lighter than body for contrast */
-      border: 1px solid #2a2c2e;
-      border-radius: 16px;
-      padding: 40px 30px;
-      max-width: 480px;
+      background: var(--card-light);
+      border-radius: 20px;
+      padding: 50px 40px;
+      max-width: 500px;
       width: 100%;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
       text-align: center;
+      animation: fadeIn 1s ease;
     }
 
     h1 {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 600;
-      margin-bottom: 12px;
-      letter-spacing: 1px;
-      color: #fff;
+      letter-spacing: 1.5px;
+      margin-bottom: 10px;
     }
 
     p {
       font-size: 16px;
-      margin-bottom: 30px;
-      color: #aaa;
+      color: var(--text-mid);
+      margin-bottom: 35px;
     }
 
     button {
-      background: #f1f1f1;
-      color: #111;
+      background: var(--button-bg);
+      color: var(--button-text);
       border: none;
-      padding: 14px 24px;
+      padding: 16px 26px;
       font-size: 16px;
       font-weight: 600;
-      border-radius: 10px;
-      margin: 12px 6px;
+      border-radius: 12px;
+      margin: 12px 8px;
       cursor: pointer;
-      transition: all 0.25s ease-in-out;
-      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 14px rgba(255, 255, 255, 0.05);
+      transform: scale(1);
     }
 
     button:hover {
-      background: #e0e0e0;
-      transform: scale(1.05);
+      background: var(--button-hover);
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
     }
 
     .returning {
-      margin-bottom: 35px;
+      margin-bottom: 45px;
     }
 
     .returning p {
       font-size: 14px;
-      color: #888;
+      color: var(--text-soft);
       margin-top: 10px;
     }
 
-    @media screen and (max-width: 480px) {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
       .container {
-        padding: 30px 20px;
+        padding: 35px 20px;
       }
 
       button {
@@ -88,7 +105,7 @@
       }
 
       h1 {
-        font-size: 26px;
+        font-size: 28px;
       }
 
       p {
