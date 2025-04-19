@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8"><!DOCTYPE html><html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Amend Booking</title>
@@ -45,6 +47,10 @@
       font-size: 14px;
       box-sizing: border-box;
     }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 10px;
+    }
     button {
       margin-top: 25px;
       padding: 12px 20px;
@@ -75,13 +81,20 @@
       background: #f8f8f8;
       padding: 15px;
       margin-top: 20px;
-      border-left: 4px solid #cc0000;
       font-size: 14px;
       border-radius: 4px;
       color: #333;
     }
+    p {
+      font-size: 14px;
+      margin: 10px 0;
+      color: #555;
+    }
     @media screen and (max-width: 480px) {
       body {
+        padding: 20px;
+      }
+      .container {
         padding: 20px;
       }
     }
@@ -113,7 +126,6 @@
     <input type="text" id="extra">
     <label for="dropoff">Drop-off Location:</label>
     <input type="text" id="dropoff" required>
-
     <label for="passengers">Number of Passengers:</label>
     <select id="passengers">
       <option value="">--Select--</option>
@@ -124,7 +136,6 @@
       <option>5</option>
       <option>6</option>
     </select>
-
     <label for="luggage">Luggage Size:</label>
     <select id="luggage">
       <option value="">-- Select Luggage Size --</option>
@@ -133,38 +144,36 @@
       <option value="medium">Medium – a couple of suitcases</option>
       <option value="large">Large – multiple bags or oversized items</option>
     </select>
-
     <div class="warning" id="luggageWarning">Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.</div>
-
     <div class="disclaimer">
       <strong>Important Notice Regarding Pets</strong><br>
       We regret to inform you that, due to multiple incidents involving damage to our vehicles — even with well-behaved pets under responsible supervision — our drivers are no longer accepting animals on board.<br><br>
       As such, we are <strong>not a pet-friendly service</strong>, and we ask that you acknowledge you are not travelling with a pet companion.<br><br>
       <strong>Failure to disclose the presence of a pet may result in refusal of travel.</strong>
     </div>
-
-    <label style="margin-top: 15px;">
-      <input type="checkbox" id="noPets" required>
-      I acknowledge I am not travelling with a pet.
-    </label>
-
-    <button type="submit">Update Booking</button>
-  </form>
+    <label style="margin-top: 15px;"><input type="checkbox" id="noPets" required> I acknowledge I am not travelling with a pet.</label><label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
+<p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
+<div id="scheduleFields">
+  <label for="pickupDate">Pickup Date:</label>
+  <input type="date" id="pickupDate">
+  <label for="pickupTime">Pickup Time:</label>
+  <select id="pickupTime"><option value="">Select a time...</option></select>
 </div>
 
-<script>
+<button type="submit">Update Booking</button>
 
+  </form>
+</div><script>
   const phone = localStorage.getItem("returningPhoneNumber");
   const verifiedTime = parseInt(localStorage.getItem("verifiedTime") || 0);
   const now = Date.now();
-  const maxAge = 15 * 60 * 1000; //15 minutes
-  
+  const maxAge = 15 * 60 * 1000;
   if (!phone || !verifiedTime || now - verifiedTime > maxAge) {
     localStorage.removeItem("returningPhoneNumber");
     localStorage.removeItem("verifiedTime");
     window.location.href = "ReturningCustomer.html";
   }
-  
+
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
     authDomain: "tourthelakes-1e165.firebaseapp.com",
@@ -178,13 +187,16 @@
   const db = firebase.database();
 
   const id = new URLSearchParams(location.search).get("id");
-  if (!id) {
-    window.location.href = "ReturningCustomer.html";
-  }
+  if (!id) window.location.href = "ReturningCustomer.html";
+
   const form = document.getElementById("amendForm");
   const areaSelect = document.getElementById("area");
   const luggage = document.getElementById("luggage");
   const passengers = document.getElementById("passengers");
+  const pickupDate = document.getElementById("pickupDate");
+  const pickupTime = document.getElementById("pickupTime");
+  const asapCheckbox = document.getElementById("asapCheckbox");
+  const asapMessage = document.getElementById("asapMessage");
 
   const luggageWarning = document.getElementById("luggageWarning");
   const otherAreaBox = document.getElementById("otherAreaBox");
@@ -204,28 +216,89 @@
     document.getElementById("passengers").value = data.passengers;
     document.getElementById("luggage").value = data.luggage;
     document.getElementById("noPets").checked = data.pets === "No";
+    if (data.pickupType === "ASAP") {
+      asapCheckbox.checked = true;
+      pickupDate.disabled = true;
+      pickupTime.disabled = true;
+      asapMessage.style.display = "block";
+    } else {
+      pickupDate.value = data.pickupDate || "";
+      pickupTime.innerHTML = `<option value="${data.pickupTime}">${data.pickupTime}</option>`;
+    }
     checkLuggageLimit();
   });
 
   passengers.addEventListener("change", checkLuggageLimit);
-  areaSelect.addEventListener("change", function () {
-    otherAreaBox.style.display = this.value === "other" ? "block" : "none";
+  areaSelect.addEventListener("change", () => {
+    otherAreaBox.style.display = areaSelect.value === "other" ? "block" : "none";
   });
+  asapCheckbox.addEventListener("change", () => {
+    const now = new Date();
+    const hour = now.getHours();
+    if (hour < 9 || hour >= 19) {
+      alert("ASAP bookings are only available between 09:00 and 19:00.");
+      asapCheckbox.checked = false;
+      return;
+    }
+    pickupDate.disabled = asapCheckbox.checked;
+    pickupTime.disabled = asapCheckbox.checked;
+    asapMessage.style.display = asapCheckbox.checked ? "block" : "none";
+  });
+
+  pickupDate.setAttribute("min", new Date().toISOString().split("T")[0]);
+  pickupDate.addEventListener("change", populateTimes);
 
   function checkLuggageLimit() {
     const count = parseInt(passengers.value);
-    const mediumOption = luggage.querySelector('option[value="medium"]');
-    const largeOption = luggage.querySelector('option[value="large"]');
+    const medium = luggage.querySelector('[value="medium"]');
+    const large = luggage.querySelector('[value="large"]');
     if (count > 4) {
-      mediumOption.disabled = true;
-      largeOption.disabled = true;
+      medium.disabled = true;
+      large.disabled = true;
       if (["medium", "large"].includes(luggage.value)) luggage.value = "";
       luggageWarning.style.display = "block";
     } else {
-      mediumOption.disabled = false;
-      largeOption.disabled = false;
+      medium.disabled = false;
+      large.disabled = false;
       luggageWarning.style.display = "none";
     }
+  }
+
+  function populateTimes() {
+    pickupTime.innerHTML = '<option value="">Select a time...</option>';
+    const selectedDate = new Date(pickupDate.value);
+    const currentDate = new Date();
+    const todayStr = currentDate.toISOString().split("T")[0];
+    const isToday = pickupDate.value === todayStr;
+
+    db.ref("driverShifts").once("value").then(shiftsSnap => {
+      db.ref("driverStatus").once("value").then(statusSnap => {
+        const shifts = shiftsSnap.val() || {};
+        const statuses = statusSnap.val() || {};
+        const available = Object.keys(statuses).filter(dc => {
+          const s = shifts[dc];
+          if (!s || statuses[dc] !== "Available") return false;
+          const fromHour = parseInt(s.from);
+          const untilHour = parseInt(s.until);
+          const nowHour = new Date().getHours();
+          return !isToday || (nowHour >= fromHour && nowHour < untilHour);
+        });
+        if (!available.length) return alert("No drivers available on selected date.");
+        let startTime = new Date(selectedDate);
+        const shiftStart = 9, shiftEnd = 19;
+        startTime.setHours(shiftStart, 0, 0, 0);
+        let minTime = new Date(currentDate.getTime() + 30 * 60000);
+        if (isToday) startTime = new Date(Math.max(startTime, minTime));
+        const endTime = new Date(selectedDate);
+        endTime.setHours(shiftEnd, 0, 0, 0);
+        while (startTime <= endTime) {
+          const h = String(startTime.getHours()).padStart(2, '0');
+          const m = String(startTime.getMinutes()).padStart(2, '0');
+          pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
+          startTime.setMinutes(startTime.getMinutes() + 15);
+        }
+      });
+    });
   }
 
   form.onsubmit = e => {
@@ -237,10 +310,17 @@
       dropoff: document.getElementById("dropoff").value.trim(),
       passengers: passengers.value,
       luggage: luggage.value,
-      pets: document.getElementById("noPets").checked ? "No" : "Yes or not confirmed"
+      pets: document.getElementById("noPets").checked ? "No" : "Yes or not confirmed",
+      pickupType: asapCheckbox.checked ? "ASAP" : "Scheduled",
+      pickupDate: asapCheckbox.checked ? null : pickupDate.value,
+      pickupTime: asapCheckbox.checked ? null : pickupTime.value
     };
     if (!data.area || !data.pickup || !data.dropoff || !data.passengers || !data.luggage || data.pets === "Yes or not confirmed") {
       alert("Please complete all required fields and confirm no pets.");
+      return;
+    }
+    if (!asapCheckbox.checked && (!pickupDate.value || !pickupTime.value)) {
+      alert("Please select pickup date and time or choose ASAP.");
       return;
     }
     db.ref("bookings/" + id).update(data).then(() => {
@@ -249,5 +329,6 @@
     });
   };
 </script>
+
 </body>
 </html>
