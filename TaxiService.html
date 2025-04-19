@@ -58,9 +58,7 @@
       font-weight: 600;
     }
 
-    input[type="text"],
-    select,
-    textarea {
+    input[type="text"], select, textarea {
       width: 100%;
       padding: 12px;
       background: #2c2e31;
@@ -134,6 +132,11 @@
       cursor: not-allowed;
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 480px) {
       .container {
         padding: 25px 20px;
@@ -149,179 +152,171 @@
         gap: 10px;
       }
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
   </style>
 </head>
-  
+
 <body>
   <div class="container">
     <h1>Hey, let's get you moving!</h1>
-    
-<div id="step1">
-  <label for="pickup">Pickup Address:</label>
-  <input type="text" id="pickup" placeholder="Start typing...">
-  <div id="mapPickup"></div>
 
-  <label for="dropoff">Drop-off Address:</label>
-  <input type="text" id="dropoff" placeholder="Start typing...">
-  <div id="mapDropoff"></div>
+    <div id="step1">
+      <label for="pickup">Pickup Address:</label>
+      <input type="text" id="pickup" placeholder="Start typing...">
+      <div id="mapPickup"></div>
 
-  <div id="customNoteArea">
-    <label>Additional info for your driver:</label>
-    <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
-    <div class="disclaimer">
-      Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
-      <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
-      <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
-      <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
-      <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+      <label for="dropoff">Drop-off Address:</label>
+      <input type="text" id="dropoff" placeholder="Start typing...">
+      <div id="mapDropoff"></div>
+
+      <div id="customNoteArea">
+        <label>Additional info for your driver:</label>
+        <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+
+        <div class="disclaimer">
+          Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
+          <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile after.<br>
+          <strong>Night Rate:</strong> £6.30 (23:00 - 07:00), then £0.40 per 1/10 mile.<br>
+          <strong>Bank Holidays:</strong> £8.40 base, then £0.60 per 1/10 mile.<br>
+          <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on tariff.
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+        <button onclick="goToNextStep()">Next</button>
+      </div>
+    </div>
+<div id="step2" style="display:none; margin-top:30px;">
+      <h2>Journey Details</h2>
+
+      <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+      <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+      <p id="estimateMsg">Estimating your fare...</p>
+
+      <label for="passengers">How many people are travelling?</label>
+      <select id="passengers" onchange="updateLuggageOptions()">
+        <option value="">Select</option>
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+        <option>4</option>
+        <option>5</option>
+        <option>6</option>
+      </select>
+      <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+
+      <label for="luggage">Luggage:</label>
+      <select id="luggage">
+        <option>No luggage</option>
+        <option class="luggageOption">Small - a backpack or a small carry-on</option>
+        <option class="luggageOption">Medium - a couple of suitcases</option>
+        <option class="luggageOption">Large - multiple bags and/or oversized items</option>
+      </select>
+
+      <div id="capacityWarning" class="warning" style="display:none;">
+        Due to vehicle capacity and rear seat layout, luggage space is very limited. Please pack light.
+      </div>
+
+      <div class="disclaimer">
+        <strong>Important Notice Regarding Pets</strong><br>
+        Our drivers no longer accept animals due to repeated incidents of vehicle damage.<br>
+        We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+        <em>Undisclosed pets may result in refusal of travel.</em>
+      </div>
+      <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
+
+      <div class="button-row">
+        <button onclick="location.reload()">Return</button>
+        <button onclick="submitDetails()">Next</button>
+      </div>
     </div>
   </div>
 
-  <!-- Moved this block INSIDE #step1 -->
-  <div class="button-row">
-    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
-    <button onclick="goToNextStep()">Next</button>
-  </div>
-</div> <!-- closes step1 properly here -->
+  <!-- Firebase Config -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+      authDomain: "tourthelakes-1e165.firebaseapp.com",
+      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+      projectId: "tourthelakes-1e165",
+      storageBucket: "tourthelakes-1e165.appspot.com",
+      messagingSenderId: "470758171431",
+      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
 
+  <!-- Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
+  <script>
+    let mapPickup, mapDropoff, markerPickup, markerDropoff;
 
-<div id="step2" style="display:none; margin-top:30px;">
-  <h2>Journey Details</h2>
+    function initMap() {
+      const defaultLatLng = { lat: 54.3686, lng: -2.9067 };
 
-  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
-  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
-  <p id="estimateMsg">Estimating your fare...</p>
+      mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
+        center: defaultLatLng,
+        zoom: 13,
+        disableDefaultUI: true,
+        gestureHandling: "cooperative"
+      });
 
-  <label for="passengers">How many people are travelling?</label>
-  <select id="passengers" onchange="updateLuggageOptions()">
-    <option value="">Select</option>
-    <option>1</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5</option>
-    <option>6</option>
-  </select>
-  <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+      mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), {
+        center: defaultLatLng,
+        zoom: 13,
+        disableDefaultUI: true,
+        gestureHandling: "cooperative"
+      });
 
-  <label for="luggage">Luggage:</label>
-  <select id="luggage">
-    <option>No luggage</option>
-    <option class="luggageOption">Small - a backpack or a small carry-on</option>
-    <option class="luggageOption">Medium - a couple of suitcases</option>
-    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
-  </select>
+      markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
+      markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
 
-  <div id="capacityWarning" class="warning" style="display:none;">
-    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
-  </div>
+      mapPickup.addListener("click", (e) => {
+        markerPickup.setPosition(e.latLng);
+        localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
+        showCustomNote();
+      });
 
-  <div class="disclaimer">
-    <strong>Important Notice Regarding Pets</strong><br>
-    We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
-    We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
-    <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
-  </div>
-  <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
+      mapDropoff.addListener("click", (e) => {
+        markerDropoff.setPosition(e.latLng);
+        localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
+        showCustomNote();
+      });
 
-  <div class="button-row">
-    <button onclick="location.reload()">Return</button>
-    <button onclick="submitDetails()">Next</button>
-  </div>
-</div>
- </div> 
+      const pickupInput = document.getElementById("pickup");
+      const dropoffInput = document.getElementById("dropoff");
 
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-    authDomain: "tourthelakes-1e165.firebaseapp.com",
-    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-    projectId: "tourthelakes-1e165",
-    storageBucket: "tourthelakes-1e165.appspot.com",
-    messagingSenderId: "470758171431",
-    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script>
+      const pickupAuto = new google.maps.places.Autocomplete(pickupInput, { componentRestrictions: { country: 'gb' } });
+      const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput, { componentRestrictions: { country: 'gb' } });
 
+      pickupAuto.addListener("place_changed", () => {
+        const place = pickupAuto.getPlace();
+        if (place.geometry) {
+          mapPickup.setCenter(place.geometry.location);
+          markerPickup.setPosition(place.geometry.location);
+          localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
+        }
+      });
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
-<script>
-  let mapPickup, mapDropoff, markerPickup, markerDropoff;
+      dropoffAuto.addListener("place_changed", () => {
+        const place = dropoffAuto.getPlace();
+        if (place.geometry) {
+          mapDropoff.setCenter(place.geometry.location);
+          markerDropoff.setPosition(place.geometry.location);
+          localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
+        }
+      });
+    }
 
-  function initMap() {
-    const defaultLatLng = { lat: 54.3686, lng: -2.9067 }; // Windermere-ish fallback
+    function showCustomNote() {
+      document.getElementById("customNoteArea").style.display = "block";
+    }
+  </script>
 
-    mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
-      center: defaultLatLng,
-      zoom: 13,
-      disableDefaultUI: true,
-      gestureHandling: "cooperative"
-    });
-
-    mapDropoff = new google.maps.Map(document.getElementById("mapDropoff"), {
-      center: defaultLatLng,
-      zoom: 13,
-      disableDefaultUI: true,
-      gestureHandling: "cooperative"
-    });
-
-    markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
-    markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
-
-    mapPickup.addListener("click", (e) => {
-      markerPickup.setPosition(e.latLng);
-      localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
-      showCustomNote();
-    });
-
-    mapDropoff.addListener("click", (e) => {
-      markerDropoff.setPosition(e.latLng);
-      localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
-      showCustomNote();
-    });
-    
-    const pickupInput = document.getElementById("pickup");
-    const dropoffInput = document.getElementById("dropoff");
-    const pickupAuto = new google.maps.places.Autocomplete(pickupInput, {
-    componentRestrictions: { country: 'gb' }
-     });
-    const dropoffAuto = new google.maps.places.Autocomplete(dropoffInput, {
-    componentRestrictions: { country: 'gb' }
-    });
-
-    pickupAuto.addListener("place_changed", () => {
-      const place = pickupAuto.getPlace();
-      if (place.geometry) {
-        mapPickup.setCenter(place.geometry.location);
-        markerPickup.setPosition(place.geometry.location);
-        localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
-      }
-    });
-
-    dropoffAuto.addListener("place_changed", () => {
-      const place = dropoffAuto.getPlace();
-      if (place.geometry) {
-        mapDropoff.setCenter(place.geometry.location);
-        markerDropoff.setPosition(place.geometry.location);
-        localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
-      }
-    });
-  }
-
-  function showCustomNote() {
-    document.getElementById("customNoteArea").style.display = "block";
-  }
-</script>
-  
+  <!-- Page Logic -->
   <script>
     window.onload = function () {
       if (!localStorage.getItem("locationAllowed")) {
@@ -350,131 +345,99 @@
       document.getElementById('pickupDisplay').innerText = pickup;
       document.getElementById('dropoffDisplay').innerText = dropoff;
 
-      document.getElementById('pickupDisplay').innerText = pickup;
-      document.getElementById('dropoffDisplay').innerText = dropoff;
-
-      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step1').style.display = 'none';
       document.getElementById('step2').style.display = 'block';
+
       estimateJourney();
     }
 
-function updateLuggageOptions() {
-  const passengerValue = document.getElementById('passengers').value;
-  const passengerCount = parseInt(passengerValue);
-  const warning = document.getElementById('capacityWarning');
-  const luggageSelect = document.getElementById('luggage');
-  const options = luggageSelect.options;
+    function updateLuggageOptions() {
+      const passengerCount = parseInt(document.getElementById('passengers').value);
+      const warning = document.getElementById('capacityWarning');
+      const luggageSelect = document.getElementById('luggage');
+      const options = luggageSelect.options;
 
-  // Reset all options to enabled and normal style
-  for (let i = 0; i < options.length; i++) {
-    options[i].disabled = false;
-    options[i].classList.remove('disabledOption');
-  }
+      for (let i = 0; i < options.length; i++) {
+        options[i].disabled = false;
+        options[i].classList.remove('disabledOption');
+      }
 
-  if (!isNaN(passengerCount) && passengerCount >= 5) {
-    warning.style.display = 'block';
-
-    // Disable Medium and Large options (index 2 and 3)
-    if (options[2]) {
-      options[2].disabled = true;
-      options[2].classList.add('disabledOption');
-    }
-    if (options[3]) {
-      options[3].disabled = true;
-      options[3].classList.add('disabledOption');
-    }
-
-    // Auto-select Small if a disabled one was selected
-    if (luggageSelect.selectedIndex === 2 || luggageSelect.selectedIndex === 3) {
-      luggageSelect.selectedIndex = 1; // Small
-    }
-  } else {
-    warning.style.display = 'none';
-  }
-}
-
-function submitDetails() {
-  if (!document.getElementById('passengerConfirm').checked) {
-    alert('Please confirm passenger count.');
-    return;
-  }
-  if (!document.getElementById('petConfirm').checked) {
-    alert('You must confirm you are not travelling with a pet.');
-    return;
-  }
-
-  localStorage.setItem('passengers', document.getElementById('passengers').value);
-  localStorage.setItem('luggage', document.getElementById('luggage').value);
-  
-  const note = document.getElementById('customNote').value.trim();
-  localStorage.setItem('extra', note || "N/A");
-
-  window.location.href = 'TimeAndDate.html';
-}
-
-
-  function estimateJourney() {
-  const pickup = localStorage.getItem('pickupCoords');
-  const dropoff = localStorage.getItem('dropoffCoords');
-
-  if (!pickup || !dropoff) {
-    document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
-    return;
-  }
-
-  const origin = JSON.parse(pickup);
-  const destination = JSON.parse(dropoff);
-
-  if (!origin || !destination || !origin.lat || !destination.lat) {
-    document.getElementById('estimateMsg').innerText = 'Incomplete coordinates. Please reselect pickup and drop-off.';
-    return;
-  }
-
-  const service = new google.maps.DirectionsService();
-  service.route(
-    {
-      origin,
-      destination,
-      travelMode: 'DRIVING'
-    },
-    (result, status) => {
-      if (status === 'OK' && result.routes.length > 0) {
-        const leg = result.routes[0].legs[0];
-        const distanceMeters = leg.distance.value;
-        const durationMinutes = leg.duration.value / 60;
-
-        const now = new Date();
-        const hour = now.getHours();
-        const isNight = (hour >= 23 || hour < 7);
-
- // Fare logic (cleaned)
-        const baseFare = isNight ? 6.30 : 4.20;
-        const stepFare = isNight ? 0.40 : 0.30;
-        let fare = baseFare;
-
-        if (distanceMeters > 1609) {
-          const extraDist = distanceMeters - 1609;
-          const extraUnits = Math.ceil(extraDist / 161);
-          fare += extraUnits * stepFare;
+      if (!isNaN(passengerCount) && passengerCount >= 5) {
+        warning.style.display = 'block';
+        if (options[2]) options[2].disabled = options[2].classList.add('disabledOption');
+        if (options[3]) options[3].disabled = options[3].classList.add('disabledOption');
+        if (luggageSelect.selectedIndex === 2 || luggageSelect.selectedIndex === 3) {
+          luggageSelect.selectedIndex = 1;
         }
-
-
-        document.getElementById('estimateMsg').innerHTML = `
-          Estimated journey: <strong>${leg.distance.text}</strong>,
-          <strong>${leg.duration.text}</strong><br>
-          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
-        `;
-      } else if (status === 'ZERO_RESULTS') {
-        document.getElementById('estimateMsg').innerText = 'No route available. Please adjust addresses.';
       } else {
-        document.getElementById('estimateMsg').innerText = 'Could not estimate journey. Please try again.';
-        console.error('Route error:', status);
-      }
-    }
-  );
-}    
+        warning.style.display = 'none';
+      }
+    }
+
+    function submitDetails() {
+      if (!document.getElementById('passengerConfirm').checked) {
+        alert('Please confirm passenger count.');
+        return;
+      }
+      if (!document.getElementById('petConfirm').checked) {
+        alert('You must confirm you are not travelling with a pet.');
+        return;
+      }
+
+      localStorage.setItem('passengers', document.getElementById('passengers').value);
+      localStorage.setItem('luggage', document.getElementById('luggage').value);
+      const note = document.getElementById('customNote').value.trim();
+      localStorage.setItem('extra', note || "N/A");
+
+      window.location.href = 'TimeAndDate.html';
+    }
+
+    function estimateJourney() {
+      const pickup = localStorage.getItem('pickupCoords');
+      const dropoff = localStorage.getItem('dropoffCoords');
+      const msg = document.getElementById('estimateMsg');
+
+      if (!pickup || !dropoff) {
+        msg.innerText = 'Waiting for location input...';
+        return;
+      }
+
+      const origin = JSON.parse(pickup);
+      const destination = JSON.parse(dropoff);
+      if (!origin || !destination || !origin.lat || !destination.lat) {
+        msg.innerText = 'Incomplete coordinates. Please reselect pickup and drop-off.';
+        return;
+      }
+
+      const service = new google.maps.DirectionsService();
+      service.route(
+        { origin, destination, travelMode: 'DRIVING' },
+        (result, status) => {
+          if (status === 'OK' && result.routes.length > 0) {
+            const leg = result.routes[0].legs[0];
+            const dist = leg.distance.value;
+            const now = new Date();
+            const night = now.getHours() >= 23 || now.getHours() < 7;
+
+            const base = night ? 6.30 : 4.20;
+            const step = night ? 0.40 : 0.30;
+            let fare = base;
+
+            if (dist > 1609) {
+              fare += Math.ceil((dist - 1609) / 161) * step;
+            }
+
+            msg.innerHTML = `Estimated journey: <strong>${leg.distance.text}</strong>,
+            <strong>${leg.duration.text}</strong><br>
+            Estimated fare: <strong>£${fare.toFixed(2)}</strong>`;
+          } else {
+            msg.innerText = (status === 'ZERO_RESULTS') ? 'No route available. Please adjust addresses.' : 'Could not estimate journey. Please try again.';
+          }
+        }
+      );
+    }
   </script>
-
-
 </body>
 </html>
+
+    
