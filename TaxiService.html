@@ -207,7 +207,7 @@
   <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
 
   <div class="button-row">
-    <button onclick="returnToStep1()">Return</button>
+    <button onclick="location.reload()">Return</button>
     <button onclick="submitDetails()">Next</button>
   </div>
 </div>
@@ -251,23 +251,20 @@
       gestureHandling: "cooperative"
     });
 
-pickupAuto.addListener("place_changed", () => {
-  const place = pickupAuto.getPlace();
-  if (place.geometry) {
-    mapPickup.setCenter(place.geometry.location);
-    markerPickup.setPosition(place.geometry.location);
-    sessionStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
-  }
-});
+    markerPickup = new google.maps.Marker({ map: mapPickup, draggable: true });
+    markerDropoff = new google.maps.Marker({ map: mapDropoff, draggable: true });
 
-dropoffAuto.addListener("place_changed", () => {
-  const place = dropoffAuto.getPlace();
-  if (place.geometry) {
-    mapDropoff.setCenter(place.geometry.location);
-    markerDropoff.setPosition(place.geometry.location);
-    sessionStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
-  }
-});
+    mapPickup.addListener("click", (e) => {
+      markerPickup.setPosition(e.latLng);
+      localStorage.setItem("pickupCoords", JSON.stringify(e.latLng.toJSON()));
+      showCustomNote();
+    });
+
+    mapDropoff.addListener("click", (e) => {
+      markerDropoff.setPosition(e.latLng);
+      localStorage.setItem("dropoffCoords", JSON.stringify(e.latLng.toJSON()));
+      showCustomNote();
+    });
     
     const pickupInput = document.getElementById("pickup");
     const dropoffInput = document.getElementById("dropoff");
@@ -278,23 +275,24 @@ dropoffAuto.addListener("place_changed", () => {
     componentRestrictions: { country: 'gb' }
     });
 
-pickupAuto.addListener("place_changed", () => {
-  const place = pickupAuto.getPlace();
-  if (place.geometry) {
-    mapPickup.setCenter(place.geometry.location);
-    markerPickup.setPosition(place.geometry.location);
-    sessionStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
-  }
-});
+    pickupAuto.addListener("place_changed", () => {
+      const place = pickupAuto.getPlace();
+      if (place.geometry) {
+        mapPickup.setCenter(place.geometry.location);
+        markerPickup.setPosition(place.geometry.location);
+        localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
+      }
+    });
 
-dropoffAuto.addListener("place_changed", () => {
-  const place = dropoffAuto.getPlace();
-  if (place.geometry) {
-    mapDropoff.setCenter(place.geometry.location);
-    markerDropoff.setPosition(place.geometry.location);
-    sessionStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
-  }
-});
+    dropoffAuto.addListener("place_changed", () => {
+      const place = dropoffAuto.getPlace();
+      if (place.geometry) {
+        mapDropoff.setCenter(place.geometry.location);
+        markerDropoff.setPosition(place.geometry.location);
+        localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
+      }
+    });
+  }
 
   function showCustomNote() {
     document.getElementById("customNoteArea").style.display = "block";
@@ -314,34 +312,28 @@ dropoffAuto.addListener("place_changed", () => {
       }
     };
 
-function goToNextStep() {
-  const pickup = document.getElementById('pickup').value;
-  const dropoff = document.getElementById('dropoff').value;
-  const pickupCoords = sessionStorage.getItem('pickupCoords');
-  const dropoffCoords = sessionStorage.getItem('dropoffCoords');
+    function goToNextStep() {
+      const pickup = document.getElementById('pickup').value;
+      const dropoff = document.getElementById('dropoff').value;
+      const pickupCoords = localStorage.getItem('pickupCoords');
+      const dropoffCoords = localStorage.getItem('dropoffCoords');
 
-  if (!pickup || !dropoff) return alert('Please fill in both address fields.');
-  if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
+      if (!pickup || !dropoff) return alert('Please fill in both address fields.');
+      if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
 
-  sessionStorage.setItem('pickup', pickup);
-  sessionStorage.setItem('dropoff', dropoff);
+      localStorage.setItem('pickup', pickup);
+      localStorage.setItem('dropoff', dropoff);
 
-  document.getElementById('pickupDisplay').innerText = pickup;
-  document.getElementById('dropoffDisplay').innerText = dropoff;
+      document.getElementById('pickupDisplay').innerText = pickup;
+      document.getElementById('dropoffDisplay').innerText = dropoff;
 
-  document.getElementById('step1').style.display = 'none';
-  document.getElementById('step2').style.display = 'block';
-  estimateJourney();
-}
+      document.getElementById('pickupDisplay').innerText = pickup;
+      document.getElementById('dropoffDisplay').innerText = dropoff;
 
-// NEW: helper function to go back without losing data
-function returnToStep1() {
-  document.getElementById('step2').style.display = 'none';
-  document.getElementById('step1').style.display = 'block';
-
-  document.getElementById('pickup').value = sessionStorage.getItem('pickup') || '';
-  document.getElementById('dropoff').value = sessionStorage.getItem('dropoff') || '';
-}
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').style.display = 'block';
+      estimateJourney();
+    }
 
     function updateLuggageOptions() {
       const passengerCount = parseInt(document.getElementById('passengers').value);
@@ -371,8 +363,8 @@ function returnToStep1() {
     }
 
   function estimateJourney() {
-  const pickup = sessionStorage.getItem('pickupCoords');
-  const dropoff = sessionStorage.getItem('dropoffCoords');
+  const pickup = localStorage.getItem('pickupCoords');
+  const dropoff = localStorage.getItem('dropoffCoords');
 
   if (!pickup || !dropoff) {
     document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
