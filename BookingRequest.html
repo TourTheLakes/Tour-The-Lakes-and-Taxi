@@ -95,7 +95,6 @@
 
     <p><b>Name for Booking:</b> <span id="customerName"></span></p>
     <p><b>Phone Number:</b> <span id="phoneNumber"></span></p>
-    <p><b>Area:</b> <span id="area"></span></p>
     <p><b>Pickup Address:</b> <span id="pickup"></span></p>
     <p><b>Extra Info:</b> <span id="extra"></span></p>
     <p><b>Drop-off Location:</b> <span id="dropoff"></span></p>
@@ -125,7 +124,6 @@
     function showBooking() {
       document.getElementById('customerName').textContent = localStorage.getItem('customerName') || 'N/A';
       document.getElementById('phoneNumber').textContent = localStorage.getItem('phoneNumber') || 'N/A';
-      document.getElementById('area').textContent = localStorage.getItem('area') || 'N/A';
       document.getElementById('pickup').textContent = localStorage.getItem('pickup') || 'N/A';
       document.getElementById('extra').textContent = localStorage.getItem('extra') || 'N/A';
       document.getElementById('dropoff').textContent = localStorage.getItem('dropoff') || 'N/A';
@@ -152,7 +150,6 @@
       const booking = {
         name: localStorage.getItem('customerName'),
         phone: localStorage.getItem('phoneNumber'),
-        area: localStorage.getItem('area'),
         pickup: localStorage.getItem('pickup'),
         extra: localStorage.getItem('extra'),
         dropoff: localStorage.getItem('dropoff'),
