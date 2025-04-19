@@ -34,12 +34,10 @@
       background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
       background-repeat: repeat;
       background-size: auto;
-      color: var(--text-main);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px 60px; /* Bottom space added */
+      padding: 40px 20px 60px;
     }
 
     header {
@@ -49,79 +47,28 @@
     }
 
     header h1 {
-      font-size: 38px;
+      font-size: 36px;
       font-weight: 600;
       margin-bottom: 8px;
     }
 
     header p {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-sub);
-    }
-
-    .tours {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-      animation: fadeIn 1.2s ease;
-    }
-
-    .tour-card {
-      background: var(--section-light);
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-      transition: all 0.3s ease;
-      border: 1px solid transparent;
-    }
-
-    .tour-card:hover {
-      background: #232528;
-      transform: translateY(-2px);
-      border-color: #333;
-    }
-
-    .tour-card h2 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
-
-    .tour-card p {
-      font-size: 15px;
-      color: var(--text-sub);
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .tour-card a {
-      display: inline-block;
-      background: var(--accent);
-      color: var(--button-text);
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: background 0.3s ease;
-    }
-
-    .tour-card a:hover {
-      background: var(--accent-hover);
     }
 
     .actions {
-      width: 100%;
-      max-width: 600px;
       display: flex;
       flex-direction: column;
-      margin-top: 32px;
+      gap: 20px;
+      width: 100%;
+      max-width: 500px;
       animation: fadeIn 1.2s ease;
     }
 
     .action-button {
       background: var(--section-light);
-      padding: 14px 24px; /* reduced height */
+      padding: 18px 24px;
       border-radius: 16px;
       text-align: center;
       cursor: pointer;
@@ -137,6 +84,7 @@
     }
 
     .action-button span {
+      display: block;
       font-size: 18px;
       font-weight: 600;
       color: var(--accent);
@@ -144,14 +92,9 @@
 
     .action-button small {
       display: block;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-sub);
       margin-top: 4px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeInTop {
@@ -159,12 +102,24 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
     @media (max-width: 500px) {
       header h1 {
-        font-size: 30px;
+        font-size: 28px;
       }
-      .tour-card h2 {
-        font-size: 18px;
+      .action-button span {
+        font-size: 16px;
       }
     }
   </style>
@@ -176,28 +131,28 @@
     <p>Explore the Lake District with a local guide</p>
   </header>
 
-  <div class="tours">
-
-    <div class="tour-card">
-      <h2>The Lakes Explorer (Private – 4 Hours)</h2>
-      <p>This private half-day tour is tailored for small groups (up to 4 passengers) seeking a personalized experience. Enjoy stunning Lakeland landscapes from the comfort of a private vehicle. Flexible start location (Windermere, Bowness Pier, or by request). Create your own perfect Lake District itinerary with our local driver guide.</p>
-      <a href="https://www.tripadvisor.co.uk/AttractionProductReview-g190820-d26679095-The_Lakes_Explorer_4_Hours_Private-Bowness_on_Windermere_Lake_District_Cumbria_Eng.html" target="_blank">View Details / Book Now</a>
-    </div>
-
-    <div class="tour-card">
-      <h2>The Lakes Explorer (Public – 4 Hours)</h2>
-      <p>This shared tour is perfect for solo travellers or couples looking to explore the Lakes at great value. Requires a minimum of 2 bookings to operate, with space for up to 3 guests. Once the tour reaches 2 confirmed guests, it will run. Explore key beauty spots of the Lake District with others while enjoying a social and scenic journey.</p>
-      <a href="https://www.tripadvisor.co.uk/AttractionProductReview-g186330-d26638756-The_Lakes_Explorer_4_Hours_Public-Windermere_Lake_District_Cumbria_England.html" target="_blank">View Details / Book Now</a>
-    </div>
-
-  </div>
-
   <div class="actions">
+
+    <div class="action-button" onclick="window.open('https://www.tripadvisor.co.uk/AttractionProductReview-g190820-d26679095-The_Lakes_Explorer_4_Hours_Private-Bowness_on_Windermere_Lake_District_Cumbria_Eng.html', '_blank')">
+      <span>The Lakes Explorer (Private – 4 Hours)</span>
+      <small>Personalised half-day tour for up to 4 guests</small>
+    </div>
+
+    <div class="action-button" onclick="window.open('https://www.tripadvisor.co.uk/AttractionProductReview-g186330-d26638756-The_Lakes_Explorer_4_Hours_Public-Windermere_Lake_District_Cumbria_England.html', '_blank')">
+      <span>The Lakes Explorer (Public – 4 Hours)</span>
+      <small>Shared scenic tour for solo travellers or couples</small>
+    </div>
+
     <div class="action-button" onclick="location.href='index.html'">
       <span>Return to Homepage</span>
       <small>Back to main menu</small>
     </div>
+
   </div>
+
+  <footer>
+    Independent. Local. Professional.
+  </footer>
 
 </body>
 </html>
