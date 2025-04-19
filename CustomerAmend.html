@@ -153,86 +153,97 @@ button {
 </head>
 <body>
   <div class="container">
-    <h1>Hey, let's get you moving!</h1>
-    
-<div id="step1">
-  <label for="pickup">Pickup Address:</label>
-  <input type="text" id="pickup" placeholder="Start typing...">
-  <div id="mapPickup" class="map"></div>
+    <h1>Amend Your Booking</h1>
 
+    <!-- Step 1: Address & Notes -->
+    <div id="step1">
+      <label for="pickup">Pickup Address:</label>
+      <input type="text" id="pickup" placeholder="Start typing...">
+      <div id="mapPickup"></div>
 
-  <label for="dropoff">Drop-off Address:</label>
-  <input type="text" id="dropoff" placeholder="Start typing...">
-  <div id="mapDropoff" class="map"></div>
+      <label for="dropoff">Drop-off Address:</label>
+      <input type="text" id="dropoff" placeholder="Start typing...">
+      <div id="mapDropoff"></div>
 
-  <div id="customNoteArea">
-    <label>Additional info for your driver:</label>
-    <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
-    <div class="disclaimer">
-      Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
-      <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
-      <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
-      <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
-      <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+      <label>Additional info for your driver:</label>
+      <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+
+      <div class="disclaimer">
+        Westmoreland and Furness Council Hackney Carriage Maximum Fares as of 1 April 2024:<br><br>
+        <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
+        <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
+        <strong>Bank Holidays:</strong> £8.40 for the first mile, then £0.60 per 1/10 mile.<br>
+        <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on tariff.
+      </div>
+
+      <div class="button-row">
+        <button onclick="window.location.href='index.html'">Return Home</button>
+        <button onclick="goToNextStep()">Next</button>
+      </div>
     </div>
-  </div>
 
-  <!-- Moved this block INSIDE #step1 -->
-  <div class="button-row">
-    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
-    <button onclick="goToNextStep()">Next</button>
-  </div>
-</div> <!-- closes step1 properly here -->
+    <!-- Step 2: Journey Info -->
+    <div id="step2" style="display:none; margin-top:30px;">
+      <h2>Journey Details</h2>
+      <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+      <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+      <p id="estimateMsg">Estimating your fare...</p>
 
+      <label for="passengers">How many people are travelling?</label>
+      <select id="passengers" onchange="updateLuggageOptions()">
+        <option value="">Select</option>
+        <option>1</option><option>2</option><option>3</option>
+        <option>4</option><option>5</option><option>6</option>
+      </select>
+      <label><input type="checkbox" id="passengerConfirm"> I confirm this is correct.</label>
 
-<div id="step2" style="display:none; margin-top:30px;">
-  <h2>Journey Details</h2>
+      <label for="luggage">Luggage:</label>
+      <select id="luggage">
+        <option>No luggage</option>
+        <option class="luggageOption">Small - a backpack or a small carry-on</option>
+        <option class="luggageOption">Medium - a couple of suitcases</option>
+        <option class="luggageOption">Large - multiple bags and/or oversized items</option>
+      </select>
 
-  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
-  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
-  <p id="estimateMsg">Estimating your fare...</p>
+      <div id="capacityWarning" class="warning" style="display:none;">
+        Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
+      </div>
 
-  <label for="passengers">How many people are travelling?</label>
-  <select id="passengers" onchange="updateLuggageOptions()">
-    <option value="">Select</option>
-    <option>1</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5</option>
-    <option>6</option>
-  </select>
-  <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
+      <div class="disclaimer">
+        <strong>Important Notice Regarding Pets:</strong><br>
+        We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
+        We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+        <em>Failure to disclose a pet may result in refusal of travel.</em>
+      </div>
+      <label><input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.</label>
 
-  <label for="luggage">Luggage:</label>
-  <select id="luggage">
-    <option>No luggage</option>
-    <option class="luggageOption">Small - a backpack or a small carry-on</option>
-    <option class="luggageOption">Medium - a couple of suitcases</option>
-    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
-  </select>
+      <div class="button-row">
+        <button onclick="location.reload()">Return</button>
+        <button onclick="goToTimeStep()">Next</button>
+      </div>
+    </div>
 
-  <div id="capacityWarning" class="warning" style="display:none;">
-    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
-  </div>
+    <!-- Step 3: Time and Date -->
+    <div id="step3" style="display:none; margin-top:30px;">
+      <h2>Choose Pickup Time</h2>
+      <label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
+      <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
 
-<div class="disclaimer">
-  <strong>Important Notice Regarding Pets</strong><br>
-  We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
-  We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
-  <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
-</div>
+      <div id="scheduleFields">
+        <label for="pickupDate">Pickup Date:</label>
+        <input type="date" id="pickupDate">
 
-<label style="margin-top: 12px; display: flex; align-items: center;">
-  <input type="checkbox" id="petConfirm" style="margin-right: 8px;"> I acknowledge I am not travelling with a pet.
-</label>
+        <label for="pickupTime">Pickup Time:</label>
+        <select id="pickupTime">
+          <option value=\"\">Select a time...</option>
+        </select>
+      </div>
 
-  <div class="button-row">
-    <button onclick="location.reload()">Return</button>
-    <button onclick="submitDetails()">Next</button>
-  </div>
-</div>
- </div> 
+      <div class=\"step-buttons\">
+        <button onclick=\"submitAmendment()\">Update Booking</button>
+      </div>
+    </div>
+  </div>
   <script>
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
