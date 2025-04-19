@@ -1,265 +1,206 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Taxi Service</title>
-
-<style>
-  :root {
-    --bg-dark: #0e0f10;
-    --section-light: #1c1e21;
-    --text-main: #f1f1f1;
-    --text-sub: #aaaaaa;
-    --accent: #f1f1f1;
-    --accent-hover: #e0e0e0;
-    --button-text: #111;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Quicksand', sans-serif;
-  }
-
-  html, body {
-    background-color: var(--bg-dark);
-    background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-    background-repeat: repeat;
-    background-size: auto;
-    color: var(--text-main);
-    height: 100%;
-    padding: 40px 20px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .container {
-    background: var(--section-light);
-    padding: 35px 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    max-width: 650px;
-    width: 100%;
-    animation: fadeIn 1.2s ease;
-  }
-
-  h1, h2 {
-    text-align: center;
-    color: var(--accent);
-    margin-bottom: 25px;
-  }
-
-  label {
-    display: block;
-    margin-top: 25px;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: var(--text-main);
-  }
-
-  input[type="text"], select, textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #333;
-    background: #2a2c2f;
-    color: var(--text-main);
-    border-radius: 8px;
-    font-size: 14px;
-  }
-
-  input[type="checkbox"] {
-    transform: scale(1.2);
-    margin-right: 8px;
-  }
-
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
-
-  button {
-    margin-top: 15px;
-    padding: 12px 20px;
-    width: 48%;
-    background-color: var(--accent);
-    color: var(--button-text);
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  button:hover {
-    background-color: var(--accent-hover);
-  }
-
-  .button-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 4%;
-    flex-wrap: wrap;
-    margin-top: 20px;
-  }
-
-  .warning {
-    background-color: #332a00;
-    border-left: 4px solid #ffcc00;
-    padding: 12px;
-    font-size: 14px;
-    margin-top: 15px;
-    border-radius: 4px;
-    color: var(--text-main);
-  }
-
-  .disclaimer {
-    background: #222325;
-    padding: 15px;
-    margin-top: 25px;
-    font-size: 14px;
-    border-radius: 4px;
-    color: var(--text-sub);
-  }
-
-  #mapPickup, #mapDropoff {
-    width: 100%;
-    height: 220px;
-    margin-top: -5px;
-    margin-bottom: 25px;
-    border-radius: 8px;
-    filter: grayscale(0.5) contrast(1.1);
-  }
-
-  #customNoteArea {
-    margin-top: 5px;
-  }
-
-  #petConfirm {
-    margin-top: 15px;
-    margin-bottom: 25px;
-    display: inline-block;
-  }
-
-  .disabledOption {
-    color: #888 !important;
-    background-color: #333 !important;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 480px) {
-    .container {
-      padding: 25px 20px;
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0e0f10;
+      --section-light: #1c1e21;
+      --text-main: #f1f1f1;
+      --text-sub: #aaaaaa;
+      --accent: #f1f1f1;
+      --accent-hover: #e0e0e0;
+      --button-text: #111;
     }
 
-    button {
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+      background-repeat: repeat;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      background: var(--section-light);
+      padding: 30px;
+      border-radius: 16px;
       width: 100%;
-      margin-top: 10px;
+      max-width: 640px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+      animation: fadeIn 1s ease;
+    }
+
+    h1, h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 20px;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #2a2d31;
+      color: var(--text-main);
+      margin-bottom: 16px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .map {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .disclaimer, .warning {
+      background: #2a2d31;
+      border-left: 4px solid #ffa500;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 16px;
+      color: var(--text-sub);
     }
 
     .button-row {
-      flex-direction: column;
-      gap: 10px;
+      display: flex;
+      gap: 16px;
+      margin-top: 20px;
+      flex-wrap: wrap;
     }
-  }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+    button {
+      flex: 1;
+      padding: 14px;
+      background: var(--accent);
+      color: var(--button-text);
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
 
-  @keyframes fadeInTop {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-</style>
+    button:hover {
+      background: var(--accent-hover);
+    }
 
-  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 500px) {
+      .button-row {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .disabledOption {
+      color: #777 !important;
+      background-color: #444 !important;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
-
-  
 <body>
-  <div class="container">
-    <h1>Hey, let's get you moving!</h1>
-    
-<div id="step1">
-  <label for="pickup">Pickup Address:</label>
-  <input type="text" id="pickup" placeholder="Start typing...">
-  <div id="mapPickup"></div>
+  <div class="container" id="step1">
+    <h1>Let's Get You Moving</h1>
 
-  <label for="dropoff">Drop-off Address:</label>
-  <input type="text" id="dropoff" placeholder="Start typing...">
-  <div id="mapDropoff"></div>
+    <label for="pickup">Pickup Address:</label>
+    <input type="text" id="pickup" placeholder="Start typing...">
+    <div class="map" id="mapPickup"></div>
 
-  <div id="customNoteArea">
-    <label>Additional info for your driver:</label>
-    <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+    <label for="dropoff">Drop-off Address:</label>
+    <input type="text" id="dropoff" placeholder="Start typing...">
+    <div class="map" id="mapDropoff"></div>
+
+    <label for="customNote">Additional info for your driver:</label>
+    <textarea id="customNote" placeholder="Nearest landmark, gate code..."></textarea>
+
     <div class="disclaimer">
-      Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
-      <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
-      <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
-      <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
-      <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+      <strong>Fares:</strong><br>
+      Standard: £4.20 (first mile) + £0.30 per 1/10 mile<br>
+      Night: £6.30 (23:00-07:00) + £0.40 per 1/10 mile<br>
+      Bank Holidays: £8.40 + £0.60 per 1/10 mile<br>
+      Waiting time: from 30p per min
+    </div>
+
+    <div class="button-row">
+      <button onclick="location.href='https://tourthelakes.com'">Return Home</button>
+      <button onclick="goToNextStep()">Next</button>
     </div>
   </div>
 
-  <!-- Moved this block INSIDE #step1 -->
-  <div class="button-row">
-    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
-    <button onclick="goToNextStep()">Next</button>
+  <div class="container" id="step2" style="display: none;">
+    <h2>Journey Details</h2>
+
+    <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+    <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+    <p id="estimateMsg">Estimating your fare...</p>
+
+    <label for="passengers">How many people?</label>
+    <select id="passengers" onchange="updateLuggageOptions()">
+      <option value="">Select</option>
+      <option>1</option><option>2</option><option>3</option>
+      <option>4</option><option>5</option><option>6</option>
+    </select>
+    <input type="checkbox" id="passengerConfirm"> Confirmed
+
+    <label for="luggage">Luggage:</label>
+    <select id="luggage">
+      <option>No luggage</option>
+      <option class="luggageOption">Small - backpack or carry-on</option>
+      <option class="luggageOption">Medium - a couple of suitcases</option>
+      <option class="luggageOption">Large - multiple or oversized bags</option>
+    </select>
+
+    <div id="capacityWarning" class="warning" style="display:none;">
+      Limited space in rear. Large luggage not recommended with 5+ passengers.
+    </div>
+
+    <div class="disclaimer">
+      <strong>Pets Policy:</strong><br>
+      No pets allowed due to previous incidents. Non-disclosure may result in refusal.
+    </div>
+    <input type="checkbox" id="petConfirm"> I confirm no pets are travelling.
+
+    <div class="button-row">
+      <button onclick="location.reload()">Return</button>
+      <button onclick="submitDetails()">Next</button>
+    </div>
   </div>
-</div> <!-- closes step1 properly here -->
-
-
-<div id="step2" style="display:none; margin-top:30px;">
-  <h2>Journey Details</h2>
-
-  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
-  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
-  <p id="estimateMsg">Estimating your fare...</p>
-
-  <label for="passengers">How many people are travelling?</label>
-  <select id="passengers" onchange="updateLuggageOptions()">
-    <option value="">Select</option>
-    <option>1</option>
-    <option>2</option>
-    <option>3</option>
-    <option>4</option>
-    <option>5</option>
-    <option>6</option>
-  </select>
-  <input type="checkbox" id="passengerConfirm"> I confirm this is correct.
-
-  <label for="luggage">Luggage:</label>
-  <select id="luggage">
-    <option>No luggage</option>
-    <option class="luggageOption">Small - a backpack or a small carry-on</option>
-    <option class="luggageOption">Medium - a couple of suitcases</option>
-    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
-  </select>
-
-  <div id="capacityWarning" class="warning" style="display:none;">
-    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
-  </div>
-
-  <div class="disclaimer">
-    <strong>Important Notice Regarding Pets</strong><br>
-    We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
-    We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
-    <em>Failure to disclose the presence of a pet may result in refusal of travel.</em>
-  </div>
-  <input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.
-
-  <div class="button-row">
-    <button onclick="location.reload()">Return</button>
-    <button onclick="submitDetails()">Next</button>
-  </div>
-</div>
- </div> 
-
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
 <script>
@@ -498,7 +439,5 @@ function submitDetails() {
   );
 }    
   </script>
-
-
 </body>
 </html>
