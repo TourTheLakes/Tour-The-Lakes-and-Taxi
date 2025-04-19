@@ -321,8 +321,8 @@
       if (!pickup || !dropoff) return alert('Please fill in both address fields.');
       if (!pickupCoords || !dropoffCoords) return alert('Please select your address from the dropdown or tap the map.');
 
-      localStorage.setItem('pickup', pickup);
-      localStorage.setItem('dropoff', dropoff);
+      sessionStorage.setItem('pickup', pickup);
+      sessionStorage.setItem('dropoff', dropoff);
 
       document.getElementById('pickupDisplay').innerText = pickup;
       document.getElementById('dropoffDisplay').innerText = dropoff;
