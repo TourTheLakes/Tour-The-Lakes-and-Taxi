@@ -495,14 +495,29 @@ function submitAmendment() {
     return;
   }
 
-  const pickupCoords = localStorage.getItem("pickupCoords");
-  const dropoffCoords = localStorage.getItem("dropoffCoords");
-
   const pickup = document.getElementById("pickup").value.trim();
   const dropoff = document.getElementById("dropoff").value.trim();
   const passengers = document.getElementById("passengers").value;
   const luggage = document.getElementById("luggage").value;
   const customNote = document.getElementById("customNote").value.trim() || "N/A";
+
+  const pickupCoordsRaw = localStorage.getItem("pickupCoords");
+  const dropoffCoordsRaw = localStorage.getItem("dropoffCoords");
+
+  let parsedPickupCoords = null;
+  let parsedDropoffCoords = null;
+
+  try {
+    parsedPickupCoords = JSON.parse(pickupCoordsRaw);
+  } catch (e) {
+    console.warn("Invalid pickupCoords:", pickupCoordsRaw);
+  }
+
+  try {
+    parsedDropoffCoords = JSON.parse(dropoffCoordsRaw);
+  } catch (e) {
+    console.warn("Invalid dropoffCoords:", dropoffCoordsRaw);
+  }
 
   const updateData = {
     pickup,
@@ -514,8 +529,8 @@ function submitAmendment() {
     pickupType: isASAP ? "ASAP" : "Scheduled",
     pickupDate: isASAP ? null : pickupDate,
     pickupTime: isASAP ? null : pickupTime,
-    pickupCoords: pickupCoords ? JSON.parse(pickupCoords) : null,
-    dropoffCoords: dropoffCoords ? JSON.parse(dropoffCoords) : null,
+    pickupCoords: parsedPickupCoords,
+    dropoffCoords: parsedDropoffCoords,
     lastModified: Date.now()
   };
 
@@ -524,6 +539,7 @@ function submitAmendment() {
     window.location.href = "CustomerBooking.html";
   });
 }
+
 
 
   function estimateJourney() {
