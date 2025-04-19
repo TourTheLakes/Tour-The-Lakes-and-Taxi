@@ -485,7 +485,7 @@ document.getElementById("asapCheckbox").addEventListener("change", function () {
     }
   }
 
-  function submitAmendment() {
+function submitAmendment() {
   const isASAP = document.getElementById("asapCheckbox").checked;
   const pickupDate = document.getElementById("pickupDate").value;
   const pickupTime = document.getElementById("pickupTime").value;
@@ -498,13 +498,19 @@ document.getElementById("asapCheckbox").addEventListener("change", function () {
   const pickupCoords = localStorage.getItem("pickupCoords");
   const dropoffCoords = localStorage.getItem("dropoffCoords");
 
+  const pickup = document.getElementById("pickup").value.trim();
+  const dropoff = document.getElementById("dropoff").value.trim();
+  const passengers = document.getElementById("passengers").value;
+  const luggage = document.getElementById("luggage").value;
+  const customNote = document.getElementById("customNote").value.trim() || "N/A";
+
   const updateData = {
-    pickup: localStorage.getItem("pickup"),
-    dropoff: localStorage.getItem("dropoff"),
-    passengers: localStorage.getItem("passengers"),
-    luggage: localStorage.getItem("luggage"),
+    pickup,
+    dropoff,
+    passengers,
+    luggage,
     pets: "No",
-    customNote: document.getElementById("customNote").value.trim() || "N/A",
+    customNote,
     pickupType: isASAP ? "ASAP" : "Scheduled",
     pickupDate: isASAP ? null : pickupDate,
     pickupTime: isASAP ? null : pickupTime,
