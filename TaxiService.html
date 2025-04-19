@@ -371,8 +371,8 @@ function returnToStep1() {
     }
 
   function estimateJourney() {
-  const pickup = localStorage.getItem('pickupCoords');
-  const dropoff = localStorage.getItem('dropoffCoords');
+  const pickup = sessionStorage.getItem('pickupCoords');
+  const dropoff = sessionStorage.getItem('dropoffCoords');
 
   if (!pickup || !dropoff) {
     document.getElementById('estimateMsg').innerText = 'Waiting for location input...';
