@@ -230,6 +230,9 @@ input[type="checkbox"]:checked + .slider::before {
         <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
 
 <div id="customNoteArea">
+  <label>Additional info for your driver:</label>
+  <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+
   <div class="disclaimer">
     Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
     <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
@@ -244,22 +247,48 @@ input[type="checkbox"]:checked + .slider::before {
   </div>
 </div>
 
+        <div id="step2" style="display:none; margin-top:30px;">
+  <h2>Journey Details</h2>
 
-    <!-- Step 2: Journey Info -->
-<div id="customNoteArea">
-  <div class="disclaimer">
-    Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
-    <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
-    <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
-    <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
-    <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+  <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
+  <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
+  <p id="estimateMsg">Estimating your fare...</p>
+
+  <label for="passengers">How many people are travelling?</label>
+  <select id="passengers" onchange="updateLuggageOptions()">
+    <option value="">Select</option>
+    <option>1</option><option>2</option><option>3</option>
+    <option>4</option><option>5</option><option>6</option>
+  </select>
+  <label><input type="checkbox" id="passengerConfirm"> I confirm this is correct.</label>
+
+  <label for="luggage">Luggage:</label>
+  <select id="luggage">
+    <option>No luggage</option>
+    <option class="luggageOption">Small - a backpack or a small carry-on</option>
+    <option class="luggageOption">Medium - a couple of suitcases</option>
+    <option class="luggageOption">Large - multiple bags and/or oversized items</option>
+  </select>
+
+  <div id="capacityWarning" class="warning" style="display:none;">
+    Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
   </div>
 
+  <div class="disclaimer">
+    <strong>Important Notice Regarding Pets:</strong><br>
+    We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
+    We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
+    <em>Failure to disclose a pet may result in refusal of travel.</em>
+  </div>
+
+  <label><input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.</label>
+
   <div class="button-row">
-    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
-    <button onclick="goToNextStep()">Next</button>
+    <button onclick="location.reload()">Return</button>
+    <button onclick="goToTimeStep()">Next</button>
   </div>
 </div>
+
 
 
     <!-- Step 3: Time and Date -->
