@@ -71,47 +71,49 @@
       color: var(--text-main);
     }
 
+    // CHANGED: redesigned .claimed block to remove green border and match homepage
     .action-block .claimed {
       margin-top: 20px;
-      background: #1c1e21;
+      background: var(--section-light);
       padding: 16px;
-      border-radius: 12px;
-      border-left: 4px solid #4CAF50;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
+    // CHANGED: unified button row and restyled buttons
     .buttons-row {
       display: flex;
-      justify-content: flex-start;
+      flex-direction: column;
       gap: 12px;
       margin-top: 20px;
     }
 
     .buttons-row button {
-      padding: 10px 16px;
-      font-size: 14px;
+      padding: 14px;
+      font-size: 16px;
       border: none;
-      border-radius: 10px;
+      border-radius: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      width: 100%;
+      background: var(--section-light);
+      color: var(--accent);
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
     }
 
     .buttons-row .amend {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .buttons-row .amend:hover {
-      background-color: #3e9141;
+      border-left: 6px solid #4CAF50;
     }
 
     .buttons-row .cancel {
-      background-color: #cc0000;
-      color: white;
+      border-left: 6px solid #cc0000;
     }
 
-    .buttons-row .cancel:hover {
-      background-color: #990000;
+    .buttons-row button:hover {
+      background-color: #232528;
+      transform: translateY(-1px);
+      border-color: #333;
     }
 
     .return-home {
@@ -146,16 +148,9 @@
       h1 {
         font-size: 24px;
       }
-
-      .buttons-row {
-        flex-direction: column;
-      }
-
-      .buttons-row button {
-        width: 100%;
-      }
     }
   </style>
+
 </head>
 <body>
   <div class="container">
