@@ -100,9 +100,14 @@
       background: var(--accent-hover);
     }
 
-    #recaptcha-container {
-      margin-top: 10px;
-      margin-bottom: 16px;
+    .recaptcha-wrapper {
+      background: #2c2f33;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      margin: 16px 0;
+      display: flex;
+      justify-content: center;
     }
 
     @keyframes fadeIn {
@@ -127,7 +132,11 @@
     <p>Please enter your full phone number including <strong>+</strong> and country code.<br>Example: <strong>‪+447432185516‬</strong></p>
 
     <input type="tel" id="phone" placeholder="+44XXXXXXXXXX">
-    <div id="recaptcha-container"></div>
+
+    <div class="recaptcha-wrapper">
+      <div id="recaptcha-container"></div>
+    </div>
+
     <button onclick="sendCode()">Send Code</button>
 
     <div id="verifySection" style="display:none;">
@@ -171,7 +180,7 @@
         .then(confirmationResult => {
           window.confirmationResult = confirmationResult;
           document.getElementById("verifySection").style.display = "block";
-          document.getElementById("recaptcha-container").style.display = "none";
+          document.querySelector('.recaptcha-wrapper').style.display = "none";
         })
         .catch(error => alert(error.message));
     }
