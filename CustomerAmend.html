@@ -237,11 +237,48 @@
       messagingSenderId: "470758171431",
       appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
     };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
 
-    const id = new URLSearchParams(location.search).get("id");
-    if (!id) window.location.href = "ReturningCustomer.html";
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const id = new URLSearchParams(location.search).get("id");
+if (!id) window.location.href = "ReturningCustomer.html";
+
+// Load booking data and populate fields
+window.addEventListener("load", () => {
+  db.ref("bookings/" + id).once("value").then(snapshot => {
+    if (!snapshot.exists()) return alert("Booking not found.");
+    const b = snapshot.val();
+
+    document.getElementById("pickup").value = b.pickup || "";
+    document.getElementById("dropoff").value = b.dropoff || "";
+    document.getElementById("customNote").value = b.customNote || "";
+    document.getElementById("passengers").value = b.passengers || "";
+    document.getElementById("luggage").value = b.luggage || "";
+    document.getElementById("passengerConfirm").checked = true;
+    document.getElementById("petConfirm").checked = (b.pets === "No");
+
+    if (b.pickupType === "ASAP") {
+      document.getElementById("asapCheckbox").checked = true;
+      document.getElementById("pickupDate").disabled = true;
+      document.getElementById("pickupTime").disabled = true;
+      document.getElementById("asapMessage").style.display = "block";
+    } else {
+      document.getElementById("pickupDate").value = b.pickupDate || "";
+      setTimeout(() => {
+        populateTimes(); // wait for date picker to render times
+        document.getElementById("pickupTime").value = b.pickupTime || "";
+      }, 300);
+    }
+
+    if (b.pickupCoords) localStorage.setItem("pickupCoords", b.pickupCoords);
+    if (b.dropoffCoords) localStorage.setItem("dropoffCoords", b.dropoffCoords);
+    localStorage.setItem("pickup", b.pickup);
+    localStorage.setItem("dropoff", b.dropoff);
+    localStorage.setItem("passengers", b.passengers);
+    localStorage.setItem("luggage", b.luggage);
+  });
+});
 
     // Google Maps Setup
     let mapPickup, mapDropoff, markerPickup, markerDropoff;
