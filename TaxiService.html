@@ -361,7 +361,7 @@ function updateLuggageOptions() {
   if (!isNaN(passengerCount) && passengerCount >= 5) {
     warning.style.display = 'block';
 
-    // Disable Medium and Large options (index 2 and 3)
+    // Disable Medium (index 2) and Large (index 3)
     if (options[2]) {
       options[2].disabled = true;
       options[2].classList.add('disabledOption');
@@ -371,14 +371,17 @@ function updateLuggageOptions() {
       options[3].classList.add('disabledOption');
     }
 
-    // Auto-select Small if a disabled one was selected
-    if (luggageSelect.selectedIndex === 2 || luggageSelect.selectedIndex === 3) {
+    // If Medium or Large is selected, auto-reset to Small
+    const selectedIndex = luggageSelect.selectedIndex;
+    if (selectedIndex === 2 || selectedIndex === 3) {
       luggageSelect.selectedIndex = 1; // Small
+      luggageSelect.dispatchEvent(new Event('change'));
     }
   } else {
     warning.style.display = 'none';
   }
 }
+
 
 
     function submitDetails() {
