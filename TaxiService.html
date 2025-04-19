@@ -89,7 +89,6 @@
     padding: 15px;
     margin-top: 25px;
     margin-bottom: 0;
-    border-left: 4px solid #cc0000;
     font-size: 14px;
     border-radius: 4px;
     color: #333;
@@ -104,8 +103,10 @@
   }
 
   #customNoteArea {
-    margin-top: 20px;
+    margin-top: 5px;
   }
+  textarea {
+    margin-bottom: 10px;
 
   @media (max-width: 480px) {
     .container {
@@ -155,14 +156,15 @@
   <input type="text" id="dropoff" placeholder="Start typing...">
   <div id="mapDropoff"></div>
 
-  <div id="customNoteArea" style="display:none;">
+  <div id="customNoteArea">
     <label>Additional info for your driver:</label>
     <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
     <div class="disclaimer">
-      Since this is a custom address selection, it's difficult to estimate your journey time. However, our prices are as follows:<br>
-      <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
-      <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
-      <strong>Waiting Time:</strong> 30–50p per minute depending on time of day.
+      Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
+      <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
+      <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
+      <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
+      <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
     </div>
   </div>
 
