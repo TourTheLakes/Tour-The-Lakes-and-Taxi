@@ -29,134 +29,103 @@
       height: 100%;
     }
 
-    body {
-      background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-      display: flex;
-      justify-content: center;
-      padding: 40px 20px;
-    }
+body {
+  background-color: #0e0f10;
+  background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+  background-repeat: repeat;
+  background-size: auto;
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
 
-    .container {
-      background: var(--section-light);
-      max-width: 650px;
-      width: 100%;
-      padding: 35px 30px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-      animation: fadeIn 1.2s ease;
-    }
-
-    h1, h2 {
+    header {
       text-align: center;
-      color: var(--accent);
-      margin-bottom: 25px;
+      margin-bottom: 40px;
+      animation: fadeInTop 1s ease;
     }
 
-    label {
-      display: block;
-      margin-top: 20px;
+    header h1 {
+      font-size: 38px;
+      font-weight: 600;
       margin-bottom: 8px;
-      font-weight: 600;
     }
 
-    input[type="text"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px;
-      background: #2c2e31;
-      color: var(--text-main);
-      border: 1px solid #444;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 12px 20px;
-      width: 48%;
-      background-color: var(--accent);
-      color: var(--button-text);
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background: var(--accent-hover);
-    }
-
-    .button-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 4%;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .warning {
-      background-color: #fffae6;
-      border-left: 4px solid #ffa500;
-      padding: 12px;
-      font-size: 14px;
-      color: #333;
-      border-radius: 4px;
-      margin-top: 15px;
-    }
-
-    .disclaimer {
-      background: #2c2e31;
-      padding: 15px;
-      margin-top: 25px;
-      font-size: 14px;
-      border-radius: 4px;
+    header p {
+      font-size: 18px;
       color: var(--text-sub);
     }
 
-    #mapPickup, #mapDropoff {
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
       width: 100%;
-      height: 220px;
-      margin-top: -5px;
-      margin-bottom: 25px;
-      border-radius: 6px;
+      max-width: 500px;
+      animation: fadeIn 1.2s ease;
     }
 
-    .disabledOption {
-      color: #aaa !important;
-      background-color: #444 !important;
-      cursor: not-allowed;
+    .action-button {
+      background: var(--section-light);
+      padding: 24px;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+      border: 1px solid transparent;
     }
 
-    @media (max-width: 480px) {
-      .container {
-        padding: 25px 20px;
-      }
+    .action-button:hover {
+      background: #232528;
+      transform: translateY(-2px);
+      border-color: #333;
+    }
 
-      button {
-        width: 100%;
-        margin-top: 10px;
-      }
+    .action-button span {
+      display: block;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--accent);
+    }
 
-      .button-row {
-        flex-direction: column;
-        gap: 10px;
-      }
+    .action-button small {
+      display: block;
+      font-size: 14px;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 12px;
+      color: #555;
     }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-  </style>
 
+    @keyframes fadeInTop {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 30px;
+      }
+      .action-button span {
+        font-size: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
 
