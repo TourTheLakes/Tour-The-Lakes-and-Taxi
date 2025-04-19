@@ -271,12 +271,13 @@ window.addEventListener("load", () => {
       }, 300);
     }
 
-    if (b.pickupCoords) localStorage.setItem("pickupCoords", b.pickupCoords);
-    if (b.dropoffCoords) localStorage.setItem("dropoffCoords", b.dropoffCoords);
-    localStorage.setItem("pickup", b.pickup);
-    localStorage.setItem("dropoff", b.dropoff);
-    localStorage.setItem("passengers", b.passengers);
-    localStorage.setItem("luggage", b.luggage);
+if (b.pickupCoords) localStorage.setItem("pickupCoords", b.pickupCoords);
+if (b.dropoffCoords) localStorage.setItem("dropoffCoords", b.dropoffCoords);
+localStorage.setItem("pickup", b.pickup);
+localStorage.setItem("dropoff", b.dropoff);
+localStorage.setItem("passengers", b.passengers);
+localStorage.setItem("luggage", b.luggage);
+localStorage.setItem("extra", b.customNote || "N/A");
   });
 });
 
@@ -385,16 +386,17 @@ window.addEventListener("load", () => {
 
       if (!isASAP && (!pickupDate || !pickupTime)) return alert("Please select both a date and time, or choose ASAP.");
 
-      const data = {
-        pickup: localStorage.getItem("pickup"),
-        dropoff: localStorage.getItem("dropoff"),
-        passengers: localStorage.getItem("passengers"),
-        luggage: localStorage.getItem("luggage"),
-        pets: "No",
-        pickupType: isASAP ? "ASAP" : "Scheduled",
-        pickupDate: isASAP ? null : pickupDate,
-        pickupTime: isASAP ? null : pickupTime
-      };
+const data = {
+  pickup: localStorage.getItem("pickup"),
+  dropoff: localStorage.getItem("dropoff"),
+  passengers: localStorage.getItem("passengers"),
+  luggage: localStorage.getItem("luggage"),
+  pets: "No",
+  customNote: document.getElementById("customNote").value.trim() || "N/A",
+  pickupType: isASAP ? "ASAP" : "Scheduled",
+  pickupDate: isASAP ? null : pickupDate,
+  pickupTime: isASAP ? null : pickupTime
+};
 
       db.ref("bookings/" + id).update(data).then(() => {
         alert("Booking updated successfully.");
