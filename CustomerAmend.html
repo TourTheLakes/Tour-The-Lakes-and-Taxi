@@ -1,9 +1,24 @@
-<!DOCTYPE html><html lang="en">
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Amend Booking</title>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>  <!-- Google Maps -->  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>  <!-- Styles -->  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
-  <style>
+  <title>Amend Booking</title>
+
+  <!-- Fonts & Styling -->
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
+  <!-- Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
+
+  <!-- Styling comes below this in a <style> tag -->
+
+<style>
     :root {
       --bg-dark: #0e0f10;
       --section-light: #1c1e21;
@@ -149,101 +164,132 @@ button {
   }
 }
 
+  .switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.switch input[type="checkbox"] {
+  display: none;
+}
+
+.slider {
+  width: 46px;
+  height: 24px;
+  background-color: #444;
+  border-radius: 24px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: white;
+  transition: transform 0.3s;
+}
+
+input[type="checkbox"]:checked + .slider {
+  background-color: var(--accent);
+}
+
+input[type="checkbox"]:checked + .slider::before {
+  transform: translateX(22px);
+}
+
+
   </style>
 </head>
+
+  
 <body>
-  <div class="container">
-    <h1>Amend Your Booking</h1>
+  <div class="container" style="animation: fadeIn 0.8s ease;">
+    <h1>Hey, let's get you moving!</h1>
 
     <!-- Step 1: Address & Notes -->
     <div id="step1">
       <label for="pickup">Pickup Address:</label>
       <input type="text" id="pickup" placeholder="Start typing...">
-      <div id="mapPickup"></div>
+      <div id="mapPickup" class="map"></div>
 
       <label for="dropoff">Drop-off Address:</label>
       <input type="text" id="dropoff" placeholder="Start typing...">
-      <div id="mapDropoff"></div>
+      <div id="mapDropoff" class="map"></div>
 
-      <label>Additional info for your driver:</label>
-      <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
+      <div id="customNoteArea">
+        <label>Additional info for your driver:</label>
+        <textarea id="customNote" placeholder="E.g. nearest landmark, gate code..."></textarea>
 
-      <div class="disclaimer">
-        Westmoreland and Furness Council Hackney Carriage Maximum Fares as of 1 April 2024:<br><br>
-        <strong>Normal Fare:</strong> £4.20 for the first mile (07:00 - 23:00), then £0.30 per 1/10 mile after that.<br>
-        <strong>Night Rate:</strong> £6.30 for the first mile (23:00 - 07:00), then £0.40 per 1/10 mile after that.<br>
-        <strong>Bank Holidays:</strong> £8.40 for the first mile, then £0.60 per 1/10 mile.<br>
-        <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on tariff.
-      </div>
+<div id="customNoteArea">
+  <div class="disclaimer">
+    Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
+    <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
+    <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
+    <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
+    <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+  </div>
 
-      <div class="button-row">
-        <button onclick="window.location.href='index.html'">Return Home</button>
-        <button onclick="goToNextStep()">Next</button>
-      </div>
-    </div>
+  <div class="button-row">
+    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+    <button onclick="goToNextStep()">Next</button>
+  </div>
+</div>
+
 
     <!-- Step 2: Journey Info -->
-    <div id="step2" style="display:none; margin-top:30px;">
-      <h2>Journey Details</h2>
-      <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
-      <p><strong>Drop-off:</strong> <span id="dropoffDisplay"></span></p>
-      <p id="estimateMsg">Estimating your fare...</p>
+<div id="customNoteArea">
+  <div class="disclaimer">
+    Westmoreland and Furness Council Hackney Carriage Maximum Fares as of<br> 1 April 2024:<br>
+    <strong>Normal Fare:</strong> £4.20 for the first mile<br> (07:00 - 23:00), then £0.30 per 1/10 mile<br> after that.<br>
+    <strong>Night Rate:</strong> £6.30 for the first mile<br> (23:00 - 07:00), then £0.40 per 1/10 mile<br> after that.<br>
+    <strong>Bank Holidays:</strong> £8.40 for the first mile<br> (00:00 - 00:00), then £0.60 per 1/10 mile<br> after that.<br>
+    <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+  </div>
 
-      <label for="passengers">How many people are travelling?</label>
-      <select id="passengers" onchange="updateLuggageOptions()">
-        <option value="">Select</option>
-        <option>1</option><option>2</option><option>3</option>
-        <option>4</option><option>5</option><option>6</option>
-      </select>
-      <label><input type="checkbox" id="passengerConfirm"> I confirm this is correct.</label>
+  <div class="button-row">
+    <button onclick="window.location.href='https://tourthelakes.com'">Return Home</button>
+    <button onclick="goToNextStep()">Next</button>
+  </div>
+</div>
 
-      <label for="luggage">Luggage:</label>
-      <select id="luggage">
-        <option>No luggage</option>
-        <option class="luggageOption">Small - a backpack or a small carry-on</option>
-        <option class="luggageOption">Medium - a couple of suitcases</option>
-        <option class="luggageOption">Large - multiple bags and/or oversized items</option>
-      </select>
-
-      <div id="capacityWarning" class="warning" style="display:none;">
-        Due to vehicle capacity and the design of the rear seats, luggage space is extremely limited. Please pack light.
-      </div>
-
-      <div class="disclaimer">
-        <strong>Important Notice Regarding Pets:</strong><br>
-        We regret to inform you that due to multiple incidents involving damage to our vehicles, our drivers no longer accept animals on board.<br>
-        We are <strong>not a pet-friendly service</strong>. You must acknowledge this to proceed.<br>
-        <em>Failure to disclose a pet may result in refusal of travel.</em>
-      </div>
-      <label><input type="checkbox" id="petConfirm"> I acknowledge I am not travelling with a pet.</label>
-
-      <div class="button-row">
-        <button onclick="location.reload()">Return</button>
-        <button onclick="goToTimeStep()">Next</button>
-      </div>
-    </div>
 
     <!-- Step 3: Time and Date -->
-    <div id="step3" style="display:none; margin-top:30px;">
-      <h2>Choose Pickup Time</h2>
-      <label><input type="checkbox" id="asapCheckbox"> ASAP Pickup</label>
-      <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
+<div id="step3" style="display:none; margin-top:30px;">
+  <h2>Choose Pickup Time</h2>
 
-      <div id="scheduleFields">
-        <label for="pickupDate">Pickup Date:</label>
-        <input type="date" id="pickupDate">
+  <label class="switch" style="margin-bottom: 10px;">
+    <input type="checkbox" id="asapCheckbox">
+    <span class="slider"></span>
+    <span>ASAP Pickup</span>
+  </label>
 
-        <label for="pickupTime">Pickup Time:</label>
-        <select id="pickupTime">
-          <option value=\"\">Select a time...</option>
-        </select>
-      </div>
+  <p id="asapMessage" style="display: none;">Average wait time is 15 minutes.</p>
+  <p id="inlineWarning" style="display: none; font-size: 14px; color: var(--error); margin-top: 6px;"></p>
 
-      <div class=\"step-buttons\">
-        <button onclick=\"submitAmendment()\">Update Booking</button>
-      </div>
-    </div>
+  <div id="scheduleFields">
+    <label for="pickupDate">Pickup Date:</label>
+    <input type="date" id="pickupDate">
+
+    <label for="pickupTime">Pickup Time:</label>
+    <select id="pickupTime">
+      <option value="">Select a time...</option>
+    </select>
+  </div>
+
+  <div class="step-buttons">
+    <button onclick="submitAmendment()">Update Booking</button>
   </div>
+</div>
+
   <script>
   const firebaseConfig = {
     apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
@@ -347,21 +393,28 @@ button {
     document.getElementById("step3").style.display = "block";
   }
 
-  document.getElementById("asapCheckbox").addEventListener("change", function () {
-    const now = new Date();
-    const currentHour = now.getHours();
+document.getElementById("asapCheckbox").addEventListener("change", function () {
+  const now = new Date();
+  const hour = now.getHours();
+  const shiftStart = 9;
+  const shiftEnd = 19;
+  const inlineWarning = document.getElementById("inlineWarning");
 
-    if (currentHour < 9 || currentHour >= 19) {
-      alert("ASAP bookings are only available between 09:00 and 19:00.");
-      this.checked = false;
-      return;
-    }
+  if (hour < shiftStart || hour >= shiftEnd) {
+    inlineWarning.textContent = `ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.`;
+    inlineWarning.style.display = "block";
+    this.checked = false;
+    return;
+  }
 
-    const isChecked = this.checked;
-    document.getElementById("pickupDate").disabled = isChecked;
-    document.getElementById("pickupTime").disabled = isChecked;
-    document.getElementById("asapMessage").style.display = isChecked ? "block" : "none";
-  });
+  inlineWarning.style.display = "none";
+
+  const isChecked = this.checked;
+  document.getElementById("pickupDate").disabled = isChecked;
+  document.getElementById("pickupTime").disabled = isChecked;
+  document.getElementById("asapMessage").style.display = isChecked ? "block" : "none";
+});
+
 
   document.getElementById("pickupDate").addEventListener("change", populateTimes);
 
