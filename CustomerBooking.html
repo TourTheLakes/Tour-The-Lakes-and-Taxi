@@ -6,134 +6,168 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background: #0d2a45;
-    margin: 0;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-  }
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0e0f10;
+      --section-light: #1c1e21;
+      --text-main: #f1f1f1;
+      --text-sub: #aaaaaa;
+      --accent: #f1f1f1;
+      --accent-hover: #e0e0e0;
+      --button-text: #111;
+    }
 
-  .container {
-    max-width: 650px;
-    width: 100%;
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-  }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Quicksand', sans-serif;
+    }
 
-  h1 {
-    text-align: center;
-    margin-bottom: 25px;
-    color: #0d2a45;
-  }
+    html, body {
+      background-color: var(--bg-dark);
+      background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+      background-repeat: repeat;
+      background-size: auto;
+      color: var(--text-main);
+      height: 100%;
+    }
 
-  .booking {
-    background: #f4f4f4;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #4CAF50;
-  }
-
-  .booking p {
-    margin: 8px 0;
-    font-size: 15px;
-  }
-
-  .flex-wrap {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    flex-wrap: wrap; /* Responsive stacking on narrow screens */
-  }
-
-  .left-column {
-    flex: 1;
-    min-width: 200px;
-  }
-
-  .claimed-info {
-    min-width: 200px;
-    max-width: 240px;
-    padding: 15px;
-    background: #fff;
-    border-left: 4px solid #0d2a45;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    font-size: 14px;
-    color: #333;
-  }
-
-  .actions {
-    margin-top: 15px;
-  }
-
-  .actions button {
-    margin-right: 10px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    background-color: #4CAF50;
-    color: white;
-    transition: background-color 0.2s ease;
-  }
-
-  .actions button:hover {
-    background-color: #3e9141;
-  }
-
-  .actions button:last-child {
-    background-color: #cc0000;
-  }
-
-  .actions button:last-child:hover {
-    background-color: #990000;
-  }
-
-  button.return {
-    margin-top: 25px;
-    padding: 12px 20px;
-    font-size: 16px;
-    background-color: #666;
-    color: white;
-    width: 100%;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  button.return:hover {
-    background-color: #444;
-  }
-
-  @media (max-width: 600px) {
     body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px 60px;
+    }
+
+    .container {
+      background: var(--section-light);
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      max-width: 720px;
+      width: 100%;
+      animation: fadeIn 1s ease;
+    }
+
+    h1 {
+      font-size: 26px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .booking {
+      background: #232528;
       padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      border-left: 4px solid #4CAF50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .booking p {
+      margin: 8px 0;
+      font-size: 15px;
+      color: var(--text-main);
     }
 
     .flex-wrap {
-      flex-direction: column;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .left-column {
+      flex: 1;
+      min-width: 200px;
     }
 
     .claimed-info {
-      margin-top: 20px;
-    }
-  }
-</style>
+      background: #1c1e21;
+      padding: 16px;
+      border-radius: 12px;
+      min-width: 220px;
+      max-width: 280px;
+      border-left: 4px solid #4CAF50;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 14px;
+      color: var(--text-sub);
+    }
 
+    .claimed-info p {
+      margin: 6px 0;
+      line-height: 1.4;
+    }
+
+    .actions {
+      margin-top: 16px;
+    }
+
+    .actions button {
+      margin-right: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .actions button:hover {
+      background-color: #3e9141;
+    }
+
+    .actions button:last-child {
+      background-color: #cc0000;
+    }
+
+    .actions button:last-child:hover {
+      background-color: #990000;
+    }
+
+    button.return {
+      margin-top: 30px;
+      padding: 14px;
+      font-size: 16px;
+      background-color: #444;
+      color: white;
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button.return:hover {
+      background-color: #222;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+
+      .flex-wrap {
+        flex-direction: column;
+      }
+
+      .claimed-info {
+        margin-top: 20px;
+      }
+    }
+  </style>
 </head>
-  
 <body>
   <div class="container">
     <h1>Your Booking</h1>
@@ -160,7 +194,7 @@
     const phone = localStorage.getItem("returningPhoneNumber");
     const timestamp = parseInt(localStorage.getItem("verifiedTime") || 0);
     const now = Date.now();
-    const maxAge = 15 * 60 * 1000; // 15 minutes in milliseconds
+    const maxAge = 15 * 60 * 1000;
 
     if (!phone || !timestamp || now - timestamp > maxAge) {
       localStorage.removeItem("returningPhoneNumber");
@@ -220,9 +254,12 @@
 
                 const summaryLine = document.createElement("p");
                 summaryLine.style.marginTop = "10px";
-                summaryLine.innerHTML = `<strong>${d.name}</strong> is currently in a <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> with the capacity to carry up to <strong>${d.vehicle.seats}</strong> passengers. Vehicle registration <strong>${d.vehicle.registration}</strong>`;
-                   claimedBox.insertBefore(summaryLine, phoneLine.nextSibling);
-                
+                summaryLine.innerHTML = `<strong>${d.name}</strong> is 
+                currently in a <strong>${d.vehicle.color}</strong> <strong>${d.vehicle.make} ${d.vehicle.model}</strong> 
+                with the capacity to carry up to <strong>${d.vehicle.seats}</strong> 
+                passengers. Vehicle registration <strong>${d.vehicle.registration}</strong>;
+                claimedBox.insertBefore(summaryLine, phoneLine.nextSibling)`;
+
                 break;
               }
             }
@@ -247,5 +284,4 @@
     }
   </script>
 </body>
-
 </html>
