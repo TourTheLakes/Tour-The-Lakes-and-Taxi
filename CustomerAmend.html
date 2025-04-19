@@ -472,32 +472,39 @@ document.getElementById("asapCheckbox").addEventListener("change", function () {
   }
 
   function submitAmendment() {
-    const isASAP = document.getElementById("asapCheckbox").checked;
-    const pickupDate = document.getElementById("pickupDate").value;
-    const pickupTime = document.getElementById("pickupTime").value;
+  const isASAP = document.getElementById("asapCheckbox").checked;
+  const pickupDate = document.getElementById("pickupDate").value;
+  const pickupTime = document.getElementById("pickupTime").value;
 
-    if (!isASAP && (!pickupDate || !pickupTime)) {
-      alert("Please select both a date and time, or choose ASAP.");
-      return;
-    }
-
-    const updateData = {
-      pickup: localStorage.getItem("pickup"),
-      dropoff: localStorage.getItem("dropoff"),
-      passengers: localStorage.getItem("passengers"),
-      luggage: localStorage.getItem("luggage"),
-      pets: "No",
-      customNote: document.getElementById("customNote").value.trim() || "N/A",
-      pickupType: isASAP ? "ASAP" : "Scheduled",
-      pickupDate: isASAP ? null : pickupDate,
-      pickupTime: isASAP ? null : pickupTime
-    };
-
-    db.ref("bookings/" + id).update(updateData).then(() => {
-      alert("Booking updated successfully.");
-      window.location.href = "CustomerBooking.html";
-    });
+  if (!isASAP && (!pickupDate || !pickupTime)) {
+    alert("Please select both a date and time, or choose ASAP.");
+    return;
   }
+
+  const pickupCoords = localStorage.getItem("pickupCoords");
+  const dropoffCoords = localStorage.getItem("dropoffCoords");
+
+  const updateData = {
+    pickup: localStorage.getItem("pickup"),
+    dropoff: localStorage.getItem("dropoff"),
+    passengers: localStorage.getItem("passengers"),
+    luggage: localStorage.getItem("luggage"),
+    pets: "No",
+    customNote: document.getElementById("customNote").value.trim() || "N/A",
+    pickupType: isASAP ? "ASAP" : "Scheduled",
+    pickupDate: isASAP ? null : pickupDate,
+    pickupTime: isASAP ? null : pickupTime,
+    pickupCoords: pickupCoords ? JSON.parse(pickupCoords) : null,
+    dropoffCoords: dropoffCoords ? JSON.parse(dropoffCoords) : null,
+    lastModified: Date.now()
+  };
+
+  db.ref("bookings/" + id).update(updateData).then(() => {
+    alert("Booking updated successfully.");
+    window.location.href = "CustomerBooking.html";
+  });
+}
+
 
   function estimateJourney() {
     const pickup = localStorage.getItem("pickupCoords");
