@@ -274,7 +274,7 @@
         while (startTime <= endTime) {
           const h = startTime.getHours().toString().padStart(2, '0');
           const m = startTime.getMinutes().toString().padStart(2, '0');
-          pickupTime.innerHTML += <option value="${h}:${m}">${h}:${m}</option>;
+          pickupTime.innerHTML += `<option value="${h}:${m}">${h}:${m}</option>`;
           startTime.setMinutes(startTime.getMinutes() + 15);
         }
       }
@@ -300,7 +300,7 @@
           const shiftEnd = 19;
 
           if (currentHour < shiftStart || currentHour >= shiftEnd) {
-            inlineWarning.textContent = ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.;
+            inlineWarning.textContent = `ASAP bookings are only available between ${shiftStart}:00 and ${shiftEnd}:00.`;
             inlineWarning.style.display = "block";
             this.checked = false;
             return;
