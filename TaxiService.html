@@ -120,15 +120,22 @@
     .button-row {
       flex-direction: column;
       gap: 10px;
-    }
-  }
+    }
+  }
 
   #petConfirm {
     margin-top: 15px;
     margin-bottom: 25px;
     display: inline-block;
   }
+
+  .disabledOption {
+    color: #aaa !important;
+    background-color: #f2f2f2 !important;
+    cursor: not-allowed;
+  }
 </style>
+
 
 
   
@@ -338,21 +345,35 @@
 function updateLuggageOptions() {
   const passengerValue = document.getElementById('passengers').value;
   const passengerCount = parseInt(passengerValue);
-  const luggageOptions = document.querySelectorAll('.luggageOption');
   const warning = document.getElementById('capacityWarning');
+  const luggageSelect = document.getElementById('luggage');
+  const options = luggageSelect.options;
 
-  if (isNaN(passengerCount)) {
-    warning.style.display = 'none';
-    luggageOptions.forEach(option => option.style.display = 'block');
-    return;
+  // Reset all options to enabled and normal style
+  for (let i = 0; i < options.length; i++) {
+    options[i].disabled = false;
+    options[i].classList.remove('disabledOption');
   }
 
-  if (passengerCount > 4) {
+  if (!isNaN(passengerCount) && passengerCount >= 5) {
     warning.style.display = 'block';
-    luggageOptions.forEach(option => option.style.display = 'none');
+
+    // Disable Medium and Large options (index 2 and 3)
+    if (options[2]) {
+      options[2].disabled = true;
+      options[2].classList.add('disabledOption');
+    }
+    if (options[3]) {
+      options[3].disabled = true;
+      options[3].classList.add('disabledOption');
+    }
+
+    // Auto-select Small if a disabled one was selected
+    if (luggageSelect.selectedIndex === 2 || luggageSelect.selectedIndex === 3) {
+      luggageSelect.selectedIndex = 1; // Small
+    }
   } else {
-    warning.style.display = 'none';
-    luggageOptions.forEach(option => option.style.display = 'block');
+    warning.style.display = 'none';
   }
 }
 
