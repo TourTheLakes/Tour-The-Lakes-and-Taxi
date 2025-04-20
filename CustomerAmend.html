@@ -1,10 +1,19 @@
-<!DOCTYPE html>
+[20/04, 01:21] Mr FORREST: <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Amend Booking</title>
+
+  <!-- Fonts & Styling -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
+
+  <!-- Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
 
   <style>
     :root {
@@ -18,17 +27,21 @@
     }
 
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
       font-family: 'Quicksand', sans-serif;
     }
 
-    body {
+    html, body {
       background-color: var(--bg-dark);
       background-image: url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
       background-repeat: repeat;
       color: var(--text-main);
+      height: 100%;
+    }
+
+    body {
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -36,66 +49,58 @@
     }
 
     .container {
+      max-width: 650px;
+      width: 100%;
       background: var(--section-light);
       padding: 30px;
       border-radius: 16px;
-      width: 100%;
-      max-width: 640px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
       animation: fadeIn 1s ease;
     }
 
     h1, h2 {
       text-align: center;
       font-size: 28px;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      color: var(--accent);
+      font-weight: 600;
     }
 
     label {
-      font-weight: 600;
-      margin-top: 20px;
       display: block;
+      margin-top: 20px;
       margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--accent);
     }
 
-    input[type="text"], select, textarea {
+    input[type="text"], select, textarea, input[type="date"] {
       width: 100%;
       padding: 12px;
-      border-radius: 8px;
-      border: none;
       background: #2a2d31;
       color: var(--text-main);
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
       margin-bottom: 16px;
     }
 
     textarea {
       resize: vertical;
+      min-height: 80px;
     }
 
-    .map {
-      width: 100%;
-      height: 200px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      overflow: hidden;
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 8px;
     }
 
-    .disclaimer, .warning {
-      background: #2a2d31;
-      border-left: 4px solid #ffa500;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-top: 16px;
-      color: var(--text-sub);
-      line-height: 1.6;
-    }
-
-    .button-row {
+    .button-row, .step-buttons {
       display: flex;
-      gap: 16px;
-      margin-top: 20px;
       flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 25px;
     }
 
     button {
@@ -114,9 +119,40 @@
       background: var(--accent-hover);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .button-row button:first-child {
+      background: #444;
+      color: white;
+    }
+
+    .button-row button:last-child {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .disclaimer, .warning {
+      background: #2a2d31;
+      border-left: 4px solid #ffa500;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 16px;
+      color: var(--text-sub);
+      line-height: 1.6;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+    }
+
+    #mapPickup, #mapDropoff {
+      width: 100%;
+      height: 200px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #asapMessage {
+      margin-top: 10px;
+      color: var(--text-sub);
     }
 
     @media (max-width: 500px) {
@@ -129,6 +165,53 @@
       }
     }
 
+    .switch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      margin-bottom: 12px;
+    }
+
+    .switch input[type="checkbox"] {
+      display: none;
+    }
+
+    .slider {
+      width: 46px;
+      height: 24px;
+      background-color: #444;
+      border-radius: 24px;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .slider::before {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: white;
+      transition: transform 0.3s;
+    }
+
+    input[type="checkbox"]:checked + .slider {
+      background-color: var(--accent);
+    }
+
+    input[type="checkbox"]:checked + .slider::before {
+      transform: translateX(22px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .disabledOption {
       color: #777 !important;
       background-color: #444 !important;
@@ -137,27 +220,36 @@
   </style>
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <h1>Update Your Booking</h1>
 
     <div id="step1">
       <label for="pickup">Pickup Address:</label>
       <input type="text" id="pickup" placeholder="Start typing...">
-      <div id="mapPickup" class="map"></div>
+      <div id="mapPickup"></div>
 
       <label for="dropoff">Drop-off Address:</label>
       <input type="text" id="dropoff" placeholder="Start typing...">
-      <div id="mapDropoff" class="map"></div>
+      <div id="mapDropoff"></div>
 
-      <label for="customNote">Extra Info for the Driver:</label>
-      <textarea id="customNote" placeholder="E.g. gate code, side entrance..."></textarea>
+      <label for="customNote">Additional Info for the Driver:</label>
+      <textarea id="customNote" placeholder="e.g. gate code, side entrance..."></textarea>
+
+      <div class="disclaimer">
+        Westmoreland and Furness Council Hackney Carriage Maximum Fares as of 1 April 2024:<br>
+        <strong>Normal Fare:</strong> £4.20 for the first mile (07:00–23:00), then £0.30 per 1/10 mile<br>
+        <strong>Night Rate:</strong> £6.30 for the first mile (23:00–07:00), then £0.40 per 1/10 mile<br>
+        <strong>Bank Holidays:</strong> £8.40 for the first mile (00:00–00:00), then £0.60 per 1/10 mile<br>
+        <strong>Waiting Time:</strong> 30p, 50p or 70p per minute depending on the tariff.
+      </div>
 
       <div class="button-row">
-        <button onclick="location.href='https://tourthelakes.com'">Cancel</button>
+        <button onclick="window.location.href='ReturningCustomer.html'">Cancel</button>
         <button onclick="goToStep2()">Next</button>
       </div>
-    </div>
-<div id="step2" style="display:none; margin-top:30px;">
+    </div>
+
+    <div id="step2" style="display:none;">
       <h2>Journey Details</h2>
 
       <p><strong>Pickup:</strong> <span id="pickupDisplay"></span></p>
@@ -185,14 +277,13 @@
       </select>
 
       <div id="capacityWarning" class="warning" style="display:none;">
-        Due to the vehicle’s layout, luggage space is limited with 5+ passengers. Please pack light.
+        With 5+ passengers, boot space is limited. Please travel light.
       </div>
 
       <div class="disclaimer">
         <strong>Important Notice Regarding Pets</strong><br>
-        Due to prior damage, our vehicles do not accommodate animals.<br>
-        <strong>We are not a pet-friendly service.</strong><br>
-        <em>Failure to disclose pets may result in refusal of travel.</em>
+        Due to damage caused by previous incidents, we no longer carry animals. We are <strong>not</strong> a pet-friendly service.<br>
+        <em>Travel may be refused if this is not followed.</em>
       </div>
 
       <label style="margin-top: 12px; display: flex; align-items: center;">
@@ -204,32 +295,13 @@
         <button onclick="submitAmendment()">Confirm Changes</button>
       </div>
     </div>
-  </div> <!-- closes .container -->
-
-  <!-- Firebase & Google Maps -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-database-compat.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ&libraries=places&callback=initMap" async defer></script>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
-      authDomain: "tourthelakes-1e165.firebaseapp.com",
-      databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
-      projectId: "tourthelakes-1e165",
-      storageBucket: "tourthelakes-1e165.appspot.com",
-      messagingSenderId: "470758171431",
-      appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-  </script>
+  </div>
 <script>
   let bookingID = null;
   let mapPickup, mapDropoff, markerPickup, markerDropoff;
 
   function initMap() {
-    const defaultLatLng = { lat: 54.3686, lng: -2.9067 }; // Windermere fallback
+    const defaultLatLng = { lat: 54.3686, lng: -2.9067 };
 
     mapPickup = new google.maps.Map(document.getElementById("mapPickup"), {
       center: defaultLatLng,
@@ -274,7 +346,7 @@
         mapPickup.setCenter(place.geometry.location);
         markerPickup.setPosition(place.geometry.location);
         localStorage.setItem("pickupCoords", JSON.stringify(place.geometry.location.toJSON()));
-        document.getElementById("pickup").value = place.formatted_address || place.name;
+        pickupInput.value = place.formatted_address || place.name;
       }
     });
 
@@ -284,7 +356,7 @@
         mapDropoff.setCenter(place.geometry.location);
         markerDropoff.setPosition(place.geometry.location);
         localStorage.setItem("dropoffCoords", JSON.stringify(place.geometry.location.toJSON()));
-        document.getElementById("dropoff").value = place.formatted_address || place.name;
+        dropoffInput.value = place.formatted_address || place.name;
       }
     });
   }
@@ -296,11 +368,12 @@
     const dropoffCoords = localStorage.getItem("dropoffCoords");
 
     if (!pickup || !dropoff) {
-      alert("Please enter both pickup and drop-off addresses.");
+      alert("Please fill in both addresses.");
       return;
     }
+
     if (!pickupCoords || !dropoffCoords) {
-      alert("Please confirm addresses using dropdown or map.");
+      alert("Please select addresses using dropdown or tap the map.");
       return;
     }
 
@@ -312,6 +385,7 @@
 
     document.getElementById("step1").style.display = "none";
     document.getElementById("step2").style.display = "block";
+
     estimateJourney();
   }
 
@@ -332,64 +406,57 @@
     const origin = JSON.parse(pickup);
     const destination = JSON.parse(dropoff);
 
-    if (!origin || !destination || !origin.lat || !destination.lat) {
-      document.getElementById("estimateMsg").innerText = "Incomplete coordinates. Please try again.";
-      return;
-    }
-
     const service = new google.maps.DirectionsService();
-    service.route(
-      {
-        origin,
-        destination,
-        travelMode: 'DRIVING'
-      },
-      (result, status) => {
-        if (status === 'OK' && result.routes.length > 0) {
-          const leg = result.routes[0].legs[0];
-          const distanceMeters = leg.distance.value;
-          const durationMinutes = leg.duration.value / 60;
+    service.route({
+      origin,
+      destination,
+      travelMode: 'DRIVING'
+    }, (result, status) => {
+      if (status === 'OK' && result.routes.length > 0) {
+        const leg = result.routes[0].legs[0];
+        const distanceMeters = leg.distance.value;
+        const durationMinutes = leg.duration.value / 60;
 
-          const now = new Date();
-          const hour = now.getHours();
-          const isNight = (hour >= 23 || hour < 7);
+        const now = new Date();
+        const hour = now.getHours();
+        const isNight = (hour >= 23 || hour < 7);
 
-          const baseFare = isNight ? 6.30 : 4.20;
-          const stepFare = isNight ? 0.40 : 0.30;
-          let fare = baseFare;
+        const baseFare = isNight ? 6.30 : 4.20;
+        const stepFare = isNight ? 0.40 : 0.30;
+        let fare = baseFare;
 
-          if (distanceMeters > 1609) {
-            const extraDist = distanceMeters - 1609;
-            const extraUnits = Math.ceil(extraDist / 161);
-            fare += extraUnits * stepFare;
-          }
-
-          document.getElementById("estimateMsg").innerHTML = `
-            Estimated journey: <strong>${leg.distance.text}</strong>,
-            <strong>${leg.duration.text}</strong><br>
-            Estimated fare: <strong>£${fare.toFixed(2)}</strong>
-          `;
-        } else {
-          document.getElementById("estimateMsg").innerText = "Could not estimate journey. Please try again.";
+        if (distanceMeters > 1609) {
+          const extraDist = distanceMeters - 1609;
+          const extraUnits = Math.ceil(extraDist / 161);
+          fare += extraUnits * stepFare;
         }
+
+        document.getElementById("estimateMsg").innerHTML = `
+          Estimated journey: <strong>${leg.distance.text}</strong>,
+          <strong>${leg.duration.text}</strong><br>
+          Estimated fare: <strong>£${fare.toFixed(2)}</strong>
+        `;
+      } else {
+        document.getElementById("estimateMsg").innerText = "Could not estimate journey.";
       }
-    );
+    });
   }
 
   function updateLuggageOptions() {
-    const passengerValue = document.getElementById("passengers").value;
-    const passengerCount = parseInt(passengerValue);
+    const val = document.getElementById("passengers").value;
+    const count = parseInt(val);
     const warning = document.getElementById("capacityWarning");
-    const luggageSelect = document.getElementById("luggage");
-    const options = luggageSelect.options;
+    const luggage = document.getElementById("luggage");
+    const options = luggage.options;
 
     for (let i = 0; i < options.length; i++) {
       options[i].disabled = false;
       options[i].classList.remove("disabledOption");
     }
 
-    if (!isNaN(passengerCount) && passengerCount >= 5) {
+    if (!isNaN(count) && count >= 5) {
       warning.style.display = "block";
+
       if (options[2]) {
         options[2].disabled = true;
         options[2].classList.add("disabledOption");
@@ -399,24 +466,36 @@
         options[3].classList.add("disabledOption");
       }
 
-      const selectedIndex = luggageSelect.selectedIndex;
-      if (selectedIndex === 2 || selectedIndex === 3) {
-        luggageSelect.selectedIndex = 1;
-        luggageSelect.dispatchEvent(new Event("change"));
+      if (luggage.selectedIndex === 2 || luggage.selectedIndex === 3) {
+        luggage.selectedIndex = 1;
+        luggage.dispatchEvent(new Event("change"));
       }
     } else {
       warning.style.display = "none";
-    }
-  }
+    }
+  }
 </script>
 <script>
-  // Load booking data using URL param
+  // Firebase setup
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9EdglxWetAv81qe1GnwlMf7HbPccjXxQ",
+    authDomain: "tourthelakes-1e165.firebaseapp.com",
+    databaseURL: "https://tourthelakes-1e165-default-rtdb.firebaseio.com",
+    projectId: "tourthelakes-1e165",
+    storageBucket: "tourthelakes-1e165.appspot.com",
+    messagingSenderId: "470758171431",
+    appId: "1:470758171431:web:f06dd39b0f15b63b2bff02"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Load booking from URL param
   window.onload = function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    bookingID = urlParams.get("id");
+    const params = new URLSearchParams(window.location.search);
+    bookingID = params.get("id");
 
     if (!bookingID) {
-      alert("Booking ID missing. Please go back and try again.");
+      alert("Missing booking ID. Returning to login.");
       window.location.href = "ReturningCustomer.html";
       return;
     }
@@ -429,6 +508,7 @@
         return;
       }
 
+      // Prefill form
       document.getElementById("pickup").value = data.pickup || "";
       document.getElementById("dropoff").value = data.dropoff || "";
       document.getElementById("customNote").value = data.note || "";
@@ -437,17 +517,17 @@
       document.getElementById("passengerConfirm").checked = true;
       document.getElementById("petConfirm").checked = true;
 
-      localStorage.setItem("pickupCoords", JSON.stringify(data.pickupCoords));
-      localStorage.setItem("dropoffCoords", JSON.stringify(data.dropoffCoords));
-      localStorage.setItem("pickup", data.pickup);
-      localStorage.setItem("dropoff", data.dropoff);
-
-      // Center map markers
+      // Set localStorage and map markers
       if (data.pickupCoords && data.dropoffCoords) {
+        localStorage.setItem("pickupCoords", JSON.stringify(data.pickupCoords));
+        localStorage.setItem("dropoffCoords", JSON.stringify(data.dropoffCoords));
+
         const pickupLatLng = new google.maps.LatLng(data.pickupCoords.lat, data.pickupCoords.lng);
         const dropoffLatLng = new google.maps.LatLng(data.dropoffCoords.lat, data.dropoffCoords.lng);
+
         markerPickup.setPosition(pickupLatLng);
         mapPickup.setCenter(pickupLatLng);
+
         markerDropoff.setPosition(dropoffLatLng);
         mapDropoff.setCenter(dropoffLatLng);
       }
@@ -460,17 +540,17 @@
       return;
     }
     if (!document.getElementById("petConfirm").checked) {
-      alert("You must confirm you are not travelling with a pet.");
+      alert("You must confirm no pet is travelling.");
       return;
     }
 
     const pickup = document.getElementById("pickup").value;
     const dropoff = document.getElementById("dropoff").value;
-    const pickupCoords = JSON.parse(localStorage.getItem("pickupCoords") || "{}");
-    const dropoffCoords = JSON.parse(localStorage.getItem("dropoffCoords") || "{}");
     const passengers = document.getElementById("passengers").value;
     const luggage = document.getElementById("luggage").value;
     const note = document.getElementById("customNote").value;
+    const pickupCoords = JSON.parse(localStorage.getItem("pickupCoords") || "{}");
+    const dropoffCoords = JSON.parse(localStorage.getItem("dropoffCoords") || "{}");
 
     const updates = {
       pickup,
@@ -488,9 +568,9 @@
     db.ref("bookings/" + bookingID).update(updates).then(() => {
       alert("Booking updated successfully.");
       window.location.href = "CustomerBooking.html";
-    }).catch(error => {
-      alert("Error updating booking. Please try again.");
-      console.error(error);
+    }).catch(err => {
+      console.error("Update failed:", err);
+      alert("Something went wrong. Please try again.");
     });
   }
 </script>
